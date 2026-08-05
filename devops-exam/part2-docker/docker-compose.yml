@@ -1,0 +1,102 @@
+version: "3.9"
+
+# ============================================================
+# docker-compose.yml
+# Local development: run API + UI together with one command
+# Usage: docker-compose up --build
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # API – FastAPI backend
+  # ----------------------------------------------------------
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: api-app:latest
+    container_name: devops_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/appdb}
+      - DEBUG=${DEBUG:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - app-network
+
+  # ----------------------------------------------------------
+  # UI – Next.js frontend
+  # ----------------------------------------------------------
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    image: ui-app:latest
+    container_name: devops_ui
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://api:8000
+      - PORT=3000
+    depends_on:
+      - api
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - app-network
+
+  # ----------------------------------------------------------
+  # Database – PostgreSQL (for local dev only)
+  # ----------------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: devops_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=appdb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    # Not exposed outside the internal network for security
+    # ports:
+    #   - "5432:5432"
+
+# ----------------------------------------------------------
+# Shared network — containers talk to each other by service name
+# ----------------------------------------------------------
+networks:
+  app-network:
+    driver: bridge
+
+# ----------------------------------------------------------
+# Named volume for PostgreSQL data persistence
+# ----------------------------------------------------------
+volumes:
+  db-data:

@@ -1,0 +1,29 @@
+# ============================================================
+# poddisruptionbudget.yaml
+# Ensures at least 1 pod is always available during node
+# maintenance, cluster upgrades, or voluntary disruptions.
+# ============================================================
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-pdb
+  namespace: devops-exam
+spec:
+  minAvailable: 1        # Keep at least 1 API pod alive at all times
+  selector:
+    matchLabels:
+      app: api-app
+
+---
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ui-pdb
+  namespace: devops-exam
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: ui-app

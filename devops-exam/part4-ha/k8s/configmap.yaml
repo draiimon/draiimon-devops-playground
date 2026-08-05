@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: devops-exam
+data:
+  API_PORT: "8000"
+  UI_PORT: "3000"
+  DEBUG: "false"
+  LOG_LEVEL: "info"
+  NEXT_PUBLIC_API_URL: "http://api.myapp.local"

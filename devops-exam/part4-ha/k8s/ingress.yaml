@@ -1,0 +1,47 @@
+# ============================================================
+# ingress.yaml
+# Routes domain-based traffic to each service.
+# Requires: nginx ingress controller installed in the cluster.
+#
+# Install nginx ingress (Minikube):
+#   minikube addons enable ingress
+#
+# Install nginx ingress (general):
+#   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: devops-exam
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+
+  rules:
+    # API: api.myapp.local → api-service:80
+    - host: api.myapp.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-service
+                port:
+                  number: 80
+
+    # UI: ui.myapp.local → ui-service:80
+    - host: ui.myapp.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ui-service
+                port:
+                  number: 80

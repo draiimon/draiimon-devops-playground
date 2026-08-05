@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-app
+  namespace: devops-exam
+  labels:
+    app: api-app
+    tier: backend
+spec:
+  replicas: 2                    # HA: 2 pods across nodes
+  selector:
+    matchLabels:
+      app: api-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0          # Never take a pod down before a new one is ready
+      maxSurge: 1                # Allow 1 extra pod during update
+  template:
+    metadata:
+      labels:
+        app: api-app
+        tier: backend
+    spec:
+      # Spread pods across different nodes for true HA
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: api-app
+
+      containers:
+        - name: api
+          image: DOCKER_USERNAME/api-app:latest    # Replace DOCKER_USERNAME
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: PORT
+              value: "8000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: DATABASE_URL
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: SECRET_KEY
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          # Liveness probe: restart pod if app is hung
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+
+          # Readiness probe: only send traffic when truly ready
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+
+      restartPolicy: Always
