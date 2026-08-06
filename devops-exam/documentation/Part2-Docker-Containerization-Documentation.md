@@ -675,7 +675,16 @@ The UI Dockerfile was updated to run `npm install && npm run build && npm start`
 > - `devops_ui` — `Next.js ✓ Ready in 553ms` on http://localhost:3000
 > - `devops_db` — `database system is ready to accept connections` on port 5432
 
-![Task 4 - docker ps: all 3 containers STATUS Up](screenshots/part2/task02-4-docker-ps.png)
+![Task 4 - docker ps: all 3 containers STATUS Up 24 minutes](screenshots/part2/task02-4-docker-ps.png)
+
+> ✅ **`docker ps` confirms all 3 containers running:**
+> - `devops_ui` — `ui-app:latest` — Up 24 minutes — `0.0.0.0:3000->3000/tcp`
+> - `devops_api` — `api-app:latest` — Up 24 minutes — `0.0.0.0:8000->8000/tcp`
+> - `devops_db` — `postgres:15-alpine` — Up 24 minutes **(healthy)** — `5432/tcp`
+
+![Task 4 - UI accessible in browser at localhost:3000](screenshots/part2/task02-4-ui-browser.png)
+
+> ✅ **UI confirmed live in browser** — Next.js app serving at `http://localhost:3000`
 
 ---
 
@@ -706,4 +715,5 @@ The UI Dockerfile was updated to run `npm install && npm run build && npm start`
 | Task 3 — `docker ps` showing containers running | `task02-3-local-execution-2.png` | ✅ Done |
 | Task 4 — `docker-compose up --build` both images + 3 containers created | `task02-4-docker-compose.png` | ✅ Done |
 | Task 4 — API + UI + DB all running (logs confirmed) | `task02-4-all-running.png` | ✅ Done |
-| Task 4 — `docker ps` showing all 3 containers STATUS Up | `task02-4-docker-ps.png` | ⚠️ Next — open new terminal, run `docker ps` |
+| Task 4 — `docker ps` all 3 containers STATUS Up 24 min | `task02-4-docker-ps.png` | ✅ Done |
+| Task 4 — UI live in browser at localhost:3000 | `task02-4-ui-browser.png` | ✅ Done |
