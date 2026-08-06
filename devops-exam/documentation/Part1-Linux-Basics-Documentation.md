@@ -95,7 +95,9 @@ r = read (4)   w = write (2)   x = execute (1)
 | `chmod 600` | Restricts file to owner read/write — ideal for sensitive files |
 | `ls -l` | Shows permissions, owner, group, size, date |
 
-> ⚠️ **Screenshots for Tasks 1 & 2 are missing** — please add and place them as `screenshots/task01-02-files-permissions.png`.
+### 📸 Screenshot — Tasks 1 & 2
+
+![Task 1 & 2 - Files, Directories and Permissions](screenshots/task01-02-files-permissions.png)
 
 ---
 
