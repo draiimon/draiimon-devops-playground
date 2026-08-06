@@ -105,11 +105,44 @@ Load: 0.02 0.23 0.15 1/191 2795
 
 ---
 
+---
+
+## ✅ Task 3 — Text Processing — DONE
+
+Commands executed:
+```bash
+cat > /tmp/devops-exam/logs/app.log << 'EOF'
+2026-08-06 08:00:01 INFO  Server started successfully
+2026-08-06 08:01:05 ERROR Database connection failed
+...
+EOF
+
+grep "ERROR" /tmp/devops-exam/logs/app.log
+grep -c "ERROR" /tmp/devops-exam/logs/app.log
+grep -c "WARNING" /tmp/devops-exam/logs/app.log
+grep -E "^2026" /tmp/devops-exam/logs/app.log
+cat /tmp/devops-exam/logs/app.log
+head -3 /tmp/devops-exam/logs/app.log
+tail -3 /tmp/devops-exam/logs/app.log
+wc -l /tmp/devops-exam/logs/app.log
+sort /tmp/devops-exam/logs/app.log | uniq -c | sort -rn
+```
+
+Output confirmed:
+- ERROR count: **4**
+- WARNING count: **2**
+- Total lines: **10**
+- grep, regex, sort, uniq — all working ✅
+
+📸 Screenshot: {9783574C-26F8-48C6-B020-D4734D1ED9B6} ✅
+
+---
+
 ## ⏳ Tasks Still To Do
 
 | Task | Status |
 |------|--------|
-| Task 3 — Text Processing (grep, find, tail, wc) | ⏳ Next |
+| Task 3 — Text Processing (grep, find, tail, wc) | ✅ Done |
 | Task 4 — Process Management (ps, kill, jobs) | ⏳ |
 | Task 5 — Networking (ip addr, ping, ss) | ⏳ |
 | Task 6 — Package Management (apt install) | ⏳ |
