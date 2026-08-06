@@ -1,0 +1,237 @@
+draiimon@Aloof:~/devops-exam/part2-docker$ docker-compose up --build
+Building api
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  74.24kB
+Step 1/13 : FROM python:3.11-slim AS builder
+ ---> 94c50be2dc99
+Step 2/13 : WORKDIR /build
+ ---> Using cache
+ ---> c101823634f2
+Step 3/13 : RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 96bffadce0bd
+Step 4/13 : COPY requirements.txt .
+ ---> Using cache
+ ---> 72739caac8cf
+Step 5/13 : RUN pip install --upgrade pip && pip install --prefix=/install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> 750d53dc8861
+Step 6/13 : FROM python:3.11-slim AS runtime
+ ---> 94c50be2dc99
+Step 7/13 : RUN groupadd --gid 1001 appgroup && useradd --uid 1001 --gid 1001 --no-create-home --shell /sbin/nologin appuser
+ ---> Using cache
+ ---> 41698e699381
+Step 8/13 : WORKDIR /app
+ ---> Using cache
+ ---> d503fe6f6433
+Step 9/13 : COPY --from=builder /install /usr/local
+ ---> Using cache
+ ---> 30293272603d
+Step 10/13 : COPY --chown=appuser:appgroup . .
+ ---> 946a11b3c68c
+Step 11/13 : USER appuser
+ ---> Running in 2778b4f866ba
+ ---> Removed intermediate container 2778b4f866ba
+ ---> 909339e35651
+Step 12/13 : EXPOSE 8000
+ ---> Running in 193e0ebc098a
+ ---> Removed intermediate container 193e0ebc098a
+ ---> b977e4638ec8
+Step 13/13 : CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+ ---> Running in def640ec4adf
+ ---> Removed intermediate container def640ec4adf
+ ---> fb48e2afacd2
+Successfully built fb48e2afacd2
+Successfully tagged api-app:latest
+Building ui
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  565.2kB
+Step 1/10 : FROM node:20-alpine
+ ---> fb4cd12c85ee
+Step 2/10 : RUN addgroup --system --gid 1001 nodejs     && adduser --system --uid 1001 nextjs
+ ---> Running in 7ec1908125d8
+ ---> Removed intermediate container 7ec1908125d8
+ ---> b4c532762990
+Step 3/10 : WORKDIR /app
+ ---> Running in 4f8363104a15
+ ---> Removed intermediate container 4f8363104a15
+ ---> 1bd03285581b
+Step 4/10 : COPY package*.json ./
+ ---> 28fdabfaca3c
+Step 5/10 : RUN npm install
+ ---> Running in 365ab805fa3b
+
+added 276 packages, and audited 277 packages in 15s
+
+106 packages are looking for funding
+  run `npm fund` for details
+
+13 vulnerabilities (4 moderate, 8 high, 1 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues, run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+ ---> Removed intermediate container 365ab805fa3b
+ ---> 83a65ae368eb
+Step 6/10 : COPY . .
+ ---> ef871786e3d9
+Step 7/10 : RUN npm run build
+ ---> Running in b9d05182d9f6
+
+> test-ui-app@0.1.0 build
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   Creating an optimized production build ...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5)
+   Generating static pages (2/5)
+   Generating static pages (3/5)
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    1.79 kB        82.3 kB
+└ ○ /_not-found                          875 B          81.4 kB
++ First Load JS shared by all            80.5 kB
+  ├ chunks/472-4e2e57b95d647320.js       27.5 kB
+  ├ chunks/fd9d1056-16f14d1599bb12d9.js  51.1 kB
+  ├ chunks/main-app-ce281d8555633725.js  231 B
+  └ chunks/webpack-a1e5d8e4291ab25b.js   1.75 kB
+
+
+○  (Static)  automatically rendered as static HTML (uses no initial props)
+
+ ---> Removed intermediate container b9d05182d9f6
+ ---> 05f921888a89
+Step 8/10 : USER nextjs
+ ---> Running in e6a9557d0055
+ ---> Removed intermediate container e6a9557d0055
+ ---> 3746c5b92b44
+Step 9/10 : EXPOSE 3000
+ ---> Running in 909d9d23ccd7
+ ---> Removed intermediate container 909d9d23ccd7
+ ---> 974fdb19cadf
+Step 10/10 : CMD ["npm", "start"]
+ ---> Running in e0983d508c4a
+ ---> Removed intermediate container e0983d508c4a
+ ---> 4b823302f004
+Successfully built 4b823302f004
+Successfully tagged ui-app:latest
+Creating devops_db ... done
+Creating devops_api ... done
+Creating devops_ui  ... done
+Attaching to devops_db, devops_api, devops_ui
+devops_db | The files belonging to this database system will be owned by user "postgres".
+devops_db | This user must also own the server process.
+devops_db |
+devops_db | The database cluster will be initialized with locale "en_US.utf8".
+devops_db | The default database encoding has accordingly been set to "UTF8".
+devops_db | The default text search configuration will be set to "english".
+devops_db |
+devops_db | Data page checksums are disabled.
+devops_db |
+devops_db | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+devops_db | creating subdirectories ... ok
+devops_db | selecting dynamic shared memory implementation ... posix
+devops_db | selecting default max_connections ... 100
+devops_db | selecting default shared_buffers ... 128MB
+devops_db | selecting default time zone ... UTC
+devops_db | creating configuration files ... ok
+devops_db | running bootstrap script ... ok
+devops_db | performing post-bootstrap initialization ... sh: locale: not found
+devops_db | 2026-08-06 07:17:21.763 UTC [35] WARNING:  no usable system locales were found
+devops_db | ok
+devops_db | syncing data to disk ... ok
+devops_db |
+devops_db |
+devops_db | Success. You can now start the database server using:
+devops_db |
+devops_db |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+devops_db |
+devops_db | initdb: warning: enabling "trust" authentication for local connections
+devops_db | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+devops_db | waiting for server to start....2026-08-06 07:17:22.924 UTC [41] LOG:  starting PostgreSQL 15.18 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+devops_db | 2026-08-06 07:17:22.927 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+devops_db | 2026-08-06 07:17:22.946 UTC [44] LOG:  database system was shut down at 2026-08-06 07:17:22 UTC
+devops_db | 2026-08-06 07:17:22.953 UTC [41] LOG:  database system is ready to accept connections
+devops_db |  done
+devops_db | server started
+devops_db | CREATE DATABASE
+devops_db |
+devops_db |
+devops_db | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+devops_db |
+devops_db | waiting for server to shut down...2026-08-06 07:17:23.111 UTC [41] LOG:  received fast shutdown request
+devops_db | .2026-08-06 07:17:23.113 UTC [41] LOG:  aborting any active transactions
+devops_db | 2026-08-06 07:17:23.116 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+devops_db | 2026-08-06 07:17:23.118 UTC [42] LOG:  shutting down
+devops_db | 2026-08-06 07:17:23.121 UTC [42] LOG:  checkpoint starting: shutdown immediate
+devops_db | 2026-08-06 07:17:23.275 UTC [42] LOG:  checkpoint complete: wrote 922 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.037 s, sync=0.110 s, total=0.158 s; sync files=301, longest=0.040 s, average=0.001 s; distance=4249 kB, estimate=4249 kB
+devops_db | 2026-08-06 07:17:23.285 UTC [41] LOG:  database system is shut down
+devops_db |  done
+devops_db | server stopped
+devops_db |
+devops_db | PostgreSQL init process complete; ready for start up.
+devops_db |
+devops_db | 2026-08-06 07:17:23.338 UTC [1] LOG:  starting PostgreSQL 15.18 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+devops_db | 2026-08-06 07:17:23.338 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+devops_db | 2026-08-06 07:17:23.339 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+devops_db | 2026-08-06 07:17:23.344 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+devops_db | 2026-08-06 07:17:23.350 UTC [57] LOG:  database system was shut down at 2026-08-06 07:17:23 UTC
+devops_db | 2026-08-06 07:17:23.356 UTC [1] LOG:  database system is ready to accept connections
+devops_ui |
+devops_ui | > test-ui-app@0.1.0 start
+devops_ui | > next start
+devops_ui |
+devops_api | INFO:     Started server process [7]
+devops_api | INFO:     Waiting for application startup.
+devops_api | INFO:     Application startup complete.
+devops_api | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+devops_ui |   ▲ Next.js 13.5.6
+devops_ui |   - Local:        http://localhost:3000
+devops_ui |
+devops_ui |  ✓ Ready in 553ms
+Exception in thread Thread-10 (watch_events):
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3/dist-packages/compose/cli/log_printer.py", line 202, in watch_events
+    for event in event_stream:
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 626, in yield_loop
+    yield build_container_event(event)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 594, in build_container_event
+    container = Container.from_id(self.client, event['id'])
+                                               ~~~~~^^^^^^
+KeyError: 'id'
+devops_db | 2026-08-06 07:22:23.365 UTC [55] LOG:  checkpoint starting: time
+devops_db | 2026-08-06 07:22:27.508 UTC [55] LOG:  checkpoint complete: wrote 44 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.126 s, sync=0.009 s, total=4.144 s; sync files=12, longest=0.003 s, average=0.001 s; distance=252 kB, estimate=252 kB

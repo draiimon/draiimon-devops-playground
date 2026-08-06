@@ -609,7 +609,7 @@ docker rm -f devops_api devops_ui devops_db 2>/dev/null; true
 docker-compose up --build
 ```
 
-### Expected Output
+### Actual Output
 
 ```
 Creating devops_db  ... done
@@ -618,9 +618,18 @@ Creating devops_ui  ... done
 Attaching to devops_db, devops_api, devops_ui
 
 devops_db  | PostgreSQL init process complete; ready for start up.
+devops_db  | LOG: starting PostgreSQL 15.18 on x86_64-pc-linux-musl
+devops_db  | LOG: listening on IPv4 address "0.0.0.0", port 5432
 devops_db  | LOG: database system is ready to accept connections
-devops_api | INFO: Application startup complete.
-devops_ui  | ▲ Next.js ready on http://localhost:3000
+
+devops_api | INFO:     Started server process [7]
+devops_api | INFO:     Waiting for application startup.
+devops_api | INFO:     Application startup complete.
+devops_api | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+
+devops_ui  | ▲ Next.js 13.5.6
+devops_ui  | - Local: http://localhost:3000
+devops_ui  | ✓ Ready in 553ms
 ```
 
 ### What docker-compose does
@@ -655,11 +664,18 @@ The UI Dockerfile was updated to run `npm install && npm run build && npm start`
 
 ### 📸 Screenshots — Task 4
 
-![Task 4 - docker-compose up: all 3 containers created](screenshots/part2/task02-4-docker-compose.png)
+![Task 4 - docker-compose build complete; all 3 containers created](screenshots/part2/task02-4-docker-compose.png)
 
-> ✅ `Creating devops_db ... done` → `Creating devops_api ... done` → `Creating devops_ui ... done`
+> ✅ API image built: `Successfully tagged api-app:latest` → UI image built: `Successfully tagged ui-app:latest` → `Creating devops_db ... done` → `Creating devops_api ... done` → `Creating devops_ui ... done`
 
-![Task 4 - All 3 services running](screenshots/part2/task02-4-docker-compose-final.png)
+![Task 4 - All 3 services running: API on :8000, UI on :3000, DB on :5432](screenshots/part2/task02-4-all-running.png)
+
+> ✅ **All 3 services confirmed running:**
+> - `devops_api` — `Application startup complete. Uvicorn running on http://0.0.0.0:8000`
+> - `devops_ui` — `Next.js ✓ Ready in 553ms` on http://localhost:3000
+> - `devops_db` — `database system is ready to accept connections` on port 5432
+
+![Task 4 - docker ps: all 3 containers STATUS Up](screenshots/part2/task02-4-docker-ps.png)
 
 ---
 
@@ -688,5 +704,6 @@ The UI Dockerfile was updated to run `npm install && npm run build && npm start`
 | Task 2 — UI Dockerfile build complete | `task02-2-ui-build-2.png` | ✅ Done |
 | Task 3 — `docker images` both images present | `task02-3-local-execution.png` | ✅ Done |
 | Task 3 — `docker ps` showing containers running | `task02-3-local-execution-2.png` | ✅ Done |
-| Task 4 — `docker-compose up` all 3 containers created | `task02-4-docker-compose.png` | ✅ Done |
-| Task 4 — All 3 services running (final) | `task02-4-docker-compose-final.png` | ⚠️ Next — send after running the fix commands |
+| Task 4 — `docker-compose up --build` both images + 3 containers created | `task02-4-docker-compose.png` | ✅ Done |
+| Task 4 — API + UI + DB all running (logs confirmed) | `task02-4-all-running.png` | ✅ Done |
+| Task 4 — `docker ps` showing all 3 containers STATUS Up | `task02-4-docker-ps.png` | ⚠️ Next — open new terminal, run `docker ps` |
