@@ -1,0 +1,58 @@
+# ============================================================
+# ArgoCD Application — GitOps deployment
+#
+# This tells ArgoCD to watch the Helm chart in your Git repo
+# and automatically sync it to the cluster. Any push to the
+# 'staging' branch that changes the chart triggers a deploy.
+#
+# Install ArgoCD:
+#   kubectl create namespace argocd
+#   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+#   kubectl port-forward svc/argocd-server -n argocd 8080:443
+# ============================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io   # clean up on delete
+spec:
+  project: default
+
+  source:
+    # Replace with your actual Git repo URL
+    repoURL: https://github.com/YOUR_USERNAME/YOUR_REPO.git
+    targetRevision: staging
+    path: devops-exam/part4-ha/helm
+
+    helm:
+      valueFiles:
+        - values.yaml
+      # Override image tags — updated by CI on each deploy
+      parameters:
+        - name: api.image.tag
+          value: latest
+        - name: ui.image.tag
+          value: latest
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devops-exam
+
+  syncPolicy:
+    automated:
+      prune: true        # Remove resources deleted from Git
+      selfHeal: true     # Re-sync if cluster drifts from Git
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  revisionHistoryLimit: 5

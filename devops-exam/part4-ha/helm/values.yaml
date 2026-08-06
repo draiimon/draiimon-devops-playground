@@ -1,0 +1,116 @@
+# ============================================================
+# values.yaml — default values for the myapp Helm chart
+# Override per-environment with: -f values.staging.yaml
+# ============================================================
+
+namespace: devops-exam
+
+# ---- API backend --------------------------------------------
+api:
+  name: api
+  replicaCount: 2
+
+  image:
+    repository: your-dockerhub-username/api-app
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8000
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  env:
+    PORT: "8000"
+    DEBUG: "false"
+    LOG_LEVEL: "info"
+
+  secrets:
+    databaseUrl: ""   # Set via --set or external secret manager
+    secretKey: ""
+
+  probes:
+    liveness:
+      path: /healthz
+      initialDelaySeconds: 15
+      periodSeconds: 20
+    readiness:
+      path: /healthz
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+# ---- UI frontend --------------------------------------------
+ui:
+  name: ui
+  replicaCount: 2
+
+  image:
+    repository: your-dockerhub-username/ui-app
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+
+  env:
+    PORT: "3000"
+    NODE_ENV: "production"
+    NEXT_TELEMETRY_DISABLED: "1"
+    NEXT_PUBLIC_API_URL: "http://api.myapp.local"
+
+  probes:
+    liveness:
+      path: /
+      initialDelaySeconds: 20
+      periodSeconds: 20
+    readiness:
+      path: /
+      initialDelaySeconds: 15
+      periodSeconds: 10
+
+# ---- Ingress ------------------------------------------------
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    api: api.myapp.local
+    ui: ui.myapp.local
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+
+# ---- PodDisruptionBudget ------------------------------------
+pdb:
+  enabled: true
+  minAvailable: 1

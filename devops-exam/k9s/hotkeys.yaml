@@ -1,0 +1,45 @@
+# ============================================================
+# k9s hotkeys — place at: ~/.config/k9s/hotkeys.yaml
+# Custom keyboard shortcuts on top of k9s defaults
+# ============================================================
+hotKeys:
+  # Jump to pods in devops-exam namespace
+  shift-e:
+    shortCut: Shift-E
+    description: devops-exam pods
+    command: pods
+    args:
+      - --namespace
+      - devops-exam
+
+  # Jump to all deployments
+  shift-d:
+    shortCut: Shift-D
+    description: All deployments
+    command: deployments
+    args:
+      - --all-namespaces
+
+  # Jump to ArgoCD apps
+  shift-a:
+    shortCut: Shift-A
+    description: ArgoCD applications
+    command: applications
+    args:
+      - --namespace
+      - argocd
+
+  # Jump to HPAs
+  shift-h:
+    shortCut: Shift-H
+    description: Horizontal Pod Autoscalers
+    command: horizontalpodautoscalers
+    args:
+      - --namespace
+      - devops-exam
+
+  # Node overview
+  shift-n:
+    shortCut: Shift-N
+    description: Nodes
+    command: nodes

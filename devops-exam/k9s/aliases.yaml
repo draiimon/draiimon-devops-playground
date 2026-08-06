@@ -1,0 +1,23 @@
+# ============================================================
+# k9s aliases — place at: ~/.config/k9s/aliases.yaml
+# Type the alias in k9s command mode (:alias) to jump to view
+# ============================================================
+aliases:
+  # Shorthand for common resource types
+  dp:   v1/deployments
+  svc:  v1/services
+  ing:  networking.k8s.io/v1/ingresses
+  cm:   v1/configmaps
+  sec:  v1/secrets
+  hpa:  autoscaling/v2/horizontalpodautoscalers
+  pdb:  policy/v1/poddisruptionbudgets
+  no:   v1/nodes
+  ev:   v1/events
+  sa:   v1/serviceaccounts
+
+  # ArgoCD shortcuts
+  app:  argoproj.io/v1alpha1/applications
+  argo: argoproj.io/v1alpha1/applications
+
+  # Jump straight into the exam namespace pods
+  exam: devops-exam/v1/pods
