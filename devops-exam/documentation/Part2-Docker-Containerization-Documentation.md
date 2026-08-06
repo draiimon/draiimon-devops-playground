@@ -7,6 +7,21 @@
 
 ---
 
+## Connection to Part 1
+
+Part 1 established the Linux foundation this entire exam builds on — file management, permissions, process control, networking, and shell scripting. **Part 2 directly applies those skills inside Docker containers:**
+
+| Part 1 Skill | How it's used in Part 2 |
+|--------------|------------------------|
+| File & directory management (`mkdir`, `cp`, `mv`) | Creating the project folder structure on the local machine before running Docker |
+| File permissions (`chmod`, non-root users) | Dockerfiles create non-root users (`appuser`, `nextjs`) — same concept as `useradd` in Task 8 |
+| Package management (`apt install`) | Dockerfile RUN steps use `apt-get install` and `pip install` to set up the environment |
+| Shell scripting (`bash`, variables, `CMD`) | The container entrypoint (`CMD`) is a shell command, same as writing a `.sh` script |
+| Networking (`ip addr`, ports) | Docker maps ports with `-p host:container`, same concept as the ports seen with `ss -tuln` |
+| Archiving (`tar`) | Docker images are internally layered archives — each `COPY` and `RUN` is a layer |
+
+---
+
 ## Environment Overview
 
 All tasks were performed on **WSL2 (Windows Subsystem for Linux 2)** running Ubuntu 24.04 on a Windows machine. Docker Desktop (with WSL2 backend) was used to build and run containers.
@@ -15,6 +30,64 @@ All tasks were performed on **WSL2 (Windows Subsystem for Linux 2)** running Ubu
 - **Hostname:** Aloof  
 - **Docker version:** Docker Desktop with WSL2 backend  
 - **Working Directory:** `~/devops-exam/part2-docker`
+
+---
+
+## Pre-Task Setup — Creating the Project Structure on Local Machine
+
+Before building Docker images, the project folder structure needs to exist on the local WSL machine. The files live in Replit (the exam workspace), so we recreate them locally first.
+
+### Why this is needed
+
+Docker runs on your **local machine** — it cannot pull files directly from Replit. The `docker build` command needs the `Dockerfile` and source files to be present on the same machine where Docker is running. This is the same principle as Part 1 Task 1 (`mkdir -p`) — you always set up your directory structure before working inside it.
+
+### Commands Executed
+
+```bash
+# Create the folder structure (same as Part 1 Task 1 — mkdir -p)
+mkdir -p ~/devops-exam/part2-docker/api
+
+# Create requirements.txt
+cat > ~/devops-exam/part2-docker/api/requirements.txt << 'EOF'
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+sqlalchemy>=2.0.0
+alembic>=1.13.0
+asyncpg>=0.29.0
+pydantic>=2.7.0
+pydantic-settings>=2.2.0
+httpx>=0.27.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-dotenv>=1.0.0
+python-multipart>=0.0.9
+EOF
+
+# Create the Dockerfile
+cat > ~/devops-exam/part2-docker/api/Dockerfile << 'EOF'
+FROM python:3.11-slim AS builder
+WORKDIR /build
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install --prefix=/install --no-cache-dir -r requirements.txt
+FROM python:3.11-slim AS runtime
+RUN groupadd --gid 1001 appgroup && useradd --uid 1001 --gid 1001 --no-create-home --shell /sbin/nologin appuser
+WORKDIR /app
+COPY --from=builder /install /usr/local
+COPY --chown=appuser:appgroup . .
+USER appuser
+EXPOSE 8000
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+EOF
+```
+
+### Explanation
+
+| Command | What it does |
+|---------|-------------|
+| `mkdir -p ~/devops-exam/part2-docker/api` | Creates nested folders in one shot (same as Part 1 Task 1) |
+| `cat > file << 'EOF' ... EOF` | Heredoc — writes a multi-line block directly into a file without a text editor |
+| `~/devops-exam/` | The tilde `~` is shorthand for `/home/draiimon` — your home directory |
 
 ---
 
