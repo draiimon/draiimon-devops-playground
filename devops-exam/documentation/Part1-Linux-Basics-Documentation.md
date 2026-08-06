@@ -68,12 +68,18 @@ chmod u+x /tmp/devops-exam/logs/app.log
 chmod 600 /tmp/devops-exam/config/app.config
 chmod +x ~/devops-exam/scripts/system_health.sh
 ls -l /tmp/devops-exam/logs/app.log
+ls -l /tmp/devops-exam/config/app.config
+
+# Change file ownership (chown)
+sudo chown draiimon:docker /tmp/devops-exam/logs/app.log
+ls -l /tmp/devops-exam/logs/app.log
 ```
 
 ### Output
 
 ```
--rwxr-xr-x 1 draiimon docker 0 Aug  6 11:47 /tmp/devops-exam/logs/app.log
+-rwxr-xr-x 1 draiimon docker 520 Aug  6 11:54 /tmp/devops-exam/logs/app.log
+-rw------- 1 draiimon docker   0 Aug  6 11:47 /tmp/devops-exam/config/app.config
 ```
 
 ### Explanation
@@ -94,6 +100,7 @@ r = read (4)   w = write (2)   x = execute (1)
 | `chmod u+x` | Adds execute for the owner only |
 | `chmod 600` | Restricts file to owner read/write — ideal for sensitive files |
 | `ls -l` | Shows permissions, owner, group, size, date |
+| `chown user:group file` | Changes the **owner** and **group** of a file — only root/sudo can change ownership to another user |
 
 ### 📸 Screenshot — Tasks 1 & 2
 
@@ -128,6 +135,9 @@ head -3 /tmp/devops-exam/logs/app.log
 tail -3 /tmp/devops-exam/logs/app.log
 wc -l /tmp/devops-exam/logs/app.log
 sort /tmp/devops-exam/logs/app.log | uniq -c | sort -rn
+
+# Follow a log file in real-time (Ctrl+C to stop)
+tail -f /tmp/devops-exam/logs/app.log
 ```
 
 ### Results
@@ -150,6 +160,7 @@ sort /tmp/devops-exam/logs/app.log | uniq -c | sort -rn
 | `tail -3` | Shows last 3 lines |
 | `wc -l` | Counts total lines |
 | `sort \| uniq -c` | Sorts then counts duplicates — great for log analysis |
+| `tail -f` | **Follows** a log file in real-time — new lines appear as they are written (Ctrl+C to stop) |
 
 ### 📸 Screenshot
 
@@ -367,6 +378,11 @@ whoami
 id
 cat /etc/passwd | tail -5
 cat /etc/group | tail -5
+
+# Switch to another user (su)
+su - devops
+whoami
+exit
 ```
 
 ### Key Output
@@ -394,6 +410,7 @@ developers:x:1002:devops
 | `whoami` | Shows current logged-in username |
 | `/etc/passwd` | System file storing all user accounts |
 | `/etc/group` | System file storing all groups and their members |
+| `su - devops` | **Switches to another user** — the `-` loads that user's full environment (home dir, PATH). Type `exit` to return |
 
 ### 📸 Screenshot
 
@@ -497,6 +514,59 @@ bash ~/devops-exam/scripts/system_health.sh
 
 ---
 
+### Script 4: scripting_demo.sh
+
+**Purpose:** Demonstrates all required shell scripting concepts — variables, `if/else`, `for` loop, `while` loop, output redirection (`>` and `>>`), and pipes (`|`).
+
+```bash
+#!/bin/bash
+CANDIDATE="draiimon"
+LOG_FILE="/tmp/devops-exam/logs/script_output.log"
+
+# Redirect output to file (>)
+echo "Script started at: $(date)" > "$LOG_FILE"
+echo "Candidate: $CANDIDATE" >> "$LOG_FILE"
+
+# if/else conditional — check disk usage
+DISK_USAGE=$(df / | tail -1 | awk '{print $5}' | tr -d '%')
+if [ "$DISK_USAGE" -gt 80 ]; then
+    echo "WARNING: Disk at ${DISK_USAGE}%"
+else
+    echo "OK: Disk at ${DISK_USAGE}%"
+fi
+
+# for loop — check directories exist
+for dir in app logs config backup; do
+    if [ -d "/tmp/devops-exam/$dir" ]; then
+        echo "  ✔ $dir exists"
+    fi
+done
+
+# while loop — countdown
+COUNT=3
+while [ $COUNT -gt 0 ]; do
+    echo "  Countdown: $COUNT"
+    COUNT=$((COUNT - 1))
+done
+
+# Pipes — top 3 largest files
+find /tmp -type f 2>/dev/null | xargs ls -lh 2>/dev/null | sort -k5 -rh | head -3
+```
+
+**Key concepts covered:**
+
+| Concept | Example used |
+|---------|-------------|
+| Variables | `CANDIDATE="draiimon"`, `COUNT=3` |
+| `if/else` | Disk usage check — warns if over 80% |
+| `for` loop | Iterates over directory names to check existence |
+| `while` loop | Countdown from 3 to 0 |
+| Redirect `>` | Writes fresh output to a log file (overwrites) |
+| Redirect `>>` | Appends additional lines to the same log file |
+| Pipes `\|` | `find \| xargs \| sort \| head` — chains 4 commands together |
+
+---
+
 ### Script 2: backup.sh
 
 **Purpose:** Creates a timestamped `.tar.gz` backup and automatically removes backups older than 7 days.
@@ -588,16 +658,35 @@ Last 5 entries:
 | Task | Description | Status |
 |------|-------------|--------|
 | Task 1 | File and Directory Management | ✅ Complete |
-| Task 2 | File Permissions and Ownership | ✅ Complete |
-| Task 3 | Text Processing and Searching | ✅ Complete |
+| Task 2 | File Permissions and Ownership (`chmod`, `chown`) | ✅ Complete |
+| Task 3 | Text Processing and Searching (incl. `tail -f`) | ✅ Complete |
 | Task 4 | Process Management | ✅ Complete |
 | Task 5 | Networking Basics | ✅ Complete |
 | Task 6 | Package Management | ✅ Complete |
 | Task 7 | System Information | ✅ Complete |
-| Task 8 | User and Group Management | ✅ Complete |
+| Task 8 | User and Group Management (incl. `su`) | ✅ Complete |
 | Task 9 | Archiving and Compression | ✅ Complete |
-| Task 10a | system_health.sh Script | ✅ Complete |
-| Task 10b | backup.sh Script | ✅ Complete |
-| Task 10c | log_analysis.sh Script | ✅ Complete |
+| Task 10a | system_health.sh (incl. service check) | ✅ Complete |
+| Task 10b | backup.sh | ✅ Complete |
+| Task 10c | log_analysis.sh | ✅ Complete |
+| Task 10d | scripting_demo.sh (if/else, loops, redirects, pipes) | ✅ Complete |
 
 **All 10 tasks completed. Part 1 — DONE ✅**
+
+---
+
+## 📸 Screenshot Checklist
+
+| Screenshot | Filename | Status |
+|------------|----------|--------|
+| Tasks 1 & 2 — Files, directories, chmod, chown | `task01-02-files-permissions.png` | ✅ Done |
+| Task 3 — Text processing + `tail -f` | `task03-text-processing.png` | ✅ Done |
+| Task 4 — Process management | `task04-process-management.png` | ✅ Done |
+| Task 5 — Networking | `task05-networking.png` | ✅ Done |
+| Task 6 — Package management | `task06-packages-1.png` + `task06-packages-2.png` | ✅ Done |
+| Task 7 — System information | `task07-system-info.png` | ✅ Done |
+| Task 8 — User management + `su` | `task08-user-management.png` | ✅ Done |
+| Task 9 — Archiving | `task09-archiving.png` | ✅ Done |
+| Task 10a — system_health.sh | `task10a-system-health.png` | ✅ Done |
+| Task 10b+c — backup.sh + log_analysis.sh | `task10bc-scripts.png` | ✅ Done |
+| Task 10d — scripting_demo.sh | `task10d-scripting-demo.png` | ⚠️ Missing |
