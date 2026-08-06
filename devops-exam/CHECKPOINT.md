@@ -80,7 +80,7 @@ devops-exam/
 
 ---
 
-## ✅ Part 2 — Docker Containerization — COMPLETE
+## 🔄 Part 2 — Docker Containerization — ALMOST DONE (1 screenshot left)
 
 **Documentation:** `documentation/Part2-Docker-Containerization-Documentation.md`
 
