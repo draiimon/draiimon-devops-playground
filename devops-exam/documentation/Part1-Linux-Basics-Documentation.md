@@ -1,4 +1,4 @@
-# Part 1: Linux Basics — Formal Documentation
+# Part 1: Linux Basics — Documentation
 
 **Candidate:** draiimon  
 **Machine:** Aloof — WSL2 (Ubuntu 24.04 on Windows)  
@@ -95,7 +95,7 @@ r = read (4)   w = write (2)   x = execute (1)
 | `chmod 600` | Restricts file to owner read/write — ideal for sensitive files |
 | `ls -l` | Shows permissions, owner, group, size, date |
 
-> 📸 **Screenshot — Tasks 1 & 2:** (from initial session — see Task 3 screenshot for reference setup)
+> ⚠️ **Screenshots for Tasks 1 & 2 are missing** — please add and place them as `screenshots/task01-02-files-permissions.png`.
 
 ---
 
