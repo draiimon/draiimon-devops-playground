@@ -85,9 +85,21 @@ EOF
 
 | Command | What it does |
 |---------|-------------|
-| `mkdir -p ~/devops-exam/part2-docker/api` | Creates nested folders in one shot (same as Part 1 Task 1) |
-| `cat > file << 'EOF' ... EOF` | Heredoc — writes a multi-line block directly into a file without a text editor |
-| `~/devops-exam/` | The tilde `~` is shorthand for `/home/draiimon` — your home directory |
+| `mkdir -p ~/devops-exam/part2-docker/api` | Creates nested folders in one shot — `-p` means "create parent directories too, no error if they exist" (same as Part 1 Task 1) |
+| `cat > file << 'EOF' ... EOF` | **Heredoc** — a way to write a multi-line block of text directly into a file from the terminal, without opening a text editor. Everything between `EOF` and `EOF` is written as the file content |
+| `~/devops-exam/` | The tilde `~` is shorthand for your home directory `/home/draiimon` |
+| `FROM python:3.11-slim AS builder` | Pulls the official Python 3.11 slim image from Docker Hub as the **build stage** — "slim" means it has the minimum OS packages needed |
+| `RUN apt-get install gcc libpq-dev` | Installs C compiler (`gcc`) and PostgreSQL headers (`libpq-dev`) needed to compile some Python packages |
+| `pip install --prefix=/install` | Installs Python packages into a separate `/install` folder so they can be cleanly copied to the next stage |
+| `FROM python:3.11-slim AS runtime` | Starts a **fresh, clean image** — no build tools, no compiler, just the runtime. This is what makes multi-stage builds powerful |
+| `useradd --no-create-home --shell /sbin/nologin appuser` | Creates a locked-down non-root user — no home folder, no login shell. Containers should never run as root |
+| `COPY --from=builder /install /usr/local` | Copies only the installed packages from the builder stage — leaves the compiler and build tools behind |
+| `EXPOSE 8000` | Documents which port the app listens on (does not actually open the port — that's done with `-p` in `docker run`) |
+| `CMD ["sh", "-c", "uvicorn main:app ..."]` | The default command that runs when the container starts — launches the FastAPI app with Uvicorn |
+
+### 📸 Screenshot — Pre-Task Setup
+
+![Pre-Task Setup - Creating folder structure and files](screenshots/task02-0-setup.png)
 
 ---
 
@@ -160,7 +172,9 @@ CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers
 
 ### 📸 Screenshot — Task 1
 
-⚠️ **Screenshot missing** — please add and place as `screenshots/task02-1-api-dockerfile.png`
+![Task 1 - API Docker Build](screenshots/task02-1-api-build.png)
+
+> 📝 **Note:** The `DEPRECATED: The legacy builder` warning is **not an error** — it just means Docker Desktop recommends using the newer BuildKit engine (`buildx`). The build still works perfectly. The warning can be silenced by running `export DOCKER_BUILDKIT=1` before building.
 
 ---
 
@@ -432,7 +446,8 @@ docker-compose down
 
 | Screenshot | Filename | Status |
 |------------|----------|--------|
-| Task 1 — API Dockerfile build output | `task02-1-api-dockerfile.png` | ⚠️ Missing |
-| Task 2 — UI Dockerfile build output | `task02-2-ui-dockerfile.png` | ⚠️ Missing |
+| Pre-Setup — folder structure + file creation | `task02-0-setup.png` | ✅ Done |
+| Task 1 — API Dockerfile build output | `task02-1-api-build.png` | ✅ Done |
+| Task 2 — UI Dockerfile build output | `task02-2-ui-build.png` | ⚠️ Missing |
 | Task 3 — `docker ps` + `docker images` | `task02-3-local-execution.png` | ⚠️ Missing |
 | Task 4 — `docker-compose up` output | `task02-4-docker-compose.png` | ⚠️ Missing |
