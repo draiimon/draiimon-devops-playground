@@ -1,0 +1,55 @@
+Part 2: Docker Containerization
+Objective
+Containerize the provided web applications using Docker to ensure consistent, reproducible
+environments across development and production.
+Requirements
+Create appropriate Dockerfile(s) for the applications with the following features:
+1. API Backend Containerization
+- Create a Dockerfile for the FastAPI application
+- Set up the Python environment with required dependencies
+- Configure appropriate base image
+- Expose necessary ports
+- Use multi-stage builds for optimization (optional but recommended)
+2. UI Frontend Containerization
+- Create a Dockerfile for the Next.js application
+- Set up the Node.js environment
+- Build the application for production
+- Configure appropriate base image
+- Expose necessary ports
+- Optimize for production deployment
+3. Local Execution
+- Ensure both applications can be built using docker build
+- Ensure both applications can be run using docker run
+- Verify applications work correctly when containerized
+- Test inter-service communication if applicable
+4. Docker Compose (Optional but Recommended)
+- Create a docker-compose.yml for local development
+- Configure both services
+- Set up networking between containers
+- Define environment variables
+Example Commands
+Your solution should support commands like:
+# Build the API
+docker build -t api-app:latest ./api
+# Run the API
+docker run -p 8000:8000 api-app:latest
+# Build the UI
+docker build -t ui-app:latest ./ui
+# Run the UI
+docker run -p 3000:3000 ui-app:latest
+# Or using Docker Compose
+docker-compose up --build
+Implementation Guidelines
+- Base Images: Choose appropriate base images (e.g., python:3.10-slim,
+node:18-alpine)
+- Layer Optimization: Order Dockerfile commands to maximize cache efficiency
+- Security: Don't run containers as root user
+- Environment Variables: Use environment variables for configuration
+- Health Checks: Implement Docker health checks (recommended)
+- .dockerignore: Create .dockerignore files to exclude unnecessary files
+Tips
+- Start with the API backend first (typically simpler)
+- Test each Dockerfile independently before combining
+- Use multi-stage builds to reduce image size
+- Document any environment variables required
+- Consider using Docker Compose for easier local development
