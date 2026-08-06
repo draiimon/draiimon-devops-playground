@@ -170,11 +170,68 @@ CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers
 | `--prefix=/install` trick | Installs packages into a separate folder, easy to copy cleanly to runtime stage |
 | `HEALTHCHECK` | Docker/Compose can detect and restart unhealthy containers automatically |
 
+### Build Command
+
+```bash
+cd ~/devops-exam/part2-docker
+docker build -t api-app:latest ./api
+```
+
+### Full Build Log — Step by Step
+
+```
+Step 1/13 : FROM python:3.11-slim AS builder
+Step 2/13 : WORKDIR /build
+Step 3/13 : RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev
+Step 4/13 : COPY requirements.txt .
+Step 5/13 : RUN pip install --upgrade pip && pip install --prefix=/install --no-cache-dir -r requirements.txt
+→ Successfully installed: fastapi, uvicorn, sqlalchemy, asyncpg, pydantic, python-jose,
+  passlib, httpx, alembic, cryptography, bcrypt, starlette, uvloop, watchfiles, websockets...
+
+Step 6/13 : FROM python:3.11-slim AS runtime      ← fresh clean image starts here
+Step 7/13 : RUN groupadd --gid 1001 appgroup && useradd --uid 1001 ... appuser
+Step 8/13 : WORKDIR /app
+Step 9/13 : COPY --from=builder /install /usr/local
+Step 10/13: COPY --chown=appuser:appgroup . .
+Step 11/13: USER appuser
+Step 12/13: EXPOSE 8000
+Step 13/13: CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+
+Successfully built 1ca9c3c0e40e
+Successfully tagged api-app:latest
+```
+
+### What Each Step Does
+
+| Step | Command | What's happening |
+|------|---------|-----------------|
+| 1 | `FROM python:3.11-slim AS builder` | Downloads the official Python 3.11 slim image from Docker Hub — this is the **builder stage** |
+| 2 | `WORKDIR /build` | Sets the working directory inside the container to `/build` — like `cd /build` |
+| 3 | `RUN apt-get install gcc libpq-dev` | Installs the C compiler (`gcc`) and PostgreSQL headers (`libpq-dev`) needed to compile Python packages that have C extensions |
+| 4 | `COPY requirements.txt .` | Copies `requirements.txt` from your machine into the container |
+| 5 | `pip install --prefix=/install` | Installs all Python packages into `/install` folder — isolated so they can be cleanly copied to the next stage |
+| 6 | `FROM python:3.11-slim AS runtime` | **Starts a brand new, clean image** — no compiler, no build tools. This is the power of multi-stage builds — the final image is small and clean |
+| 7 | `RUN groupadd && useradd appuser` | Creates a non-root user `appuser` — containers must not run as root in production |
+| 8 | `WORKDIR /app` | Sets the working directory in the runtime image to `/app` |
+| 9 | `COPY --from=builder /install /usr/local` | Copies only the installed packages from the builder — leaves the compiler behind |
+| 10 | `COPY --chown=appuser:appgroup . .` | Copies the app source code, giving ownership to `appuser` |
+| 11 | `USER appuser` | Switches to the non-root user — all commands from here run as `appuser` |
+| 12 | `EXPOSE 8000` | Documents that the app listens on port 8000 |
+| 13 | `CMD [...]` | The command that runs when the container starts — launches FastAPI with Uvicorn |
+
+### ⚠️ Warnings Explained — These Are NOT Errors
+
+| Warning | Why it appears | Is it a problem? |
+|---------|---------------|-----------------|
+| `DEPRECATED: The legacy builder` | Docker Desktop recommends using the newer BuildKit engine. The old builder still works perfectly. | ❌ No — build succeeds. Fix: run `export DOCKER_BUILDKIT=1` to silence it |
+| `debconf: unable to initialize frontend: Dialog` | During `apt-get install`, Docker containers don't have an interactive terminal so the package installer can't show dialog boxes. It automatically falls back to non-interactive mode. | ❌ No — packages install fine anyway |
+| `WARNING: Running pip as the 'root' user` | In the **builder stage**, pip runs as root inside the container. This is fine because it's a temporary build environment, not the final image. In the runtime stage, we switch to `appuser`. | ❌ No — the runtime stage runs as a non-root user as required |
+
 ### 📸 Screenshot — Task 1
 
 ![Task 1 - API Docker Build](screenshots/task02-1-api-build.png)
 
-> 📝 **Note:** The `DEPRECATED: The legacy builder` warning is **not an error** — it just means Docker Desktop recommends using the newer BuildKit engine (`buildx`). The build still works perfectly. The warning can be silenced by running `export DOCKER_BUILDKIT=1` before building.
+> ✅ **Build result:** `Successfully built 1ca9c3c0e40e` → `Successfully tagged api-app:latest` — the image was built and tagged correctly.
 
 ---
 
