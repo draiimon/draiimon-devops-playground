@@ -1,0 +1,51 @@
+Task 1 — File and Directory Management
+Commands Executed
+mkdir -p /tmp/devops-exam/{app,logs,config,backup}
+touch /tmp/devops-exam/logs/app.log
+cp /tmp/devops-exam/logs/app.log /tmp/devops-exam/config/app.log.bak
+mv /tmp/devops-exam/config/app.log.bak /tmp/devops-exam/config/app.config
+ln -s /tmp/devops-exam/logs/app.log /tmp/devops-exam/app/current.log
+find /tmp/devops-exam -type f -name "*.log"
+du -sh /tmp/devops-exam/*
+
+Output
+/tmp/devops-exam/logs/app.log
+4.0K    /tmp/devops-exam/app
+4.0K    /tmp/devops-exam/backup
+4.0K    /tmp/devops-exam/config
+4.0K    /tmp/devops-exam/logs
+
+Explanation
+Command	What it does
+mkdir -p	Creates nested directories in one shot; {} creates multiple at once
+touch	Creates an empty file
+cp	Copies a file from source to destination
+mv	Moves or renames a file
+ln -s	Creates a symbolic link (like a Windows shortcut)
+find -name "*.log"	Searches the folder tree for files matching the pattern
+du -sh	Shows disk usage in human-readable sizes (K, M, G)
+Task 2 — File Permissions and Ownership
+Commands Executed
+chmod 755 /tmp/devops-exam/app/current.log
+chmod u+x /tmp/devops-exam/logs/app.log
+chmod 600 /tmp/devops-exam/config/app.config
+chmod +x ~/devops-exam/scripts/system_health.sh
+ls -l /tmp/devops-exam/logs/app.log
+
+Output
+-rwxr-xr-x 1 draiimon docker 0 Aug  6 11:47 /tmp/devops-exam/logs/app.log
+
+Explanation
+Permission format:  - r w x  r - x  r - x
+                      owner  group  others
+r = read (4)   w = write (2)   x = execute (1)
+755 = rwxr-xr-x  → owner: full, group/others: read+execute
+600 = rw-------  → owner only (used for secrets/config files)
+
+Command	What it does
+chmod 755	Sets permissions using numeric notation
+chmod u+x	Adds execute for the owner only
+chmod 600	Restricts file to owner read/write — ideal for sensitive files
+ls -l	Shows permissions, owner, group, size, date
+⚠️ Screenshots for Tasks 1 & 2 are missing — please add and place them as screenshots/task01-02-files-permissions.png.
+
