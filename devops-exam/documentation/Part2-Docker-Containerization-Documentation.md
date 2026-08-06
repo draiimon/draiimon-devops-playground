@@ -301,9 +301,78 @@ CMD ["node", "server.js"]
 | `NEXT_TELEMETRY_DISABLED=1` | Disables Next.js telemetry in CI/CD and production |
 | `HEALTHCHECK` with `wget` | Alpine does not ship `curl`; `wget` is built in |
 
-### 📸 Screenshot — Task 2
+### Build Command
 
-⚠️ **Screenshot missing** — please add and place as `screenshots/task02-2-ui-dockerfile.png`
+```bash
+mkdir -p ~/devops-exam/part2-docker/ui
+# (create Dockerfile via heredoc — see pre-setup section)
+cd ~/devops-exam/part2-docker
+docker build -t ui-app:latest ./ui
+```
+
+### Full Build Log — Step by Step
+
+```
+Step 1/14 : FROM node:20-alpine AS deps        ← deps stage starts
+Step 2/14 : RUN apk add --no-cache libc6-compat
+  → Installing musl-obstack, libucontext, gcompat (21 packages, 11.0 MiB)
+Step 3/14 : WORKDIR /app
+
+Step 4/14 : FROM node:20-alpine AS builder     ← builder stage starts
+Step 5/14 : WORKDIR /app
+Step 6/14 : ENV NEXT_TELEMETRY_DISABLED=1
+
+Step 7/14 : FROM node:20-alpine AS runtime     ← runtime stage starts (fresh clean image)
+Step 8/14 : RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+Step 9/14 : WORKDIR /app
+Step 10/14: ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME="0.0.0.0"
+Step 11/14: USER nextjs
+Step 12/14: EXPOSE 3000
+Step 13/14: HEALTHCHECK --interval=30s ... CMD wget -qO- http://localhost:3000/ || exit 1
+Step 14/14: CMD ["node", "server.js"]
+
+Successfully built f78652353702
+Successfully tagged ui-app:latest
+```
+
+### What Each Step Does
+
+| Step | Command | What's happening |
+|------|---------|-----------------|
+| 1 | `FROM node:20-alpine AS deps` | Downloads Node.js 20 Alpine image — Alpine is the smallest Linux distro (~5MB vs ~200MB for full Ubuntu) |
+| 2 | `RUN apk add libc6-compat` | Installs compatibility libraries needed by some Node.js packages — `apk` is Alpine's package manager (same idea as `apt` in Ubuntu) |
+| 3 | `WORKDIR /app` | Sets working directory in the deps stage |
+| 4 | `FROM node:20-alpine AS builder` | Starts the **builder stage** — note Docker reuses the same `node:20-alpine` image it already pulled, no re-download needed |
+| 5 | `WORKDIR /app` | Sets working directory in the builder stage |
+| 6 | `ENV NEXT_TELEMETRY_DISABLED=1` | Disables Next.js from sending usage analytics during the build |
+| 7 | `FROM node:20-alpine AS runtime` | Starts the **final runtime stage** — fresh clean image, no build tools |
+| 8 | `addgroup && adduser nextjs` | Creates a non-root system user `nextjs` — same security principle as Task 1's `appuser` |
+| 9 | `WORKDIR /app` | Sets working directory in the runtime stage |
+| 10 | `ENV NODE_ENV=production ...` | Sets production environment variables — `HOSTNAME="0.0.0.0"` makes the server listen on all network interfaces |
+| 11 | `USER nextjs` | Switches to non-root user — container will NOT run as root |
+| 12 | `EXPOSE 3000` | Documents the app port |
+| 13 | `HEALTHCHECK` | Docker checks `wget http://localhost:3000/` every 30s to confirm the app is alive |
+| 14 | `CMD ["node", "server.js"]` | Starts the Next.js standalone server — `server.js` is the self-contained output from `next build` |
+
+### Key Difference vs API Build
+
+| | API (13 steps) | UI (14 steps) |
+|-|----------------|---------------|
+| Base image | `python:3.11-slim` | `node:20-alpine` |
+| Stages | 2 (builder + runtime) | 3 (deps + builder + runtime) |
+| Package manager | `apt-get` + `pip` | `apk` (Alpine) + `npm` |
+| Non-root user | `appuser` | `nextjs` |
+| Extra step | — | `libc6-compat` for Alpine compatibility |
+
+> 📝 **Why 3 stages for UI?** The `deps` stage is separated specifically to cache `node_modules`. If only your source code changes but `package.json` stays the same, Docker reuses the cached `deps` layer and skips `npm ci` entirely — making rebuilds much faster.
+
+### 📸 Screenshots — Task 2
+
+![Task 2 - UI Dockerfile Setup and Build Start](screenshots/task02-2-ui-build-1.png)
+
+![Task 2 - UI Dockerfile Build Complete](screenshots/task02-2-ui-build-2.png)
+
+> ✅ **Build result:** `Successfully built f78652353702` → `Successfully tagged ui-app:latest`
 
 ---
 
