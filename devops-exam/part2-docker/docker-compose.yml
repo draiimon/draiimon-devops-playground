@@ -13,7 +13,9 @@ services:
   # ----------------------------------------------------------
   api:
     build:
-      context: ./api
+      # Use ./api-src if you cloned the real app (git clone https://bitbucket.org/metawhale/fast-api-clean api-src)
+      # Use ./api if you only have the Dockerfile + requirements.txt (no main.py yet)
+      context: ./api-src
       dockerfile: Dockerfile
     image: api-app:latest
     container_name: devops_api
@@ -42,7 +44,9 @@ services:
   # ----------------------------------------------------------
   ui:
     build:
-      context: ./ui
+      # Use ./ui-src if you cloned the real app (git clone https://bitbucket.org/metawhale/nextjs_app ui-src)
+      # Use ./ui if you only have the Dockerfile (no Next.js source yet)
+      context: ./ui-src
       dockerfile: Dockerfile
     image: ui-app:latest
     container_name: devops_ui
