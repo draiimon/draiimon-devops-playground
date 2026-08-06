@@ -99,7 +99,7 @@ EOF
 
 ### 📸 Screenshot — Pre-Task Setup
 
-![Pre-Task Setup - Creating folder structure and files](screenshots/task02-0-setup.png)
+![Pre-Task Setup - Creating folder structure and files](screenshots/part2/task02-0-setup.png)
 
 ---
 
@@ -229,7 +229,7 @@ Successfully tagged api-app:latest
 
 ### 📸 Screenshot — Task 1
 
-![Task 1 - API Docker Build](screenshots/task02-1-api-build.png)
+![Task 1 - API Docker Build](screenshots/part2/task02-1-api-build.png)
 
 > ✅ **Build result:** `Successfully built 1ca9c3c0e40e` → `Successfully tagged api-app:latest` — the image was built and tagged correctly.
 
@@ -368,9 +368,9 @@ Successfully tagged ui-app:latest
 
 ### 📸 Screenshots — Task 2
 
-![Task 2 - UI Dockerfile Setup and Build Start](screenshots/task02-2-ui-build-1.png)
+![Task 2 - UI Dockerfile Setup and Build Start](screenshots/part2/task02-2-ui-build-1.png)
 
-![Task 2 - UI Dockerfile Build Complete](screenshots/task02-2-ui-build-2.png)
+![Task 2 - UI Dockerfile Build Complete](screenshots/part2/task02-2-ui-build-2.png)
 
 > ✅ **Build result:** `Successfully built f78652353702` → `Successfully tagged ui-app:latest`
 
@@ -428,7 +428,7 @@ ui-app    latest   <id>   node:20-alpine base
 
 ### 📸 Screenshot — Task 3
 
-⚠️ **Screenshot missing** — please add and place as `screenshots/task02-3-local-execution.png`
+⚠️ **Screenshot missing** — please add and place as `screenshots/part2/task02-3-local-execution.png`
 
 ---
 
@@ -551,7 +551,7 @@ docker-compose down
 
 ### 📸 Screenshot — Task 4
 
-⚠️ **Screenshot missing** — please add and place as `screenshots/task02-4-docker-compose.png`
+⚠️ **Screenshot missing** — please add and place as `screenshots/part2/task02-4-docker-compose.png`
 
 ---
 

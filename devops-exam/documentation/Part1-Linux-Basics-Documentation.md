@@ -104,7 +104,7 @@ r = read (4)   w = write (2)   x = execute (1)
 
 ### 📸 Screenshot — Tasks 1 & 2
 
-![Task 1 & 2 - Files, Directories and Permissions](screenshots/task01-02-files-permissions.png)
+![Task 1 & 2 - Files, Directories and Permissions](screenshots/part1/task01-02-files-permissions.png)
 
 ---
 
@@ -164,7 +164,7 @@ tail -f /tmp/devops-exam/logs/app.log
 
 ### 📸 Screenshot
 
-![Task 3 - Text Processing](screenshots/task03-text-processing.png)
+![Task 3 - Text Processing](screenshots/part1/task03-text-processing.png)
 
 ---
 
@@ -216,7 +216,7 @@ uptime
 
 ### 📸 Screenshot
 
-![Task 4 - Process Management](screenshots/task04-process-management.png)
+![Task 4 - Process Management](screenshots/part1/task04-process-management.png)
 
 ---
 
@@ -262,7 +262,7 @@ google.com → 108.177.97.100, 108.177.97.113
 
 ### 📸 Screenshot
 
-![Task 5 - Networking](screenshots/task05-networking.png)
+![Task 5 - Networking](screenshots/part1/task05-networking.png)
 
 ---
 
@@ -309,9 +309,9 @@ tree /tmp/devops-exam
 
 ### 📸 Screenshots
 
-![Task 6 - Package Management Part 1](screenshots/task06-packages-1.png)
+![Task 6 - Package Management Part 1](screenshots/part1/task06-packages-1.png)
 
-![Task 6 - Package Management Part 2](screenshots/task06-packages-2.png)
+![Task 6 - Package Management Part 2](screenshots/part1/task06-packages-2.png)
 
 ---
 
@@ -361,7 +361,7 @@ Mem:   1.9Gi   586Mi   883Mi
 
 ### 📸 Screenshot
 
-![Task 7 - System Information](screenshots/task07-system-info.png)
+![Task 7 - System Information](screenshots/part1/task07-system-info.png)
 
 ---
 
@@ -414,7 +414,7 @@ developers:x:1002:devops
 
 ### 📸 Screenshot
 
-![Task 8 - User Management](screenshots/task08-user-management.png)
+![Task 8 - User Management](screenshots/part1/task08-user-management.png)
 
 ---
 
@@ -462,7 +462,7 @@ total 28K
 
 ### 📸 Screenshot
 
-![Task 9 - Archiving](screenshots/task09-archiving.png)
+![Task 9 - Archiving](screenshots/part1/task09-archiving.png)
 
 ---
 
@@ -510,7 +510,7 @@ bash ~/devops-exam/scripts/system_health.sh
 
 ### 📸 Screenshot — system_health.sh
 
-![Task 10a - system_health.sh](screenshots/task10a-system-health.png)
+![Task 10a - system_health.sh](screenshots/part1/task10a-system-health.png)
 
 ---
 
@@ -649,7 +649,7 @@ Last 5 entries:
 
 ### 📸 Screenshot — backup.sh + log_analysis.sh
 
-![Task 10bc - Scripts](screenshots/task10bc-scripts.png)
+![Task 10bc - Scripts](screenshots/part1/task10bc-scripts.png)
 
 ---
 
