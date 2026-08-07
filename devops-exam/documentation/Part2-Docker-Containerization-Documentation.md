@@ -580,6 +580,21 @@ UI:  01c7d38
 This confirms that the Docker build contexts contain the actual Bitbucket
 application source, not only empty placeholder folders.
 
+### Screenshot — Clone and Verify Application Components
+
+![Successful clone and source-file verification for the API and UI repositories](screenshots/part2/task02-4-git-clone.png)
+
+The screenshot shows the successful source-file verification from the local
+WSL terminal. The API checkout contains `main.py`, `database.py`, `models.py`,
+`schemas.py`, and `requirements.txt`. The UI checkout contains the Next.js
+`app/` and `components/` folders, `package.json`, `package-lock.json`, and
+`next.config.js`.
+
+The `No such file or directory` message at the top was caused by entering the
+Markdown documentation path as if it were a shell command. It is unrelated to
+the Git clone operation; both repositories were cloned and verified
+successfully.
+
 The source-based Docker Compose build was then run from `part2-docker/`:
 
 ```bash
