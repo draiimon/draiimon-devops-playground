@@ -35,6 +35,8 @@ _Describe the high-level user-facing capabilities of this app once they exist._
 ## User preferences
 
 - Respond in English.
+- Keep exam documentation task-by-task in the same format as Part 1, with an English explanation directly below every screenshot.
+- Record meaningful progress and verification results in `devops-exam/CHECKPOINT.md` so future sessions can resume without losing context.
 
 ## Gotchas
 
