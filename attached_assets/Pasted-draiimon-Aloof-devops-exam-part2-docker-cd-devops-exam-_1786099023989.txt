@@ -1,0 +1,249 @@
+draiimon@Aloof:~/devops-exam/part2-docker$ cd ~/devops-exam/part2-docker
+docker-compose up -d
+Creating volume "part2-docker_mysql-data" with default driver
+Pulling db (mysql:8.0)...
+8.0: Pulling from library/mysql
+96d30d9fbee8: Pull complete
+0d74d296605b: Pull complete
+6ef6c7b50a93: Pull complete
+a63160a5eda1: Pull complete
+edf85873f64e: Pull complete
+297d04cfe470: Pull complete
+4c8a3e0d4e4b: Pull complete
+e3e5d1ac74c1: Pull complete
+49ec2dab01d9: Pull complete
+7534d1db9f8d: Pull complete
+ab24264a27e9: Pull complete
+796812c73292: Download complete
+af166387641d: Download complete
+Digest: sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
+Status: Downloaded newer image for mysql:8.0
+Recreating devops_db ...
+
+ERROR: for devops_db  'ContainerConfig'
+
+ERROR: for db  'ContainerConfig'
+Traceback (most recent call last):
+  File "/usr/bin/docker-compose", line 33, in <module>
+    sys.exit(load_entry_point('docker-compose==1.29.2', 'console_scripts', 'docker-compose')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 81, in main
+    command_func()
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 203, in perform_command
+    handler(command, command_options)
+  File "/usr/lib/python3/dist-packages/compose/metrics/decorator.py", line 18, in wrapper
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 1186, in up
+    to_attach = up(False)
+                ^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/cli/main.py", line 1166, in up
+    return self.project.up(
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 697, in up
+    results, errors = parallel.parallel_execute(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/parallel.py", line 108, in parallel_execute
+    raise error_to_reraise
+  File "/usr/lib/python3/dist-packages/compose/parallel.py", line 206, in producer
+    result = func(obj)
+             ^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 679, in do
+    return service.execute_convergence_plan(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 579, in execute_convergence_plan
+    return self._execute_convergence_recreate(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 499, in _execute_convergence_recreate
+    containers, errors = parallel_execute(
+                         ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/parallel.py", line 108, in parallel_execute
+    raise error_to_reraise
+  File "/usr/lib/python3/dist-packages/compose/parallel.py", line 206, in producer
+    result = func(obj)
+             ^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 494, in recreate
+    return self.recreate_container(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 612, in recreate_container
+    new_container = self.create_container(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 330, in create_container
+    container_options = self._get_container_create_options(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 921, in _get_container_create_options
+    container_options, override_options = self._build_container_volume_options(
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 960, in _build_container_volume_options
+    binds, affinity = merge_volume_bindings(
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 1548, in merge_volume_bindings
+    old_volumes, old_mounts = get_container_data_volumes(
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/compose/service.py", line 1579, in get_container_data_volumes
+    container.image_config['ContainerConfig'].get('Volumes') or {}
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+KeyError: 'ContainerConfig'
+draiimon@Aloof:~/devops-exam/part2-docker$ docker-compose ps
+         Name                       Command                State     Ports
+--------------------------------------------------------------------------
+04417543e677_devops_db   docker-entrypoint.sh postgres    Exit 255
+devops_api               sh -c uvicorn main:app --h ...   Exit 255
+devops_ui                docker-entrypoint.sh npm start   Exit 255
+draiimon@Aloof:~/devops-exam/part2-docker$ docker-compose logs --tail=100
+Attaching to devops_ui, devops_api, 04417543e677_devops_db
+04417543e677_devops_db | The files belonging to this database system will be owned by user "postgres".
+04417543e677_devops_db | This user must also own the server process.
+04417543e677_devops_db |
+04417543e677_devops_db | The database cluster will be initialized with locale "en_US.utf8".
+04417543e677_devops_db | The default database encoding has accordingly been set to "UTF8".
+04417543e677_devops_db | The default text search configuration will be set to "english".
+04417543e677_devops_db |
+04417543e677_devops_db | Data page checksums are disabled.
+04417543e677_devops_db |
+04417543e677_devops_db | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+04417543e677_devops_db | creating subdirectories ... ok
+04417543e677_devops_db | selecting dynamic shared memory implementation ... posix
+04417543e677_devops_db | selecting default max_connections ... 100
+04417543e677_devops_db | selecting default shared_buffers ... 128MB
+04417543e677_devops_db | selecting default time zone ... UTC
+04417543e677_devops_db | creating configuration files ... ok
+04417543e677_devops_db | running bootstrap script ... ok
+04417543e677_devops_db | sh: locale: not found
+04417543e677_devops_db | 2026-08-06 07:17:21.763 UTC [35] WARNING:  no usable system locales were found
+04417543e677_devops_db | performing post-bootstrap initialization ... ok
+04417543e677_devops_db | syncing data to disk ... ok
+04417543e677_devops_db |
+04417543e677_devops_db | initdb: warning: enabling "trust" authentication for local connections
+04417543e677_devops_db | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+04417543e677_devops_db |
+04417543e677_devops_db | Success. You can now start the database server using:
+04417543e677_devops_db |
+04417543e677_devops_db |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+04417543e677_devops_db |
+04417543e677_devops_db | waiting for server to start....2026-08-06 07:17:22.924 UTC [41] LOG:  starting PostgreSQL 15.18 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+04417543e677_devops_db | 2026-08-06 07:17:22.927 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+04417543e677_devops_db | 2026-08-06 07:17:22.946 UTC [44] LOG:  database system was shut down at 2026-08-06 07:17:22 UTC
+04417543e677_devops_db | 2026-08-06 07:17:22.953 UTC [41] LOG:  database system is ready to accept connections
+04417543e677_devops_db |  done
+04417543e677_devops_db | server started
+04417543e677_devops_db | CREATE DATABASE
+04417543e677_devops_db |
+04417543e677_devops_db |
+04417543e677_devops_db | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+04417543e677_devops_db |
+04417543e677_devops_db | waiting for server to shut down...2026-08-06 07:17:23.111 UTC [41] LOG:  received fast shutdown request
+04417543e677_devops_db | .2026-08-06 07:17:23.113 UTC [41] LOG:  aborting any active transactions
+04417543e677_devops_db | 2026-08-06 07:17:23.116 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+04417543e677_devops_db | 2026-08-06 07:17:23.118 UTC [42] LOG:  shutting down
+04417543e677_devops_db | 2026-08-06 07:17:23.121 UTC [42] LOG:  checkpoint starting: shutdown immediate
+04417543e677_devops_db | 2026-08-06 07:17:23.275 UTC [42] LOG:  checkpoint complete: wrote 922 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.037 s, sync=0.110 s, total=0.158 s; sync files=301, longest=0.040 s, average=0.001 s; distance=4249 kB, estimate=4249 kB
+04417543e677_devops_db | 2026-08-06 07:17:23.285 UTC [41] LOG:  database system is shut down
+04417543e677_devops_db |  done
+04417543e677_devops_db | server stopped
+04417543e677_devops_db |
+04417543e677_devops_db | PostgreSQL init process complete; ready for start up.
+04417543e677_devops_db |
+04417543e677_devops_db | 2026-08-06 07:17:23.338 UTC [1] LOG:  starting PostgreSQL 15.18 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+04417543e677_devops_db | 2026-08-06 07:17:23.338 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+04417543e677_devops_db | 2026-08-06 07:17:23.339 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+04417543e677_devops_db | 2026-08-06 07:17:23.344 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+04417543e677_devops_db | 2026-08-06 07:17:23.350 UTC [57] LOG:  database system was shut down at 2026-08-06 07:17:23 UTC
+04417543e677_devops_db | 2026-08-06 07:17:23.356 UTC [1] LOG:  database system is ready to accept connections
+04417543e677_devops_db | 2026-08-06 07:22:23.365 UTC [55] LOG:  checkpoint starting: time
+04417543e677_devops_db | 2026-08-06 07:22:27.508 UTC [55] LOG:  checkpoint complete: wrote 44 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.126 s, sync=0.009 s, total=4.144 s; sync files=12, longest=0.003 s, average=0.001 s; distance=252 kB, estimate=252 kB
+devops_ui |
+devops_ui | > test-ui-app@0.1.0 start
+devops_ui | > next start
+devops_ui |
+devops_ui |   ▲ Next.js 13.5.6
+devops_ui |   - Local:        http://localhost:3000
+devops_ui |
+devops_ui |  ✓ Ready in 553ms
+devops_api | INFO:     Started server process [7]
+devops_api | INFO:     Waiting for application startup.
+devops_api | INFO:     Application startup complete.
+devops_api | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+draiimon@Aloof:~/devops-exam/part2-docker$ docker-compose logs db
+docker-compose logs api
+docker-compose logs ui
+Attaching to 04417543e677_devops_db
+04417543e677_devops_db | The files belonging to this database system will be owned by user "postgres".
+04417543e677_devops_db | This user must also own the server process.
+04417543e677_devops_db |
+04417543e677_devops_db | The database cluster will be initialized with locale "en_US.utf8".
+04417543e677_devops_db | The default database encoding has accordingly been set to "UTF8".
+04417543e677_devops_db | The default text search configuration will be set to "english".
+04417543e677_devops_db |
+04417543e677_devops_db | Data page checksums are disabled.
+04417543e677_devops_db |
+04417543e677_devops_db | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+04417543e677_devops_db | creating subdirectories ... ok
+04417543e677_devops_db | selecting dynamic shared memory implementation ... posix
+04417543e677_devops_db | selecting default max_connections ... 100
+04417543e677_devops_db | selecting default shared_buffers ... 128MB
+04417543e677_devops_db | selecting default time zone ... UTC
+04417543e677_devops_db | creating configuration files ... ok
+04417543e677_devops_db | running bootstrap script ... ok
+04417543e677_devops_db | sh: locale: not found
+04417543e677_devops_db | 2026-08-06 07:17:21.763 UTC [35] WARNING:  no usable system locales were found
+04417543e677_devops_db | performing post-bootstrap initialization ... ok
+04417543e677_devops_db | syncing data to disk ... ok
+04417543e677_devops_db |
+04417543e677_devops_db | initdb: warning: enabling "trust" authentication for local connections
+04417543e677_devops_db | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+04417543e677_devops_db |
+04417543e677_devops_db | Success. You can now start the database server using:
+04417543e677_devops_db |
+04417543e677_devops_db |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+04417543e677_devops_db |
+04417543e677_devops_db | waiting for server to start....2026-08-06 07:17:22.924 UTC [41] LOG:  starting PostgreSQL 15.18 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+04417543e677_devops_db | 2026-08-06 07:17:22.927 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+04417543e677_devops_db | 2026-08-06 07:17:22.946 UTC [44] LOG:  database system was shut down at 2026-08-06 07:17:22 UTC
+04417543e677_devops_db | 2026-08-06 07:17:22.953 UTC [41] LOG:  database system is ready to accept connections
+04417543e677_devops_db |  done
+04417543e677_devops_db | server started
+04417543e677_devops_db | CREATE DATABASE
+04417543e677_devops_db |
+04417543e677_devops_db |
+04417543e677_devops_db | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+04417543e677_devops_db |
+04417543e677_devops_db | waiting for server to shut down...2026-08-06 07:17:23.111 UTC [41] LOG:  received fast shutdown request
+04417543e677_devops_db | .2026-08-06 07:17:23.113 UTC [41] LOG:  aborting any active transactions
+04417543e677_devops_db | 2026-08-06 07:17:23.116 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+04417543e677_devops_db | 2026-08-06 07:17:23.118 UTC [42] LOG:  shutting down
+04417543e677_devops_db | 2026-08-06 07:17:23.121 UTC [42] LOG:  checkpoint starting: shutdown immediate
+04417543e677_devops_db | 2026-08-06 07:17:23.275 UTC [42] LOG:  checkpoint complete: wrote 922 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.037 s, sync=0.110 s, total=0.158 s; sync files=301, longest=0.040 s, average=0.001 s; distance=4249 kB, estimate=4249 kB
+04417543e677_devops_db | 2026-08-06 07:17:23.285 UTC [41] LOG:  database system is shut down
+04417543e677_devops_db |  done
+04417543e677_devops_db | server stopped
+04417543e677_devops_db |
+04417543e677_devops_db | PostgreSQL init process complete; ready for start up.
+04417543e677_devops_db |
+04417543e677_devops_db | 2026-08-06 07:17:23.338 UTC [1] LOG:  starting PostgreSQL 15.18 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+04417543e677_devops_db | 2026-08-06 07:17:23.338 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+04417543e677_devops_db | 2026-08-06 07:17:23.339 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+04417543e677_devops_db | 2026-08-06 07:17:23.344 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+04417543e677_devops_db | 2026-08-06 07:17:23.350 UTC [57] LOG:  database system was shut down at 2026-08-06 07:17:23 UTC
+04417543e677_devops_db | 2026-08-06 07:17:23.356 UTC [1] LOG:  database system is ready to accept connections
+04417543e677_devops_db | 2026-08-06 07:22:23.365 UTC [55] LOG:  checkpoint starting: time
+04417543e677_devops_db | 2026-08-06 07:22:27.508 UTC [55] LOG:  checkpoint complete: wrote 44 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.126 s, sync=0.009 s, total=4.144 s; sync files=12, longest=0.003 s, average=0.001 s; distance=252 kB, estimate=252 kB
+Attaching to devops_api
+devops_api | INFO:     Started server process [7]
+devops_api | INFO:     Waiting for application startup.
+devops_api | INFO:     Application startup complete.
+devops_api | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Attaching to devops_ui
+devops_ui |
+devops_ui | > test-ui-app@0.1.0 start
+devops_ui | > next start
+devops_ui |
+devops_ui |   ▲ Next.js 13.5.6
+devops_ui |   - Local:        http://localhost:3000
+devops_ui |
+devops_ui |  ✓ Ready in 553ms
+draiimon@Aloof:~/devops-exam/part2-docker$ curl http://localhost:8000/
+curl http://localhost:3000/
+curl: (7) Failed to connect to localhost port 8000 after 0 ms: Couldn't connect to server
+curl: (7) Failed to connect to localhost port 3000 after 0 ms: Couldn't connect to server
+draiimon@Aloof:~/devops-exam/part2-docker$
