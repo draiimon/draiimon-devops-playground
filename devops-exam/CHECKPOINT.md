@@ -26,7 +26,7 @@ devops-exam/
 ├── README.md                                         ← Main overview + architecture
 ├── Makefile
 ├── documentation/
-│   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete (1 screenshot still missing — see below)
+│   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete — now formatted consistently with Part 2 (1 screenshot still missing)
 │   ├── Part2-Docker-Containerization-Documentation.md  ✅ Complete
 │   ├── Part3-CICD-Documentation.md                   ❌ FILE DOES NOT EXIST — must be created
 │   ├── Part4-HA-Documentation.md                     ❌ FILE DOES NOT EXIST — must be created
@@ -63,7 +63,7 @@ devops-exam/
 
 ## ✅ PART 1 — Linux Basics — COMPLETE (1 screenshot pending)
 
-**Documentation file:** `documentation/Part1-Linux-Basics-Documentation.md` ✅ Complete  
+**Documentation file:** `documentation/Part1-Linux-Basics-Documentation.md` ✅ Complete — now formatted consistently with Part 2
 **Scripts folder:** `part1-linux/` — all 4 scripts present and executable
 
 ### PDF Alignment Check (Part 1)

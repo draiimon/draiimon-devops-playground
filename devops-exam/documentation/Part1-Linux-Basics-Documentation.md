@@ -145,7 +145,7 @@ sort /tmp/devops-exam/logs/app.log | uniq -c | sort -rn
 tail -f /tmp/devops-exam/logs/app.log
 ```
 
-### Results
+### Output
 
 | Query | Result |
 |-------|--------|
@@ -195,7 +195,7 @@ jobs
 uptime
 ```
 
-### Key Output
+### Output
 
 ```
 # Background job created:
@@ -248,7 +248,7 @@ curl -O https://example.com
 ip route
 ```
 
-### Key Output
+### Output
 
 ```
 # Interfaces found:
@@ -300,7 +300,7 @@ sudo apt install -y tree
 tree /tmp/devops-exam
 ```
 
-### Key Output
+### Output
 
 ```
 /tmp/devops-exam
@@ -355,7 +355,7 @@ uptime
 journalctl -n 20
 ```
 
-### Key Output
+### Output
 
 ```
 # OS:
@@ -416,7 +416,7 @@ whoami
 exit
 ```
 
-### Key Output
+### Output
 
 ```
 # id devops:
@@ -471,7 +471,7 @@ gzip /tmp/devops-exam/backup/app.log
 ls -lh /tmp/devops-exam/backup/
 ```
 
-### Key Output
+### Output
 
 ```
 total 28K
@@ -506,6 +506,26 @@ successfully packaged and checked using archive tools.
 ---
 
 ## Task 10 — Shell Scripting
+
+### Commands Executed
+
+```bash
+cd ~/devops-exam
+
+chmod +x part1-linux/system_health.sh
+chmod +x part1-linux/backup.sh
+chmod +x part1-linux/log_analysis.sh
+chmod +x part1-linux/scripting_demo.sh
+
+bash part1-linux/system_health.sh
+bash part1-linux/backup.sh
+bash part1-linux/log_analysis.sh
+bash part1-linux/scripting_demo.sh
+```
+
+These commands make all four scripts executable and run each script from the
+exam repository. The individual script definitions and their required shell
+concepts are documented below.
 
 ### Script 1: system_health.sh
 
@@ -543,9 +563,16 @@ echo "================================"
 
 **How to run:**
 ```bash
-chmod +x ~/devops-exam/scripts/system_health.sh
-bash ~/devops-exam/scripts/system_health.sh
+chmod +x ~/devops-exam/part1-linux/system_health.sh
+bash ~/devops-exam/part1-linux/system_health.sh
 ```
+
+### Output
+
+The script output includes the current date and time, system uptime, memory
+usage, disk usage, the top five CPU-consuming processes, CPU information, and
+the closing report marker. The screenshot below provides the terminal evidence
+for this execution.
 
 ### 📸 Screenshot — system_health.sh
 
@@ -690,6 +717,11 @@ Last 5 entries:
 === END ===
 ```
 
+### Output
+
+The script reported 10 total log lines, 4 `ERROR` entries, and 2 `WARNING`
+entries. It also printed all error lines and the five most recent log entries.
+
 ### 📸 Screenshot — backup.sh + log_analysis.sh
 
 ![Task 10bc - Scripts](screenshots/part1/task10bc-scripts.png)
@@ -719,7 +751,8 @@ processing tasks.
 | Task 10c | log_analysis.sh | ✅ Complete |
 | Task 10d | scripting_demo.sh (if/else, loops, redirects, pipes) | ✅ Complete |
 
-**All 10 tasks completed. Part 1 — DONE ✅**
+**All 10 Linux tasks and the required scripts are documented. Part 1
+documentation is complete; one screenshot for Task 10d remains pending.**
 
 ---
 
@@ -737,4 +770,4 @@ processing tasks.
 | Task 9 — Archiving | `task09-archiving.png` | ✅ Done |
 | Task 10a — system_health.sh | `task10a-system-health.png` | ✅ Done |
 | Task 10b+c — backup.sh + log_analysis.sh | `task10bc-scripts.png` | ✅ Done |
-| Task 10d — scripting_demo.sh | `task10d-scripting-demo.png` | ⚠️ Missing |
+| Task 10d — scripting_demo.sh | `task10d-scripting-demo.png` | ⚠️ Pending — documentation and script are complete; terminal screenshot still needed |
