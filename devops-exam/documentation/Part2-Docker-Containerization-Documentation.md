@@ -580,6 +580,34 @@ UI:  01c7d38
 This confirms that the Docker build contexts contain the actual Bitbucket
 application source, not only empty placeholder folders.
 
+### Step 2B — Check Docker Setup Files
+
+Before copying or building anything, the local WSL terminal was used to
+confirm that the existing Docker files and the cloned application source were
+in the expected folders:
+
+```bash
+cd ~/devops-exam/part2-docker
+
+printf "\nExisting API Docker files:\n"
+find api -maxdepth 1 -type f -print | sort
+
+printf "\nExisting UI Docker files:\n"
+find ui -maxdepth 1 -type f -print | sort
+
+printf "\nCloned API root files:\n"
+find api-src -maxdepth 1 -type f -print | sort
+
+printf "\nCloned UI root files:\n"
+find ui-src -maxdepth 1 -type f -print | sort
+```
+
+![Docker setup files and cloned application files verified](screenshots/part2/task02-5-file-check.png)
+
+The verification confirmed that `api/Dockerfile` and `api/requirements.txt`
+exist, `ui/Dockerfile` exists, and both cloned repositories contain their
+application source files.
+
 ### Screenshot — Clone and Verify Application Components
 
 ![Successful clone and source-file verification for the API and UI repositories](screenshots/part2/task02-4-git-clone.png)
