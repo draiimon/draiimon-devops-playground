@@ -140,6 +140,7 @@ The Part 2 document now follows the same task-by-task format as Part 1:
 - the legacy Compose `ContainerConfig` error remains documented in Task 4
 - the stale PostgreSQL versus required MySQL problem remains documented in Task 4
 - cleanup commands, configuration corrections, final solutions, and screenshots remain included
+- an extra English operational guide now explains how to stop, start, force-kill, rerun, rebuild, inspect logs, and verify the Compose services
 
 The document remains aligned to the Part 2 section of
 `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`.
@@ -386,7 +387,7 @@ The final local result was:
 | Part | PDF Section | Files | Documentation | Screenshots | Status |
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ⚠️ 11/12 (task10d missing) | 🟡 Near-complete |
-| Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation | ✅ All evidence present | ✅ **COMPLETE** |
+| Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ deploy.yml | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |

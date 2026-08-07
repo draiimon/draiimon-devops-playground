@@ -604,6 +604,133 @@ required for the final stack verification are present.
 
 ---
 
+## Extra Operational Guide — Stopping, Restarting, and Rerunning Containers
+
+This section documents the normal Docker container lifecycle after the images have
+already been built. Building an image and running a container are separate
+operations: rebuilding is not required every time the application is stopped and
+started again.
+
+### Check the current Compose status
+
+```bash
+cd ~/devops-exam/part2-docker
+docker-compose ps
+```
+
+`docker-compose ps` lists the API, UI, and database containers managed by the
+Compose project, including whether each container is running and healthy.
+
+### Stop and start the existing containers
+
+```bash
+docker-compose stop
+docker-compose ps
+
+docker-compose start
+docker-compose ps
+```
+
+`docker-compose stop` gracefully stops the running containers but keeps the
+containers, images, network, and named database volume. Because the containers
+still exist, `docker-compose start` can start them again without rebuilding the
+images.
+
+### Stop and remove the containers, then run them again
+
+```bash
+docker-compose down
+docker-compose up -d
+docker-compose ps
+```
+
+`docker-compose down` stops and removes the Compose containers and network. It
+does not remove the images or the named `mysql-data` volume unless the `-v`
+option is explicitly added. `docker-compose up -d` recreates and starts the
+services from the existing images.
+
+### Rebuild after changing source code or a Dockerfile
+
+```bash
+docker-compose up -d --build
+```
+
+The `--build` option tells Compose to rebuild the images before starting the
+services. It is needed after changing application source files, dependencies, or
+Dockerfiles. It is not necessary for an ordinary stop-and-start cycle.
+
+### Stop and restart one container
+
+```bash
+docker stop devops_api
+docker-compose ps
+
+docker start devops_api
+docker-compose ps
+```
+
+This demonstrates that the API container can be stopped and started
+independently while the other services remain managed by Compose.
+
+The equivalent Compose commands are:
+
+```bash
+docker-compose stop api
+docker-compose start api
+```
+
+### Force-kill a container when it does not respond
+
+```bash
+docker kill devops_api
+docker-compose ps
+docker start devops_api
+```
+
+`docker kill` immediately terminates the container process. It should be used
+only when a normal `docker stop` does not work. A normal stop is preferred
+because it gives the application time to close connections and write pending
+data safely.
+
+### Verify that the services recovered
+
+```bash
+docker-compose ps
+docker-compose logs --tail=50 api
+docker-compose logs --tail=50 ui
+docker-compose logs --tail=50 db
+
+curl http://localhost:8000/
+curl http://localhost:3000/
+curl http://localhost:8000/trip
+```
+
+The `ps` output should show the services as running and healthy. The `curl`
+commands verify that the API, UI, and database-backed API route respond after
+the restart.
+
+### Docker lifecycle command summary
+
+| Command | Purpose |
+|---------|---------|
+| `docker-compose build` | Builds or rebuilds the service images. |
+| `docker-compose up -d` | Creates and starts the services in detached mode. |
+| `docker-compose up -d --build` | Rebuilds the images, then creates and starts the services. |
+| `docker-compose stop` | Stops containers without removing them. |
+| `docker-compose start` | Starts existing stopped containers without rebuilding. |
+| `docker-compose down` | Stops and removes containers and the Compose network. |
+| `docker stop <container>` | Gracefully stops one named container. |
+| `docker start <container>` | Starts one existing stopped container. |
+| `docker kill <container>` | Immediately force-stops one container. |
+| `docker-compose logs --tail=50` | Displays recent logs for troubleshooting. |
+| `docker-compose ps` | Verifies container state and health. |
+
+This extra guide demonstrates operational control of the completed Docker
+deployment and clarifies the difference between building images, running
+containers, stopping services, and rerunning the application.
+
+---
+
 ## ✅ Part 2 — Completion Summary
 
 | Task | Description | Status |
@@ -618,6 +745,7 @@ required for the final stack verification are present.
 | Task 4 | Test trip created and retrieved | ✅ Complete |
 | Task 4 | All containers confirmed `Up (healthy)` | ✅ Complete |
 | Troubleshooting | Actual errors, warnings, causes, and solutions recorded | ✅ Complete |
+| Operations guide | Stop, start, down, up, kill, logs, and health verification documented | ✅ Complete |
 
 **All Part 2 requirements were completed and documented. Part 2 — DONE ✅**
 
