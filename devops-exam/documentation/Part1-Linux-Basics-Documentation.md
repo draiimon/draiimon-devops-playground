@@ -106,6 +106,11 @@ r = read (4)   w = write (2)   x = execute (1)
 
 ![Task 1 & 2 - Files, Directories and Permissions](screenshots/part1/task01-02-files-permissions.png)
 
+**Screenshot Explanation:** The screenshot shows the directories and files created
+for the exam workspace, along with the file permissions and ownership changes.
+This proves that the file management, `chmod`, and `chown` commands were completed
+successfully.
+
 ---
 
 ## Task 3 — Text Processing and Searching
@@ -166,6 +171,11 @@ tail -f /tmp/devops-exam/logs/app.log
 
 ![Task 3 - Text Processing](screenshots/part1/task03-text-processing.png)
 
+**Screenshot Explanation:** The screenshot shows the log file contents and the
+text-processing commands used to search, filter, count, and inspect log entries.
+This proves that the required Linux text-processing and searching operations were
+performed.
+
 ---
 
 ## Task 4 — Process Management
@@ -218,6 +228,11 @@ uptime
 
 ![Task 4 - Process Management](screenshots/part1/task04-process-management.png)
 
+**Screenshot Explanation:** The screenshot shows running processes, system
+resource information, background job status, and the terminated sleep process.
+This proves that process inspection, background job control, and process
+termination were completed.
+
 ---
 
 ## Task 5 — Networking Basics
@@ -263,6 +278,10 @@ google.com → 108.177.97.100, 108.177.97.113
 ### 📸 Screenshot
 
 ![Task 5 - Networking](screenshots/part1/task05-networking.png)
+
+**Screenshot Explanation:** The screenshot shows the detected network interface,
+the ping result, and the DNS lookup output. This proves that basic network
+connectivity, interface inspection, and name resolution were tested.
 
 ---
 
@@ -311,7 +330,15 @@ tree /tmp/devops-exam
 
 ![Task 6 - Package Management Part 1](screenshots/part1/task06-packages-1.png)
 
+**Screenshot Explanation:** The screenshot shows the package-management commands
+and the initial update or installation output. This proves that packages were
+managed using the system's supported package tools.
+
 ![Task 6 - Package Management Part 2](screenshots/part1/task06-packages-2.png)
+
+**Screenshot Explanation:** The screenshot shows the continued package-management
+verification, including the installed package or version result. This proves that
+the package operation completed and was checked afterward.
 
 ---
 
@@ -362,6 +389,10 @@ Mem:   1.9Gi   586Mi   883Mi
 ### 📸 Screenshot
 
 ![Task 7 - System Information](screenshots/part1/task07-system-info.png)
+
+**Screenshot Explanation:** The screenshot shows the operating system details,
+disk usage, memory information, uptime, and the exam folder. This proves that the
+required system information commands were executed and recorded.
 
 ---
 
@@ -416,6 +447,10 @@ developers:x:1002:devops
 
 ![Task 8 - User Management](screenshots/part1/task08-user-management.png)
 
+**Screenshot Explanation:** The screenshot shows the user and group-management
+commands, including the user identity and group entries. This proves that user
+creation, group inspection, ownership context, and the `su` check were completed.
+
 ---
 
 ## Task 9 — Archiving and Compression
@@ -464,6 +499,10 @@ total 28K
 
 ![Task 9 - Archiving](screenshots/part1/task09-archiving.png)
 
+**Screenshot Explanation:** The screenshot shows the archive creation, compression,
+and extraction or verification output. This proves that the required files were
+successfully packaged and checked using archive tools.
+
 ---
 
 ## Task 10 — Shell Scripting
@@ -511,6 +550,10 @@ bash ~/devops-exam/scripts/system_health.sh
 ### 📸 Screenshot — system_health.sh
 
 ![Task 10a - system_health.sh](screenshots/part1/task10a-system-health.png)
+
+**Screenshot Explanation:** The screenshot shows the output of `system_health.sh`,
+including the date, uptime, resource information, disk usage, process summary,
+and service checks. This proves that the system-health script ran successfully.
 
 ---
 
@@ -650,6 +693,11 @@ Last 5 entries:
 ### 📸 Screenshot — backup.sh + log_analysis.sh
 
 ![Task 10bc - Scripts](screenshots/part1/task10bc-scripts.png)
+
+**Screenshot Explanation:** The screenshot shows the backup and log-analysis
+scripts being executed, including the generated backup or analyzed log results.
+This proves that the automation scripts performed their required file and log
+processing tasks.
 
 ---
 

@@ -110,9 +110,21 @@ must not begin database work before MySQL is reachable.
 
 ![Initial Docker setup and API files](screenshots/part2/task02-0-setup.png)
 
+**Screenshot Explanation:** The terminal shows the initial Docker project setup,
+the API/UI folders, and the creation of the Dockerfile files. This proves that
+the working directories were organized before the image builds began.
+
 ![API image build](screenshots/part2/task02-1-api-build.png)
 
+**Screenshot Explanation:** The screenshot shows the `docker build` output for the
+API image, including the Python dependencies and successful image tag. This proves
+that `api-app:latest` was built successfully.
+
 ![Cloned API and UI repositories](screenshots/part2/task02-4-git-clone.png)
+
+**Screenshot Explanation:** The screenshot shows the Bitbucket clone commands and
+the source files retrieved for the FastAPI and Next.js applications. This proves
+that the real application source was used as the Docker build context.
 
 ---
 
@@ -198,11 +210,28 @@ Next.js application's `package.json`.
 
 ![UI build start](screenshots/part2/task02-2-ui-build-1.png)
 
+**Screenshot Explanation:** The screenshot shows the start of the UI Docker build,
+including the Node.js base image and `npm ci` dependency installation. This proves
+that the production build started with the locked package dependencies.
+
 ![UI build completed](screenshots/part2/task02-2-ui-build-2.png)
+
+**Screenshot Explanation:** The screenshot shows the successful Next.js compilation
+and image tagging after the build. This proves that `ui-app:latest` is ready for
+container execution.
 
 ![Dockerfiles copied into the cloned source folders](screenshots/part2/task02-6-copy-dockerfiles.png)
 
+**Screenshot Explanation:** The screenshot shows the copy commands and file listing
+after the Dockerfiles were placed in `api-src` and `ui-src`. This proves that the
+container definitions are in the correct cloned source folders.
+
 ![Dockerfiles inspected before building](screenshots/part2/task02-7-dockerfile-check.png)
+
+**Screenshot Explanation:** The screenshot shows the inspection output for the API
+and UI Dockerfiles, including the base images, build commands, non-root users,
+health checks, and startup commands. This proves that the Dockerfiles were
+reviewed before the final build.
 
 ---
 
@@ -280,9 +309,22 @@ before final verification.
 
 ![Initial local execution](screenshots/part2/task02-3-local-execution.png)
 
+**Screenshot Explanation:** The screenshot shows the initial `docker images` and
+`docker run` attempts for the API and UI. This documents the first local execution
+phase before it was discovered that the real application source was missing from
+the build context.
+
 ![Local execution follow-up](screenshots/part2/task02-3-local-execution-2.png)
 
+**Screenshot Explanation:** The screenshot shows the follow-up container/status
+check where the containers did not remain running. This documents the failed
+attempt and explains why the repositories had to be cloned before rebuilding.
+
 ![Both source-based images built](screenshots/part2/task02-4-build-both.png)
+
+**Screenshot Explanation:** The screenshot shows the build output for both the API
+and UI from the cloned source folders. This proves that the corrected,
+source-based image builds completed successfully.
 
 ---
 
@@ -512,19 +554,53 @@ was retained, so database persistence was not intentionally deleted.
 
 ![Compose configuration](screenshots/part2/task02-4-docker-compose.png)
 
+**Screenshot Explanation:** The screenshot shows the Docker Compose configuration
+for the API, UI, and database services, including ports, environment values,
+network, and volume. This proves that the complete local application stack was
+configured.
+
 ![Compose startup logs](screenshots/part2/task02-4-docker-compose-2.png)
+
+**Screenshot Explanation:** The screenshot shows the startup logs for MySQL,
+FastAPI, and Next.js. This proves that the connected services started and that
+the API waited for the database connection.
 
 ![Earlier Compose problem and database correction](screenshots/part2/task02-4-docker-compose-3.png)
 
+**Screenshot Explanation:** The screenshot shows the earlier Compose error and the
+database diagnostic output pointing to the stale PostgreSQL setup. This documents
+the actual problem encountered and why the configuration had to be changed to
+MySQL.
+
 ![All services running](screenshots/part2/task02-4-all-running.png)
+
+**Screenshot Explanation:** The screenshot shows the API, UI, and MySQL containers
+running together. This proves that Compose networking and service startup worked
+after the configuration was corrected.
 
 ![Final Docker container status](screenshots/part2/task02-4-docker-ps.png)
 
+**Screenshot Explanation:** The `docker ps` output shows `devops_api`,
+`devops_db`, and `devops_ui` as `Up (healthy)`, along with the API/UI port
+mappings. This is the final proof that the complete containerized stack is healthy.
+
 ![API browser test](screenshots/part2/task02-4-api-browser.png)
+
+**Screenshot Explanation:** The screenshot shows the FastAPI root endpoint response
+in the browser. This proves that the API is accessible through published port
+`8000` from the host machine.
 
 ![UI browser test](screenshots/part2/task02-4-ui-browser.png)
 
+**Screenshot Explanation:** The screenshot shows the rendered Next.js application
+page in the browser. This proves that the production UI is accessible and being
+served correctly through published port `3000`.
+
 ![Source and Docker setup file check](screenshots/part2/task02-5-file-check.png)
+
+**Screenshot Explanation:** The screenshot shows the final file check for the
+cloned source, Dockerfiles, and Compose project files. This proves that all files
+required for the final stack verification are present.
 
 ---
 
