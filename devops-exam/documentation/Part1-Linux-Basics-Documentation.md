@@ -754,8 +754,8 @@ processing tasks.
 | Task 10c | log_analysis.sh | ✅ Complete |
 | Task 10d | scripting_demo.sh (if/else, loops, redirects, pipes) | ✅ Complete |
 
-**All 10 Linux tasks and the required scripts are documented. Part 1
-documentation is complete; one screenshot for Task 10d remains pending.**
+**All 10 Linux tasks and the required scripts are documented. Part 1 —
+FULLY COMPLETE ✅**
 
 ---
 
@@ -773,4 +773,3 @@ documentation is complete; one screenshot for Task 10d remains pending.**
 | Task 9 — Archiving | `task09-archiving.png` | ✅ Done |
 | Task 10a — system_health.sh | `task10a-system-health.png` | ✅ Done |
 | Task 10b+c — backup.sh + log_analysis.sh | `task10bc-scripts.png` | ✅ Done |
-| Task 10d — scripting_demo.sh | `task10d-scripting-demo.png` | ⚠️ Pending — documentation and script are complete; terminal screenshot still needed |
