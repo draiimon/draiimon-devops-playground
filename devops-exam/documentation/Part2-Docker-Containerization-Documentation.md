@@ -534,17 +534,27 @@ volumes:
 
 ### Step 1 — Clone the Real App Source Code
 
+This is the **Application Components / Repository Setup** step from the exam.
+The two URLs in the exam are the source repositories for the applications that
+will be containerized:
+
+| Component | Repository | Local checkout |
+|-----------|------------|----------------|
+| API Backend | `https://bitbucket.org/metawhale/fast-api-clean/src/main/` | `part2-docker/api-src/` |
+| UI Frontend | `https://bitbucket.org/metawhale/nextjs_app/src/main/` | `part2-docker/ui-src/` |
+
 Before `docker-compose up` can build working images, the actual application code must exist locally. The Dockerfiles expect source files (`main.py` for API, full Next.js project for UI) that come from Bitbucket, not from Replit.
 
 ```bash
 # Go to the part2-docker folder
 cd ~/devops-exam/part2-docker
 
-# Clone the FastAPI backend into the api/ folder
-# (this replaces the placeholder Dockerfile-only folder)
+# Clone the FastAPI backend into api-src/
+# (api/ remains the folder for the Dockerfile and dependency definitions)
 git clone https://bitbucket.org/metawhale/fast-api-clean api-src
 
-# Clone the Next.js frontend into the ui/ folder
+# Clone the Next.js frontend into ui-src/
+# (ui/ remains the folder for the Dockerfile)
 git clone https://bitbucket.org/metawhale/nextjs_app ui-src
 ```
 
@@ -559,7 +569,19 @@ After cloning, update the `docker-compose.yml` build contexts to point at the re
 # ui: context: ./ui-src
 ```
 
-Alternatively, copy the Dockerfile into the cloned source folder:
+The local structure after cloning is:
+
+```text
+part2-docker/
+├── api/                 # Dockerfile, .dockerignore, requirements.txt
+├── api-src/             # cloned FastAPI source code
+├── ui/                  # Dockerfile and .dockerignore
+├── ui-src/              # cloned Next.js source code
+└── docker-compose.yml
+```
+
+Copy the container files into the cloned source folders when the Dockerfiles
+need to build the real application source:
 
 ```bash
 cp api/Dockerfile api-src/Dockerfile

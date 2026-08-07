@@ -3,7 +3,7 @@
 **Candidate:** draiimon  
 **Machine:** Aloof — WSL2 (Ubuntu 24.04 on Windows)  
 **Exam:** Junior DevOps Engineer Exam 2026  
-**Last Updated:** August 6, 2026  
+**Last Updated:** August 7, 2026
 
 > ⚠️ **For the next agent:** Read this file FIRST before doing anything. It tells you exactly where we are, what's done, what's pending, and the rules to follow. Cross-reference everything against the exam PDF at `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`.
 
@@ -332,6 +332,8 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 ---
 
 ## 📊 Overall Exam Progress Summary
+
+**Repository setup note:** The exam's two Application Components are now explicitly documented in `README.md` and in Part 2 → Task 4 → Step 1. The FastAPI repository is cloned into `part2-docker/api-src/` and the Next.js repository into `part2-docker/ui-src/`; Docker Compose uses those folders as its build contexts.
 
 | Part | PDF Section | Files | Documentation | Screenshots | Status |
 |------|-------------|-------|--------------|-------------|--------|

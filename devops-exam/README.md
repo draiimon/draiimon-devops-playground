@@ -8,6 +8,51 @@
 
 ---
 
+## Application Components: Clone the Sample Applications
+
+The exam uses two sample applications hosted in Bitbucket. Clone both repositories
+before building the Docker images or starting Docker Compose.
+
+From the `part2-docker` directory on the Linux/WSL machine:
+
+```bash
+cd ~/devops-exam/part2-docker
+
+# Clone the FastAPI backend
+git clone https://bitbucket.org/metawhale/fast-api-clean api-src
+
+# Clone the Next.js frontend
+git clone https://bitbucket.org/metawhale/nextjs_app ui-src
+```
+
+The resulting structure should look like this:
+
+```text
+part2-docker/
+├── api/                 # Dockerfile and Python dependency definitions
+├── api-src/             # cloned FastAPI application source
+├── ui/                  # Dockerfile for the frontend
+├── ui-src/              # cloned Next.js application source
+└── docker-compose.yml
+```
+
+The Docker Compose file uses `api-src` and `ui-src` as its build contexts:
+
+```yaml
+services:
+  api:
+    build:
+      context: ./api-src
+  ui:
+    build:
+      context: ./ui-src
+```
+
+If the repositories have already been cloned, do not run `git clone` again.
+Use `git pull` inside `api-src` or `ui-src` to update an existing checkout.
+
+---
+
 ## Table of Contents
 
 1. [Linux Basics](#part-1-linux-basics)
