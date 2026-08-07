@@ -11,11 +11,14 @@
 
 All tasks were performed on **WSL2 (Windows Subsystem for Linux 2)** running Ubuntu 24.04 on a Windows machine. WSL2 provides a full Linux kernel environment inside Windows, making it suitable for all DevOps Linux tasks.
 
-- **Username:** draiimon  
-- **Hostname:** Aloof  
-- **Kernel:** Linux 5.15.167.4-microsoft-standard-WSL2  
-- **Architecture:** x86_64  
-- **Working Directory:** `~` → `/home/draiimon`
+| Item | Value |
+|------|-------|
+| Operating system | Ubuntu 24.04 on WSL2 |
+| Username | `draiimon` |
+| Hostname | `Aloof` |
+| Kernel | Linux 5.15.167.4-microsoft-standard-WSL2 |
+| Architecture | `x86_64` |
+| Working directory | `~` → `/home/draiimon` |
 
 ---
 
