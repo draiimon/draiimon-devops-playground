@@ -123,23 +123,23 @@ Then add this entry to the Part 1 doc screenshot checklist (it already has a pla
 
 ### Part 2 documentation coverage
 
-The Part 2 document now includes the complete chronological walkthrough, not only a
-completion summary:
+The Part 2 document now follows the same task-by-task format as Part 1:
 
-- purpose of the Part 2 objective and every task
-- every recorded shell command with a command-by-command explanation table
-- heredoc/redirection explanation for creating the Dockerfiles
-- API Dockerfile line-by-line purpose table
-- UI Dockerfile line-by-line purpose table
-- Docker Compose line-by-line purpose table
-- actual build outputs and final API/UI responses
-- all recorded warnings separated from actual errors
-- the early missing-source container problem
-- the `docker compose` versus `docker-compose` command error
-- the legacy Compose `ContainerConfig` error
-- the stale PostgreSQL versus required MySQL problem
-- cleanup commands, configuration corrections, and final solutions
-- API, UI, database, health check, persistence, and screenshot evidence
+- `Environment Overview`
+- `Task 1 — API Backend Containerization`
+- `Task 2 — UI Frontend Containerization`
+- `Task 3 — Local Docker Build and Run`
+- `Task 4 — Docker Compose, Networking, and Final Verification`
+- each task uses `Commands Executed`, `Output`, `Explanation`, and `📸 Screenshots`
+- API and UI Dockerfile line-by-line explanations are inside their task sections
+- Docker Compose line-by-line explanations are inside Task 4
+- actual build outputs and final API/UI responses are preserved
+- warnings are separated from actual errors
+- the early missing-source container problem remains documented in Task 3
+- the `docker compose` versus `docker-compose` error remains documented in Task 4
+- the legacy Compose `ContainerConfig` error remains documented in Task 4
+- the stale PostgreSQL versus required MySQL problem remains documented in Task 4
+- cleanup commands, configuration corrections, final solutions, and screenshots remain included
 
 The document remains aligned to the Part 2 section of
 `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`.
