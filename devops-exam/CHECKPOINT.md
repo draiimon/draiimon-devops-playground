@@ -118,54 +118,55 @@ Then add this entry to the Part 1 doc screenshot checklist (it already has a pla
 
 ## ✅ PART 2 — Docker Containerization — COMPLETE ✅
 
-**Documentation file:** `documentation/Part2-Docker-Containerization-Documentation.md` ✅ Fully complete  
-**All 4 tasks done. All screenshots present.**
+**Documentation file:** `documentation/Part2-Docker-Containerization-Documentation.md` ✅ Updated with final evidence
+**All 4 tasks done. Final MySQL Compose run and screenshots recorded.**
 
 ### PDF Alignment Check (Part 2)
 
 | PDF Requirement | Our Coverage | Status |
 |-----------------|-------------|--------|
-| Task 1: API Backend Containerization | `api/Dockerfile` — multi-stage, python:3.11-slim, non-root `appuser`, HEALTHCHECK, EXPOSE 8000 | ✅ |
-| Task 2: UI Frontend Containerization | `ui/Dockerfile` — 3-stage (deps/builder/runtime), node:20-alpine, non-root `nextjs`, HEALTHCHECK, EXPOSE 3000 | ✅ |
-| Task 3: Local Execution (`docker build` + `docker run`) | Both images built and run; `docker images` confirmed both present | ✅ |
-| Task 4: Docker Compose | `docker-compose.yml` — 3 services (api + ui + db), `app-network`, `db-data` volume, `depends_on` health conditions | ✅ |
+| Task 1: API Backend Containerization | `api-src/Dockerfile` — multi-stage, python:3.11-slim, non-root `app`, HEALTHCHECK, EXPOSE 8000 | ✅ |
+| Task 2: UI Frontend Containerization | `ui-src/Dockerfile` — node:20-alpine, non-root `node`, HEALTHCHECK, EXPOSE 3000 | ✅ |
+| Task 3: Local Execution (`docker-compose build`) | API and UI images built successfully from the cloned source | ✅ |
+| Task 4: Docker Compose | `docker-compose.yml` — 3 services (api + ui + MySQL db), `app-network`, `mysql-data` volume, `depends_on` health conditions | ✅ |
 | Multi-stage builds | API: 2-stage; UI: 3-stage | ✅ |
 | Non-root user | API: `appuser`; UI: `nextjs` | ✅ |
 | Health checks | Both Dockerfiles + docker-compose healthchecks | ✅ |
-| `docker-compose up --build` with all 3 services | `devops_api`, `devops_ui`, `devops_db` all confirmed Up | ✅ |
+| `docker-compose up -d` with all 3 services | `devops_api`, `devops_ui`, `devops_db` all confirmed `Up (healthy)` | ✅ |
 
 ### Screenshot Status — Part 2 (`screenshots/part2/`)
 
 | Filename | Content | File Present |
 |----------|---------|-------------|
 | `task02-0-setup.png` | Pre-setup — mkdir + Dockerfile creation via heredoc | ✅ Present |
-| `task02-1-api-build.png` | Task 1 — `docker build -t api-app:latest ./api` output | ✅ Present |
-| `task02-2-ui-build-1.png` | Task 2 — UI Dockerfile setup + build start | ✅ Present |
-| `task02-2-ui-build-2.png` | Task 2 — UI build complete, tagged `ui-app:latest` | ✅ Present |
-| `task02-3-local-execution.png` | Task 3 — `docker images` showing both images | ✅ Present |
-| `task02-3-local-execution-2.png` | Task 3 — `docker ps` | ✅ Present |
-| `task02-4-git-clone.png` | Task 4 — clone and verify Bitbucket API/UI source | ✅ Present and documented |
-| `task02-5-file-check.png` | Task 4 — Docker files and cloned source file check | ✅ Present and documented |
-| `task02-6-copy-dockerfiles.png` | Task 4 — Dockerfiles copied into cloned application folders | ✅ Present and documented |
-| `task02-7-dockerfile-check.png` | Task 4 — API and UI Dockerfiles inspected before build | ✅ Present and documented |
-| `task02-4-build-both.png` | Task 4 — building both images from real source | ✅ Present |
-| `task02-4-docker-compose.png` | Task 4 — `docker-compose up --build` → all 3 containers created | ✅ Present |
-| `task02-4-docker-compose-2.png` | Task 4 — DB running; API/UI startup logs | ✅ Present |
-| `task02-4-docker-compose-3.png` | Task 4 — API ModuleNotFoundError explained | ✅ Present |
-| `task02-4-all-running.png` | Task 4 — All 3 services logs: API ready on :8000, UI ready on :3000, DB ready on :5432 | ✅ Present |
-| `task02-4-docker-ps.png` | Task 4 — `docker ps` showing all 3 containers STATUS: Up 24 minutes | ✅ Present |
-| `task02-4-ui-browser.png` | Task 4 — UI accessible in browser at localhost:3000 | ✅ Present |
+| `task02-1-api-build.png` | API image build output | ✅ Present |
+| `task02-2-ui-build-1.png` | UI Dockerfile setup and build start | ✅ Present |
+| `task02-2-ui-build-2.png` | UI build complete and tagged | ✅ Present |
+| `task02-3-local-execution.png` | Both images present | ✅ Present |
+| `task02-3-local-execution-2.png` | Local container check | ✅ Present |
+| `task02-4-git-clone.png` | Clone and verify Bitbucket API/UI source | ✅ Present |
+| `task02-5-file-check.png` | Docker files and cloned source check | ✅ Present |
+| `task02-6-copy-dockerfiles.png` | Dockerfiles copied into cloned folders | ✅ Present |
+| `task02-7-dockerfile-check.png` | Dockerfiles inspected before build | ✅ Present |
+| `task02-4-build-both.png` | Both images built from real source | ✅ Present |
+| `task02-4-docker-compose.png` | Compose services created | ✅ Present |
+| `task02-4-docker-compose-2.png` | Database and application startup logs | ✅ Present |
+| `task02-4-docker-compose-3.png` | Earlier startup issue and correction | ✅ Present |
+| `task02-4-all-running.png` | API, UI, and database running | ✅ Present |
+| `task02-4-docker-ps.png` | Final API, MySQL, and UI `Up (healthy)` | ✅ Present |
+| `task02-4-api-browser.png` | FastAPI root endpoint in browser | ✅ Present |
+| `task02-4-ui-browser.png` | UI in browser at localhost:3000 | ✅ Present |
 
 ### Confirmed Final State (from docker ps screenshot)
 
 ```
-CONTAINER ID   IMAGE                COMMAND               STATUS
-devops_ui      ui-app:latest        "node server.js"      Up 24 minutes   0.0.0.0:3000->3000/tcp
-devops_api     api-app:latest       "sh -c 'uvicorn..."   Up 24 minutes   0.0.0.0:8000->8000/tcp
-devops_db      postgres:15-alpine   "docker-entrypoint"   Up 24 minutes (healthy)   5432/tcp
+CONTAINER ID   IMAGE          COMMAND                 STATUS
+devops_api     api-app:latest "uvicorn main:app..."  Up (healthy)  0.0.0.0:8000->8000/tcp
+devops_db      mysql:8.0     "docker-entrypoint..."  Up (healthy)  3306/tcp
+devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000->3000/tcp
 ```
 
-**Part 2 is 100% DONE ✅**
+**Part 2 is 100% DONE ✅ — final MySQL-backed run verified.**
 
 ---
 
@@ -340,27 +341,34 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 
 **Repository setup note:** The exam's two Application Components are now explicitly documented in `README.md` and in Part 2 → Task 4 → Step 1. The FastAPI repository is cloned into `part2-docker/api-src/` and the Next.js repository into `part2-docker/ui-src/`; Docker Compose uses those folders as its build contexts.
 
-**Workspace verification:** In the Replit copy, both repositories were cloned successfully and both source-based Docker images were built successfully with `docker compose build api ui`. The user's local WSL walkthrough is tracked separately below and has not yet reached the local Docker build step.
+**Workspace verification:** In the Replit copy, both repositories were cloned successfully and both source-based Docker images were built successfully. The user's local WSL walkthrough was then completed and verified with the final MySQL-backed Compose run.
 
-**Current local walkthrough pause point:** Steps 2A–2D of the Part 2 application-source walkthrough are complete on the user's local WSL machine and documented with screenshots:
+**Final local walkthrough status:** Steps 2A–2E of the Part 2 application-source walkthrough are complete on the user's local WSL machine and documented with screenshots:
 
 - Step 2A — clone and verify the Bitbucket API and UI repositories
 - Step 2B — check the existing Docker setup files and cloned source files
 - Step 2C — copy `api/Dockerfile` into `api-src/` and `ui/Dockerfile` into `ui-src/`
 - Step 2D — inspect the Dockerfiles before building
+- Step 2E — update and verify the concise production Dockerfiles, build both images, correct the Compose database to MySQL, start all services, and verify healthy containers plus API/UI responses
 
-**Next step when the user returns:** Step 2E — replace/update the Dockerfiles inside `api-src/` and `ui-src/` with the reviewed production-ready versions, then run the verification `grep` commands and capture a screenshot. Do **not** run `docker build` until Step 2E has been reviewed and documented.
+The final local result was:
+
+- `devops_api` — `Up (healthy)` on port `8000`
+- `devops_db` — `mysql:8.0`, `Up (healthy)` on the internal MySQL port `3306`
+- `devops_ui` — `Up (healthy)` on port `3000`
+- API root and `/trip` endpoints responded successfully
+- A test trip record was created successfully through the API
+- The cloned Next.js UI served successfully at `http://localhost:3000`
 
 | Part | PDF Section | Files | Documentation | Screenshots | Status |
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ⚠️ 11/12 (task10d missing) | 🟡 Near-complete |
-| Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Done | ✅ 14/14 | ✅ **COMPLETE** |
+| Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Done | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ deploy.yml | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Continue local Part 2 walkthrough at Step 2E — prepare and verify the production Dockerfiles
-2. (Optional) Get `task10d-scripting-demo.png` from user → finishes Part 1 completely
-3. Create `documentation/Part3-CICD-Documentation.md`
+1. (Optional) Get `task10d-scripting-demo.png` from user → finishes Part 1 completely
+2. Create `documentation/Part3-CICD-Documentation.md`
 3. Create `documentation/Part4-HA-Documentation.md`
