@@ -69,7 +69,7 @@ du -sh /tmp/devops-exam/*
 chmod 755 /tmp/devops-exam/app/current.log
 chmod u+x /tmp/devops-exam/logs/app.log
 chmod 600 /tmp/devops-exam/config/app.config
-chmod +x ~/devops-exam/scripts/system_health.sh
+chmod +x ~/part1-linux/system_health.sh
 ls -l /tmp/devops-exam/logs/app.log
 ls -l /tmp/devops-exam/config/app.config
 
@@ -566,8 +566,8 @@ echo "================================"
 
 **How to run:**
 ```bash
-chmod +x ~/devops-exam/part1-linux/system_health.sh
-bash ~/devops-exam/part1-linux/system_health.sh
+chmod +x ~/part1-linux/system_health.sh
+bash ~/part1-linux/system_health.sh
 ```
 
 ### Output

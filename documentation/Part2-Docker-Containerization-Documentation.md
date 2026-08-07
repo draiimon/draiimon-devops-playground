@@ -18,7 +18,7 @@ FastAPI backend, Next.js frontend, and MySQL database required by the exam.
 | Operating system | Ubuntu 24.04 on WSL2 |
 | Username | `draiimon` |
 | Hostname | `Aloof` |
-| Working directory | `~/devops-exam/part2-docker` |
+| Working directory | `~/part2-docker` |
 | Docker | Docker version `29.1.3` |
 | Compose available | Legacy `docker-compose` version `1.29.2` |
 | API repository | Bitbucket `metawhale/fast-api-clean` |
@@ -40,7 +40,7 @@ earlier failed attempt.
 ### Commands Executed
 
 ```bash
-cd ~/devops-exam/part2-docker
+cd ~/part2-docker
 
 git clone https://bitbucket.org/metawhale/fast-api-clean api-src
 
@@ -79,7 +79,7 @@ message was recorded as a warning, not as a build failure.
 
 | Command or Dockerfile line | What it does |
 |----------------------------|--------------|
-| `cd ~/devops-exam/part2-docker` | Enters the Part 2 project directory so all relative paths point to the correct folders. |
+| `cd ~/part2-docker` | Enters the Part 2 project directory so all relative paths point to the correct folders. |
 | `git clone ... api-src` | Downloads the FastAPI application from Bitbucket into the `api-src` build context. |
 | `find api-src -maxdepth 1 -type f` | Verifies that the real API source and dependency files exist before building. |
 | `cp api/Dockerfile api-src/Dockerfile` | Places the container definition inside the cloned API source directory. |
@@ -133,7 +133,7 @@ that the real application source was used as the Docker build context.
 ### Commands Executed
 
 ```bash
-cd ~/devops-exam/part2-docker
+cd ~/part2-docker
 
 git clone https://bitbucket.org/metawhale/nextjs_app ui-src
 
@@ -240,7 +240,7 @@ reviewed before the final build.
 ### Commands Executed
 
 ```bash
-cd ~/devops-exam/part2-docker
+cd ~/part2-docker
 
 docker build -t api-app:latest ./api
 docker build -t ui-app:latest ./ui
@@ -333,7 +333,7 @@ source-based image builds completed successfully.
 ### Commands Executed
 
 ```bash
-cd ~/devops-exam/part2-docker
+cd ~/part2-docker
 
 docker compose config
 docker-compose config
@@ -614,7 +614,7 @@ started again.
 ### Check the current Compose status
 
 ```bash
-cd ~/devops-exam/part2-docker
+cd ~/part2-docker
 docker-compose ps
 ```
 

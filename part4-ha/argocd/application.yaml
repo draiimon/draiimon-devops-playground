@@ -24,7 +24,7 @@ spec:
     # Replace with your actual Git repo URL
     repoURL: https://github.com/YOUR_USERNAME/YOUR_REPO.git
     targetRevision: staging
-    path: devops-exam/part4-ha/helm
+    path: part4-ha/helm
 
     helm:
       valueFiles:

@@ -1,4 +1,11 @@
-/*
-!/.gitignore
-!/devops-exam/
-!/devops-exam/**
+# Local/generated files
+node_modules/
+.cache/
+.config/
+.local/
+.agents/
+attached_assets/
+artifacts/
+lib/
+scripts/
+*.tsbuildinfo

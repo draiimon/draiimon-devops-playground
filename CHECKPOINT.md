@@ -21,15 +21,15 @@
 ## 📁 Folder Structure (current state)
 
 ```
-devops-exam/
+repository-root/
 ├── CHECKPOINT.md                                     ← YOU ARE HERE
 ├── README.md                                         ← Main overview + architecture
 ├── Makefile
 ├── documentation/
 │   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete — now formatted consistently with Part 2
 │   ├── Part2-Docker-Containerization-Documentation.md  ✅ Complete
-│   ├── Part3-CICD-Documentation.md                   ❌ FILE DOES NOT EXIST — must be created
-│   ├── Part4-HA-Documentation.md                     ❌ FILE DOES NOT EXIST — must be created
+│   ├── Part3-CICD-Documentation.md                   ✅ Complete
+│   ├── Part4-HA-Documentation.md                     ⏳ Pending — create after Part 3 verification
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
 │       └── part2/   ← 14 screenshots present (all done)

@@ -13,10 +13,10 @@
 The exam uses two sample applications hosted in Bitbucket. Clone both repositories
 before building the Docker images or starting Docker Compose.
 
-From the `part2-docker` directory on the Linux/WSL machine:
+From the repository root on the Linux/WSL machine:
 
 ```bash
-cd ~/devops-exam/part2-docker
+cd part2-docker
 
 # Clone the FastAPI backend
 git clone https://bitbucket.org/metawhale/fast-api-clean api-src
