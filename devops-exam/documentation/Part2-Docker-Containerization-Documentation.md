@@ -633,6 +633,34 @@ The screenshot confirms that `api-src/Dockerfile` and `ui-src/Dockerfile`
 were created successfully. It also confirms that the API requirements file and
 the UI package manifest are present in their respective cloned folders.
 
+### Step 2D — Inspect the Dockerfiles
+
+Before building the images, the Dockerfiles in the cloned application folders
+were displayed and reviewed:
+
+```bash
+cd ~/devops-exam/part2-docker
+
+printf "\nAPI Dockerfile:\n"
+cat api-src/Dockerfile
+
+printf "\nUI Dockerfile:\n"
+cat ui-src/Dockerfile
+```
+
+![API and UI Dockerfiles displayed for review](screenshots/part2/task02-7-dockerfile-check.png)
+
+The API Dockerfile shows a Python multi-stage build, a non-root runtime user,
+port `8000`, and the Uvicorn startup command. The UI Dockerfile shows the
+Node.js Alpine base, a non-root runtime user, port `3000`, a health check, and
+the Next.js startup command.
+
+The review also identified that the UI Dockerfile must install dependencies,
+copy the source, and run `npm run build` before `npm start`. These steps are
+required because the cloned UI is a normal Next.js application and does not
+contain a pre-built production output yet. The API Dockerfile also needs the
+database wait behavior documented below so its startup does not race MySQL.
+
 ### Screenshot — Clone and Verify Application Components
 
 ![Successful clone and source-file verification for the API and UI repositories](screenshots/part2/task02-4-git-clone.png)

@@ -147,6 +147,7 @@ Then add this entry to the Part 1 doc screenshot checklist (it already has a pla
 | `task02-4-git-clone.png` | Task 4 — clone and verify Bitbucket API/UI source | ✅ Present and documented |
 | `task02-5-file-check.png` | Task 4 — Docker files and cloned source file check | ✅ Present and documented |
 | `task02-6-copy-dockerfiles.png` | Task 4 — Dockerfiles copied into cloned application folders | ✅ Present and documented |
+| `task02-7-dockerfile-check.png` | Task 4 — API and UI Dockerfiles inspected before build | ✅ Present and documented |
 | `task02-4-build-both.png` | Task 4 — building both images from real source | ✅ Present |
 | `task02-4-docker-compose.png` | Task 4 — `docker-compose up --build` → all 3 containers created | ✅ Present |
 | `task02-4-docker-compose-2.png` | Task 4 — DB running; API/UI startup logs | ✅ Present |
