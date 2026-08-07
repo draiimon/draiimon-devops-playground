@@ -608,6 +608,31 @@ The verification confirmed that `api/Dockerfile` and `api/requirements.txt`
 exist, `ui/Dockerfile` exists, and both cloned repositories contain their
 application source files.
 
+### Step 2C — Add Dockerfiles to the Cloned Application Folders
+
+The Dockerfiles were copied into the cloned application folders so each Docker
+build context contains both the real application source and its container
+definition:
+
+```bash
+cd ~/devops-exam/part2-docker
+
+cp api/Dockerfile api-src/Dockerfile
+cp ui/Dockerfile ui-src/Dockerfile
+
+printf "\nAPI cloned folder:\n"
+ls -l api-src/Dockerfile api-src/requirements.txt
+
+printf "\nUI cloned folder:\n"
+ls -l ui-src/Dockerfile ui-src/package.json
+```
+
+![Dockerfiles copied into the cloned API and UI folders](screenshots/part2/task02-6-copy-dockerfiles.png)
+
+The screenshot confirms that `api-src/Dockerfile` and `ui-src/Dockerfile`
+were created successfully. It also confirms that the API requirements file and
+the UI package manifest are present in their respective cloned folders.
+
 ### Screenshot — Clone and Verify Application Components
 
 ![Successful clone and source-file verification for the API and UI repositories](screenshots/part2/task02-4-git-clone.png)
