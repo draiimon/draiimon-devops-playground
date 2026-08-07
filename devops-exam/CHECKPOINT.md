@@ -5,13 +5,13 @@
 **Exam:** Junior DevOps Engineer Exam 2026  
 **Last Updated:** August 7, 2026
 
-> ⚠️ **For the next agent:** Read this file FIRST before doing anything. It tells you exactly where we are, what's done, what's pending, and the rules to follow. Cross-reference everything against the exam PDF at `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`.
+> ⚠️ **For the next maintainer:** Read this file FIRST before doing anything. It tells you exactly where we are, what's done, what's pending, and the rules to follow. Cross-reference everything against the exam PDF at `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`.
 
 ---
 
 ## 📋 Exam Reference
 
-**PDF:** `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`  
+**PDF:** `documentation/reference/Junior_DevOps_Engineer_2026.pdf`
 **Source Apps (Bitbucket):**
 - API: https://bitbucket.org/metawhale/fast-api-clean
 - UI: https://bitbucket.org/metawhale/nextjs_app
@@ -129,7 +129,7 @@ The Part 2 document now follows the same task-by-task format as Part 1:
 - an extra English operational guide now explains how to stop, start, force-kill, rerun, rebuild, inspect logs, and verify the Compose services
 
 The document remains aligned to the Part 2 section of
-`attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`.
+`documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`.
 
 ### PDF Alignment Check (Part 2)
 
@@ -321,7 +321,7 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 
 5. **Checkpoint updates:** Update THIS file every time a screenshot is added or a section changes
 
-6. **PDF alignment:** Always cross-check requirements against `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf` before writing documentation
+6. **PDF alignment:** Always cross-check requirements against `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf` before writing documentation
 
 7. **Do NOT rewrite existing docs from scratch unless the user explicitly requests a full rebuild** — otherwise only add to them
 
