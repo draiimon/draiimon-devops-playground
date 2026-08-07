@@ -1,2 +1,3 @@
 - [Local PC versus Replit files](local-pc-vs-replit.md) — Uploaded screenshots prove local WSL work; Replit edits do not automatically change the user's PC.
 - [Docker Compose database alignment](docker-compose-mysql.md) — Match Compose’s database image to the cloned app’s driver and clean stale containers before recreation.
+- [Docker documentation evidence](docker-documentation-evidence.md) — Preserve the full containerization timeline and separate warnings from actual failures.

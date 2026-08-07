@@ -44,7 +44,7 @@ devops-exam/
 │   │   └── requirements.txt   ✅
 │   ├── api-src/               ✅ Cloned FastAPI application source
 │   ├── ui/
-│   │   └── Dockerfile         ✅ 3-stage, non-root (nextjs), HEALTHCHECK
+│   │   └── Dockerfile         ✅ production build, non-root (nextjs), HEALTHCHECK
 │   ├── ui-src/                ✅ Cloned Next.js application source
 │   └── docker-compose.yml     ✅ 3-service (api + ui + MySQL db), named network, healthchecks
 ├── part3-cicd/
@@ -118,8 +118,31 @@ Then add this entry to the Part 1 doc screenshot checklist (it already has a pla
 
 ## ✅ PART 2 — Docker Containerization — COMPLETE ✅
 
-**Documentation file:** `documentation/Part2-Docker-Containerization-Documentation.md` ✅ Updated with final evidence
+**Documentation file:** `documentation/Part2-Docker-Containerization-Documentation.md` ✅ Fully rebuilt in Part 1 format
 **All 4 tasks done. Final MySQL Compose run and screenshots recorded.**
+
+### Part 2 documentation coverage
+
+The Part 2 document now includes the complete chronological walkthrough, not only a
+completion summary:
+
+- purpose of the Part 2 objective and every task
+- every recorded shell command with a command-by-command explanation table
+- heredoc/redirection explanation for creating the Dockerfiles
+- API Dockerfile line-by-line purpose table
+- UI Dockerfile line-by-line purpose table
+- Docker Compose line-by-line purpose table
+- actual build outputs and final API/UI responses
+- all recorded warnings separated from actual errors
+- the early missing-source container problem
+- the `docker compose` versus `docker-compose` command error
+- the legacy Compose `ContainerConfig` error
+- the stale PostgreSQL versus required MySQL problem
+- cleanup commands, configuration corrections, and final solutions
+- API, UI, database, health check, persistence, and screenshot evidence
+
+The document remains aligned to the Part 2 section of
+`attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf`.
 
 ### PDF Alignment Check (Part 2)
 
@@ -129,7 +152,7 @@ Then add this entry to the Part 1 doc screenshot checklist (it already has a pla
 | Task 2: UI Frontend Containerization | `ui-src/Dockerfile` — node:20-alpine, non-root `node`, HEALTHCHECK, EXPOSE 3000 | ✅ |
 | Task 3: Local Execution (`docker-compose build`) | API and UI images built successfully from the cloned source | ✅ |
 | Task 4: Docker Compose | `docker-compose.yml` — 3 services (api + ui + MySQL db), `app-network`, `mysql-data` volume, `depends_on` health conditions | ✅ |
-| Multi-stage builds | API: 2-stage; UI: 3-stage | ✅ |
+| Build optimization | API: 2-stage; UI: locked `npm ci` + production `npm run build` | ✅ |
 | Non-root user | API: `appuser`; UI: `nextjs` | ✅ |
 | Health checks | Both Dockerfiles + docker-compose healthchecks | ✅ |
 | `docker-compose up -d` with all 3 services | `devops_api`, `devops_ui`, `devops_db` all confirmed `Up (healthy)` | ✅ |
@@ -166,7 +189,7 @@ devops_db      mysql:8.0     "docker-entrypoint..."  Up (healthy)  3306/tcp
 devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000->3000/tcp
 ```
 
-**Part 2 is 100% DONE ✅ — final MySQL-backed run verified.**
+**Part 2 is 100% DONE ✅ — full documentation and final MySQL-backed run verified.**
 
 ---
 
@@ -318,7 +341,7 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 
 6. **PDF alignment:** Always cross-check requirements against `attached_assets/Junior_DevOps_Engineer_Exam_2026_1785970827190.pdf` before writing documentation
 
-7. **Do NOT rewrite existing docs from scratch** — only add to them
+7. **Do NOT rewrite existing docs from scratch unless the user explicitly requests a full rebuild** — otherwise only add to them
 
 ---
 
@@ -363,7 +386,7 @@ The final local result was:
 | Part | PDF Section | Files | Documentation | Screenshots | Status |
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ⚠️ 11/12 (task10d missing) | 🟡 Near-complete |
-| Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Done | ✅ All evidence present | ✅ **COMPLETE** |
+| Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ deploy.yml | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
