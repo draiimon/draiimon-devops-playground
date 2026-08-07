@@ -340,7 +340,16 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 
 **Repository setup note:** The exam's two Application Components are now explicitly documented in `README.md` and in Part 2 → Task 4 → Step 1. The FastAPI repository is cloned into `part2-docker/api-src/` and the Next.js repository into `part2-docker/ui-src/`; Docker Compose uses those folders as its build contexts.
 
-**Clone verification:** Both repositories were cloned successfully and both source-based Docker images were built successfully with `docker compose build api ui`.
+**Workspace verification:** In the Replit copy, both repositories were cloned successfully and both source-based Docker images were built successfully with `docker compose build api ui`. The user's local WSL walkthrough is tracked separately below and has not yet reached the local Docker build step.
+
+**Current local walkthrough pause point:** Steps 2A–2D of the Part 2 application-source walkthrough are complete on the user's local WSL machine and documented with screenshots:
+
+- Step 2A — clone and verify the Bitbucket API and UI repositories
+- Step 2B — check the existing Docker setup files and cloned source files
+- Step 2C — copy `api/Dockerfile` into `api-src/` and `ui/Dockerfile` into `ui-src/`
+- Step 2D — inspect the Dockerfiles before building
+
+**Next step when the user returns:** Step 2E — replace/update the Dockerfiles inside `api-src/` and `ui-src/` with the reviewed production-ready versions, then run the verification `grep` commands and capture a screenshot. Do **not** run `docker build` until Step 2E has been reviewed and documented.
 
 | Part | PDF Section | Files | Documentation | Screenshots | Status |
 |------|-------------|-------|--------------|-------------|--------|
@@ -351,6 +360,7 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. (Optional) Get `task10d-scripting-demo.png` from user → finishes Part 1 completely
-2. Create `documentation/Part3-CICD-Documentation.md` 
+1. Continue local Part 2 walkthrough at Step 2E — prepare and verify the production Dockerfiles
+2. (Optional) Get `task10d-scripting-demo.png` from user → finishes Part 1 completely
+3. Create `documentation/Part3-CICD-Documentation.md`
 3. Create `documentation/Part4-HA-Documentation.md`
