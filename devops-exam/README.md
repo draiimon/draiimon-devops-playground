@@ -1,6 +1,6 @@
 # Junior DevOps Engineer Exam – Solution
 
-**Author:** DevOps Candidate  
+**Author:** Mark Andrei Castillo (`draiimon`)
 **Exam Date:** 2026  
 **Applications:**
 - API Backend: FastAPI (Python)

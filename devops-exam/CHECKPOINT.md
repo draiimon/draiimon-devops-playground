@@ -347,7 +347,7 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 
 **Repository setup note:** The exam's two Application Components are now explicitly documented in `README.md` and in Part 2 → Task 4 → Step 1. The FastAPI repository is cloned into `part2-docker/api-src/` and the Next.js repository into `part2-docker/ui-src/`; Docker Compose uses those folders as its build contexts.
 
-**Workspace verification:** In the Replit copy, both repositories were cloned successfully and both source-based Docker images were built successfully. The user's local WSL walkthrough was then completed and verified with the final MySQL-backed Compose run.
+**Repository verification:** Both repositories were cloned successfully and both source-based Docker images were built successfully. The user's local WSL walkthrough was then completed and verified with the final MySQL-backed Compose run.
 
 **Final local walkthrough status:** Steps 2A–2E of the Part 2 application-source walkthrough are complete on the user's local WSL machine and documented with screenshots:
 

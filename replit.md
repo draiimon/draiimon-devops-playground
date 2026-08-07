@@ -38,6 +38,7 @@ _Describe the high-level user-facing capabilities of this app once they exist._
 - Keep exam documentation task-by-task in the same format as Part 1, with an English explanation directly below every screenshot.
 - Record meaningful progress and verification results in `devops-exam/CHECKPOINT.md` so future sessions can resume without losing context.
 - Use `draiimon` / `Mark Andrei Castillo <99703880+draiimon@users.noreply.github.com>` as the Git author for commits and pushes.
+- Keep GitHub-facing project files platform-neutral and free of workspace-provider references; write the exam documentation as the candidate's own work while preserving truthful evidence.
 
 ## Gotchas
 
