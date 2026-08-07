@@ -180,10 +180,10 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 
 ---
 
-## ⚡ NEXT — PART 3 — CI/CD Pipeline — FILES DONE, DOCUMENTATION NEEDED
+## ✅ PART 3 — CI/CD Pipeline — CONFIGURATION AND DOCUMENTATION COMPLETE ✅
 
-**Pipeline file:** `part3-cicd/.github/workflows/deploy.yml` ✅ (304 lines, production-grade)  
-**Documentation:** ❌ `documentation/Part3-CICD-Documentation.md` does NOT exist yet — must be created
+**Pipeline file:** `part3-cicd/.github/workflows/deploy.yml` ✅ GitHub Actions workflow  
+**Documentation:** ✅ `documentation/Part3-CICD-Documentation.md` created in the same format as Part 1 and Part 2
 
 ### What the pipeline covers (aligned to PDF requirements)
 
@@ -192,10 +192,10 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 | Automatic triggering on `staging` branch | `on: push: branches: [staging]` | ✅ |
 | Manual trigger | `workflow_dispatch` with optional reason input | ✅ |
 | Build Stage — Docker images for both apps | Job `build` with matrix strategy (api + ui in parallel) | ✅ |
-| Image tagging (commit SHA + branch) | `docker/metadata-action` → SHA short tag + branch tag + `latest` | ✅ |
+| Image tagging (commit SHA + branch) | `docker/metadata-action` → full SHA tag + branch tag + `latest` | ✅ |
 | Build caching | `cache-from/cache-to: type=gha` (GitHub Actions cache backend) | ✅ |
-| Test Stage — automated tests | Job `test` — pytest (API) + npm test (UI) | ✅ |
-| Linting / code quality | `ruff` for API, `npm run lint` for UI | ✅ |
+| Test Stage — application validation | Job `test` — Python compile/source checks, UI lint/build, and Docker Compose smoke test | ✅ |
+| Linting / code quality | UI `npm run lint` plus production build validation | ✅ |
 | Security scan | Job `scan` — Trivy CRITICAL/HIGH CVEs, SARIF to GitHub Security tab | ✅ |
 | Deploy Stage — push images to registry | Docker Hub push via `docker/build-push-action` | ✅ |
 | Deploy to staging via Helm | `helm upgrade --atomic` (auto-rollback on failure) | ✅ |
@@ -208,7 +208,7 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 ```
 build (api + ui in parallel)
   ↓
-scan (security) + test (lint + tests) — both run in parallel after build
+scan (security) + test (source validation + UI build + Compose smoke test) — both run in parallel after build
   ↓
 deploy (Helm upgrade to Kubernetes staging)
   ↓
@@ -224,21 +224,16 @@ notify (always runs — success or failure)
 | `KUBE_CONFIG_STAGING` | kubeconfig for staging Kubernetes cluster |
 | `SLACK_WEBHOOK_URL` | Slack incoming webhook URL |
 
-### Action Needed — Part 3 Documentation
+### Part 3 documentation coverage
 
-Create `documentation/Part3-CICD-Documentation.md` following EXACTLY the same format as Part 1 and Part 2 docs:
-1. Header: Candidate, Machine, Date, Exam
-2. "Connection to previous part" section — link CI/CD to Part 2 Docker work
-3. Environment Overview
-4. Each requirement from the PDF: Commands / Config → Explanation table → Screenshot (if available)
-5. Completion summary table at the bottom (all 5 PDF requirements: trigger, build, test, deploy, notify)
-6. Screenshot checklist at the very bottom
+The Part 3 document covers the five PDF requirements, the optional security
+scan, the GitHub secrets, the workflow job order, deployment rollback behavior,
+the actual cloned-source build contexts, and the local inspection commands.
+The workflow YAML remains the source of truth.
 
-For the screenshot, the user can take one of:
-- `cat part3-cicd/.github/workflows/deploy.yml | head -60` (terminal view of the pipeline YAML)
-- Screenshot of the GitHub Actions tab on GitHub showing the workflow running (if they push to their repo)
-
-Save screenshot as: `documentation/screenshots/part3/task03-cicd-pipeline.png`
+**Part 3 configuration and documentation are complete.** A live GitHub Actions
+run screenshot can be added later as optional supporting evidence after the
+repository is connected and the required GitHub secrets are configured.
 
 ---
 
@@ -344,6 +339,7 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 - Part 4 uses Kubernetes Option A (Recommended by the PDF) — NOT Docker Swarm or VM-based
 - The `image` field in `k8s/api-deployment.yaml` has placeholder `DOCKER_USERNAME/api-app:latest` — user must replace with their actual Docker Hub username
 - `part3-cicd/` folder has only one file: `.github/workflows/deploy.yml` — no other files exist
+- Git author preference: use `draiimon` / `Mark Andrei Castillo <99703880+draiimon@users.noreply.github.com>` for future commits and pushes
 
 ---
 
@@ -374,10 +370,9 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ deploy.yml | ❌ Not created | ❌ None yet | 🔴 Docs needed |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ deploy.yml | ✅ Complete | ⏳ Live workflow screenshot optional | ✅ **COMPLETE** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Create `documentation/Part3-CICD-Documentation.md`
-2. Create `documentation/Part4-HA-Documentation.md`
+1. Create `documentation/Part4-HA-Documentation.md`

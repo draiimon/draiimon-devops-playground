@@ -112,10 +112,12 @@ Platform: **GitHub Actions**
 File: `.github/workflows/deploy.yml`
 
 ### Pipeline Stages
-1. **Build** – Build Docker images for both apps, tag with commit SHA
-2. **Test** – Run app tests and linting
-3. **Push** – Push images to Docker Hub
-4. **Deploy** – SSH into staging server and pull new images
+1. **Trigger** – Run automatically for commits to `staging`, or manually with `workflow_dispatch`
+2. **Build** – Build the API and UI images from `api-src` and `ui-src`, validate Dockerfiles, and tag with the commit SHA
+3. **Test** – Compile-check the API, lint and production-build the UI, then run a Docker Compose integration smoke test
+4. **Scan** – Scan pushed images for CRITICAL and HIGH vulnerabilities with Trivy
+5. **Deploy** – Deploy the tagged images to the Kubernetes staging environment with Helm
+6. **Notify** – Send a Slack success or failure message containing branch and commit details
 
 ### Required GitHub Secrets
 
@@ -123,9 +125,8 @@ File: `.github/workflows/deploy.yml`
 |--------|-------------|
 | `DOCKER_USERNAME` | Docker Hub username |
 | `DOCKER_PASSWORD` | Docker Hub password/token |
-| `STAGING_HOST` | Staging server IP/hostname |
-| `STAGING_USER` | SSH user on staging server |
-| `STAGING_SSH_KEY` | Private SSH key for staging |
+| `KUBE_CONFIG_STAGING` | Kubeconfig for the staging Kubernetes cluster |
+| `SLACK_WEBHOOK_URL` | Slack incoming webhook URL |
 
 ---
 

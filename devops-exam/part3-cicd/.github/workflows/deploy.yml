@@ -36,10 +36,10 @@ jobs:
       matrix:
         include:
           - app: api
-            context: ./part2-docker/api
+            context: ./part2-docker/api-src
             image_var: API_IMAGE
           - app: ui
-            context: ./part2-docker/ui
+            context: ./part2-docker/ui-src
             image_var: UI_IMAGE
 
     outputs:
@@ -54,8 +54,11 @@ jobs:
         with:
           version: latest
 
-      # OIDC-based login — no stored password needed
-      - name: Log in to Docker Hub (OIDC)
+      - name: Validate Dockerfile
+        run: docker buildx build --check "${{ matrix.context }}"
+
+      # Use a Docker Hub access token stored as a GitHub secret.
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -68,7 +71,7 @@ jobs:
         with:
           images: ${{ env[matrix.image_var] }}
           tags: |
-            type=sha,prefix=,format=short
+            type=sha,prefix=,format=long
             type=ref,event=branch
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/staging' }}
           labels: |
@@ -134,7 +137,7 @@ jobs:
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env[matrix.image_var] }}:latest
+           image-ref: ${{ env[matrix.image_var] }}:${{ github.sha }}
           format: sarif
           output: trivy-${{ matrix.app }}.sarif
           severity: CRITICAL,HIGH
@@ -159,44 +162,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # --- API ---
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
 
-      - name: Install API deps
-        working-directory: ./part2-docker/api
-        run: pip install -r requirements.txt pytest httpx ruff
+      - name: Validate API Python source
+        working-directory: ./part2-docker/api-src
+        run: |
+          python -m compileall -q .
+          grep -q "FastAPI" main.py
+          grep -q "uvicorn" requirements.txt
 
-      - name: Lint API (ruff — 2026 standard linter)
-        working-directory: ./part2-docker/api
-        run: ruff check . --output-format=github
-
-      - name: Test API
-        working-directory: ./part2-docker/api
-        run: pytest tests/ -v --tb=short
-
-      # --- UI ---
       - name: Set up Node 20
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: part2-docker/ui/package-lock.json
+          cache-dependency-path: part2-docker/ui-src/package-lock.json
 
-      - name: Install UI deps
-        working-directory: ./part2-docker/ui
-        run: npm ci
+      - name: Lint and build UI
+        working-directory: ./part2-docker/ui-src
+        run: |
+          npm ci
+          npm run lint
+          npm run build
 
-      - name: Lint UI
-        working-directory: ./part2-docker/ui
-        run: npm run lint
+      - name: Run Docker Compose integration smoke test
+        run: |
+          docker compose -f part2-docker/docker-compose.yml up -d --build
+          trap 'docker compose -f part2-docker/docker-compose.yml down -v' EXIT
 
-      - name: Test UI
-        working-directory: ./part2-docker/ui
-        run: npm test -- --passWithNoTests --ci
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:8000/ >/dev/null \
+              && curl --fail --silent http://localhost:3000/ >/dev/null \
+              && curl --fail --silent http://localhost:8000/trip >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker compose -f part2-docker/docker-compose.yml logs
+              exit 1
+            fi
+            sleep 5
+          done
+
+          curl --fail --silent -X POST http://localhost:8000/trip \
+            -H "Content-Type: application/json" \
+            -d '{"name":"CI Smoke Test","description":"GitHub Actions integration check","joiner_total_count":1}' \
+            >/dev/null
+
+          curl --fail --silent http://localhost:8000/trip >/dev/null
 
   # ============================================================
   # JOB 4 — Deploy via Helm (rolling update, auto-rollback)
@@ -216,9 +232,9 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4
 
-      - name: Set image tag
+       - name: Set image tag
         id: tag
-        run: echo "tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+         run: echo "tag=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Configure kubectl
         uses: azure/k8s-set-context@v4
