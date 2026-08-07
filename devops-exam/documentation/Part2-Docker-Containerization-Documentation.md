@@ -467,11 +467,11 @@ services:
       - "8000:8000"
     environment:
       - PORT=8000
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/appdb}
+       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-mysql+pymysql://root:password@db:3306/testdb}
       - DEBUG=${DEBUG:-false}
-    depends_on:
-      db:
-        condition: service_healthy
+       depends_on:
+         db:
+           condition: service_started
     healthcheck:
       test: ["CMD", "python", "-c",
              "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
@@ -493,7 +493,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://api:8000
+       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       - PORT=3000
     depends_on:
       - api
@@ -507,17 +507,16 @@ services:
       - app-network
 
   db:
-    image: postgres:15-alpine
+    image: mysql:8.0
     container_name: devops_db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=appdb
+       - MYSQL_ROOT_PASSWORD=password
+       - MYSQL_DATABASE=testdb
     volumes:
-      - db-data:/var/lib/postgresql/data
+       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -529,7 +528,7 @@ networks:
     driver: bridge
 
 volumes:
-  db-data:
+  mysql-data:
 ```
 
 ### Step 1 — Clone the Real App Source Code
@@ -558,6 +557,44 @@ git clone https://bitbucket.org/metawhale/fast-api-clean api-src
 git clone https://bitbucket.org/metawhale/nextjs_app ui-src
 ```
 
+### Actual Clone Verification
+
+The repositories were cloned successfully into the folders above. The checkout
+verification produced the following results:
+
+```text
+api-src/  FastAPI source present
+ui-src/   Next.js source present
+
+API files: main.py, database.py, models.py, schemas.py, requirements.txt
+UI files:  package.json, package-lock.json, next.config.js, app/, components/
+```
+
+The cloned repository revisions used for this containerization work were:
+
+```text
+API: 297f5c2
+UI:  01c7d38
+```
+
+This confirms that the Docker build contexts contain the actual Bitbucket
+application source, not only empty placeholder folders.
+
+The source-based Docker Compose build was then run from `part2-docker/`:
+
+```bash
+docker compose build api ui
+```
+
+```text
+[+] Building ... FINISHED
+✔ api  Built
+✔ ui   Built
+```
+
+This confirms that both Dockerfiles can build successfully using the cloned
+API and UI application source.
+
 > 💡 **What is `git clone`?**  
 > `git clone <url>` downloads an entire repository from a remote server (Bitbucket, GitHub, etc.) to your local machine. It creates a new folder with all the source code, history, and branches. Think of it as downloading the real app code so Docker has something to actually build and run.
 
@@ -580,14 +617,22 @@ part2-docker/
 └── docker-compose.yml
 ```
 
-Copy the container files into the cloned source folders when the Dockerfiles
-need to build the real application source:
+The Dockerfiles are now stored in the cloned source folders so the Compose
+build contexts are self-contained:
 
 ```bash
-cp api/Dockerfile api-src/Dockerfile
-cp api/requirements.txt api-src/requirements.txt
-cp ui/Dockerfile ui-src/Dockerfile
+api-src/Dockerfile
+ui-src/Dockerfile
 ```
+
+Because the original FastAPI application reads `DB_CONNECTION_STRING` and
+uses `mysql+pymysql`, the Compose database service is MySQL rather than
+PostgreSQL. The UI uses `http://localhost:8000` for browser-side API calls
+while Docker still connects the services on the shared network.
+
+The API container also waits for the MySQL TCP port before starting Uvicorn.
+This prevents the cloned application's `models.Base.metadata.create_all()`
+startup step from running before the database has finished initializing.
 
 ### Step 2 — Run Docker Compose
 

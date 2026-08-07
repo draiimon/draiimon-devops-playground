@@ -42,9 +42,11 @@ devops-exam/
 │   ├── api/
 │   │   ├── Dockerfile         ✅ Multi-stage, non-root (appuser), HEALTHCHECK
 │   │   └── requirements.txt   ✅
+│   ├── api-src/               ✅ Cloned FastAPI application source
 │   ├── ui/
 │   │   └── Dockerfile         ✅ 3-stage, non-root (nextjs), HEALTHCHECK
-│   └── docker-compose.yml     ✅ 3-service (api + ui + db), named network, healthchecks
+│   ├── ui-src/                ✅ Cloned Next.js application source
+│   └── docker-compose.yml     ✅ 3-service (api + ui + MySQL db), named network, healthchecks
 ├── part3-cicd/
 │   └── .github/
 │       └── workflows/
@@ -322,8 +324,8 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 - `debconf` frontend warnings during `apt-get` in Docker builds are NOT errors
 - `pip root user` warning in the builder stage is NOT an error (runtime uses non-root)
 - All scripts in `part1-linux/` are already `chmod +x`
-- The `docker-compose.yml` build contexts must point at `./api-src` and `./ui-src` (cloned from Bitbucket) — the `api/` and `ui/` folders only contain Dockerfiles, not the app source code
-- The `main.py` used in the final successful docker-compose run is the simple FastAPI healthz endpoint created by the agent — the real Bitbucket source had a pymysql dependency issue
+- The `docker-compose.yml` build contexts must point at `./api-src` and `./ui-src` (cloned from Bitbucket)
+- The cloned FastAPI application uses MySQL through `DB_CONNECTION_STRING`; the Compose database must match that driver instead of using PostgreSQL
 - Part 3 pipeline uses matrix strategy — API and UI are built in parallel jobs
 - Part 4 uses Kubernetes Option A (Recommended by the PDF) — NOT Docker Swarm or VM-based
 - The `image` field in `k8s/api-deployment.yaml` has placeholder `DOCKER_USERNAME/api-app:latest` — user must replace with their actual Docker Hub username
@@ -334,6 +336,8 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 ## 📊 Overall Exam Progress Summary
 
 **Repository setup note:** The exam's two Application Components are now explicitly documented in `README.md` and in Part 2 → Task 4 → Step 1. The FastAPI repository is cloned into `part2-docker/api-src/` and the Next.js repository into `part2-docker/ui-src/`; Docker Compose uses those folders as its build contexts.
+
+**Clone verification:** Both repositories were cloned successfully and both source-based Docker images were built successfully with `docker compose build api ui`.
 
 | Part | PDF Section | Files | Documentation | Screenshots | Status |
 |------|-------------|-------|--------------|-------------|--------|
