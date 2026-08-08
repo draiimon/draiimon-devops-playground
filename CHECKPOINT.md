@@ -33,7 +33,7 @@ repository-root/
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
 │       ├── part2/   ← 14 screenshots present (all done)
-│       └── part3/   ← 26 screenshots present (setup, workflow, build, test, and registry evidence)
+│       └── part3/   ← 27 screenshots present (setup, workflow, build, test, and registry evidence)
 ├── part1-linux/
 │   ├── system_health.sh       ✅ chmod +x already applied
 │   ├── backup.sh              ✅ chmod +x already applied
@@ -326,6 +326,26 @@ documentation/screenshots/part3/task15-dockerhub-ui-repository.png
 Together, these two screenshots prove Docker Hub repository setup only. They
 do not yet prove that CI successfully pushed images.
 
+### Docker Hub access token evidence
+
+A Docker Hub Personal Access Token was created for GitHub Actions with the
+description:
+
+```text
+github-actions-devops
+```
+
+The screenshot confirms **Read & Write** permissions:
+
+```text
+documentation/screenshots/part3/task16-dockerhub-access-token-created.png
+```
+
+The token value is not stored in this Repl, the repository, the documentation,
+or chat. It must be added next as an encrypted GitHub repository secret. Token
+creation alone does not prove that GitHub Actions can authenticate or push
+images.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
@@ -505,7 +525,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub API and UI repositories created | ✅ Trigger, Build, Test, and registry setup documented; Deploy/Notifications pending | ✅ 26 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub repositories and PAT created | ✅ Trigger, Build, Test, registry setup, and token tutorial documented; image push/Deploy/Notifications pending | ✅ 27 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

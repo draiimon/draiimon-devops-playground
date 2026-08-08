@@ -75,7 +75,7 @@ workflow.
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
 | Staging deployment | Not yet added/verified | ⏳ Pending |
-| Container registry/artifact storage | Docker Hub repositories `draiimon112/devops-api` and `draiimon112/devops-ui` created; image push not yet verified | 🔄 Started |
+| Container registry/artifact storage | Docker Hub repositories created and a GitHub Actions access token generated; image push not yet verified | 🔄 Started |
 | Rollback strategy | Not yet documented/implemented | ⏳ Pending |
 | Success/failure notifications | Not yet configured | ⏳ Pending |
 
@@ -570,6 +570,56 @@ documentation.
 
 ---
 
+## Task 6 — Docker Hub Personal Access Token
+
+GitHub Actions needs permission to authenticate to Docker Hub before it can
+push the API and UI images. A Docker Hub Personal Access Token (PAT) was
+created for this purpose. The PAT is used as the Docker CLI password; the
+Docker Hub username remains:
+
+```text
+draiimon112
+```
+
+### Docker Hub tutorial — create a PAT
+
+1. Sign in to Docker Hub.
+2. Open the profile menu and select **Account Settings**.
+3. Open **Personal access tokens**.
+4. Select **Generate new token**.
+5. Use this description:
+
+   ```text
+   github-actions-devops
+   ```
+
+6. Select **Read & Write** permissions.
+7. Generate the token.
+8. Copy it immediately and store it safely; Docker Hub displays the token only
+   at creation time.
+
+The screenshot confirms the token description and its **Read & Write**
+permission. It does not expose the token value.
+
+### Evidence
+
+- [Docker Hub access token created](screenshots/part3/task16-dockerhub-access-token-created.png)
+
+### Security rule
+
+The token must never be committed to the repository, written in the workflow
+YAML, placed in documentation, or sent in chat. The next step is to save it as
+an encrypted GitHub repository secret. The token itself is intentionally not
+recorded in this project.
+
+### Current status
+
+The Docker Hub PAT has been created, but GitHub Actions authentication is not
+yet verified. The registry requirement remains incomplete until the workflow
+successfully logs in and pushes both tagged images.
+
+---
+
 ## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
 
 The successful Docker build from Part 2 and the Docker build in Part 3 serve
@@ -646,8 +696,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 26 screenshot evidence files: 12 GitHub setup/history
-screenshots and 14 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 27 screenshot evidence files: 12 GitHub setup/history
+screenshots and 15 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output is preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`
