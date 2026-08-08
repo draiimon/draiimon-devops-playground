@@ -1,0 +1,217 @@
+name: CI/CD Pipeline - 2026
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+    inputs:
+      notification_test:
+        description: "Choose normal execution or test the failure notification"
+        required: true
+        default: normal
+        type: choice
+        options:
+          - normal
+          - failure
+
+permissions:
+  contents: read
+
+jobs:
+  verify-workflow:
+    name: Verify workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Confirm CI/CD starts
+        env:
+          NOTIFICATION_TEST: ${{ inputs.notification_test || 'normal' }}
+        run: |
+          set -e
+          echo "Part 3 CI/CD workflow started successfully."
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Commit: $GITHUB_SHA"
+
+          if [ "$NOTIFICATION_TEST" = "failure" ]; then
+            echo "Intentional failure-notification test requested."
+            exit 1
+          fi
+
+  build-images:
+    name: Build Docker images
+    needs: verify-workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            config --quiet
+
+      - name: Build API and UI images
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            build api ui
+
+      - name: Show built images
+        run: |
+          docker image ls api-app
+          docker image ls ui-app
+
+  test-stage:
+    name: Test applications
+    needs: build-images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install UI dependencies and run lint
+        working-directory: part2-docker/ui-src
+        run: |
+          npm ci
+          npm run lint
+
+      - name: Run API and UI smoke tests
+        run: |
+          set -e
+
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            up -d --build db api ui
+
+          trap 'docker compose -f part2-docker/docker-compose.yml down -v' EXIT
+
+          echo "Waiting for API and UI services..."
+
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8000/ >/tmp/api-root.json \
+              && curl -fsS http://localhost:3000/ >/tmp/ui-root.html; then
+              break
+            fi
+            sleep 5
+          done
+
+          test -s /tmp/api-root.json
+          test -s /tmp/ui-root.html
+          grep -q "Fast Api Exam api v1" /tmp/api-root.json
+
+          curl -fsS http://localhost:8000/trip >/tmp/api-trips.json
+          test -s /tmp/api-trips.json
+
+          echo "API root endpoint passed."
+          echo "API trip endpoint passed."
+          echo "UI root endpoint passed."
+
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            ps
+
+  deploy:
+    name: Push images to Docker Hub
+    needs: test-stage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build API and UI images for deployment
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            build api ui
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag images for Docker Hub
+        run: |
+          docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_SHA}"
+          docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_SHA}"
+
+          docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_REF_NAME}"
+          docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_REF_NAME}"
+
+          docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:latest"
+          docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:latest"
+
+      - name: Push images to Docker Hub
+        run: |
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_SHA}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_REF_NAME}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:latest"
+
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_SHA}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_REF_NAME}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:latest"
+
+  notify:
+    name: Pipeline notification
+    if: ${{ always() }}
+    needs:
+      - verify-workflow
+      - build-images
+      - test-stage
+      - deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish success or failure notification
+        env:
+          VERIFY_RESULT: ${{ needs.verify-workflow.result }}
+          BUILD_RESULT: ${{ needs.build-images.result }}
+          TEST_RESULT: ${{ needs.test-stage.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+        run: |
+          set -e
+
+          overall="success"
+          for result in "$VERIFY_RESULT" "$BUILD_RESULT" "$TEST_RESULT" "$DEPLOY_RESULT"; do
+            if [ "$result" != "success" ]; then
+              overall="failure"
+            fi
+          done
+
+          {
+            echo "## CI/CD pipeline notification"
+            echo
+            echo "**Overall result:** \`$overall\`"
+            echo
+            echo "| Stage | Result |"
+            echo "|---|---|"
+            echo "| Verify | \`$VERIFY_RESULT\` |"
+            echo "| Build | \`$BUILD_RESULT\` |"
+            echo "| Test | \`$TEST_RESULT\` |"
+            echo "| Deploy | \`$DEPLOY_RESULT\` |"
+            echo
+            echo "**Branch:** \`$GITHUB_REF_NAME\`"
+            echo
+            echo "**Commit:** \`$GITHUB_SHA\`"
+            echo
+            echo "**Run:** [Open workflow run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+          } | tee pipeline-notification.txt >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$overall" != "success" ]; then
+            exit 1
+          fi
+
+      - name: Upload notification evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-notification-${{ github.run_id }}
+          path: pipeline-notification.txt
