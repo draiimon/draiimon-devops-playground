@@ -898,6 +898,45 @@ depends on `test-stage`, then explicitly builds or obtains images on its fresh
 runner, tags them with the Docker Hub repository names, logs in through GitHub
 Secrets, and pushes them only after tests succeed.
 
+### Deploy job draft added locally
+
+The candidate then added a separate local `deploy` job after `test-stage`. The
+draft has the intended dependency:
+
+```yaml
+deploy:
+  needs: test-stage
+```
+
+Its planned sequence is:
+
+```text
+check out repository
+→ rebuild API/UI images on the fresh Deploy runner
+→ log in through docker/login-action@v3
+→ create Docker Hub repository tags
+→ push API and UI images with commit, branch, and latest tags
+```
+
+The draft uses the encrypted secret references
+`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`; no credential values were pasted
+into the workflow. A backup was created before editing:
+
+```text
+deploy.yml.before-deploy
+```
+
+The local command completed with no `git diff --check` output, which means no
+whitespace error was detected. This is only a draft and formatting check,
+not yet proof that GitHub Actions accepts the YAML, that the secrets are
+available to the `staging` branch, or that Docker Hub accepts the login and
+push. The draft must be structurally reviewed before commit or push.
+
+The next validation must therefore check the complete file structure, confirm
+that each job appears once, confirm that `deploy` depends on `test-stage`, and
+parse the YAML if a local YAML/actionlint parser is available. This validation
+must not print secret values and must not contact Docker Hub.
+
 ### Inspection result for the remaining untracked path
 
 The candidate inspected the untracked path from the WSL directory:

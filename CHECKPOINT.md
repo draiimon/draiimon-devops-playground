@@ -585,6 +585,31 @@ workflow still contains the Verify, Build, and Test jobs only; it has no
 and encrypted secrets are ready for the separate Deploy Stage, which must
 depend on successful `test-stage`.
 
+### Deploy job draft — pending validation
+
+The candidate added a separate local `deploy` job after `test-stage` with:
+
+```yaml
+needs: test-stage
+```
+
+The draft rebuilds the API/UI images on the Deploy job's fresh runner, logs in
+through `docker/login-action@v3`, creates Docker Hub tags, and pushes commit,
+branch, and `latest` tags for both repositories. It references only the
+encrypted secret names `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`; no secret
+values were exposed.
+
+A local backup was created as `deploy.yml.before-deploy`. `git diff --check`
+returned no output, so the whitespace check passed. The workflow has not been
+committed or pushed in this state. A whitespace check is not a YAML parser and
+does not prove Docker Hub authentication; structural validation must happen
+before the first Deploy run.
+
+The next safe action is a local structural validation of the complete
+workflow. It should confirm that each job appears once and that `deploy`
+depends on `test-stage`, then parse the YAML if a parser is available. It must
+not print secret values or contact Docker Hub.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
