@@ -808,6 +808,22 @@ evidence of a successful GitHub Actions run. The eventual Deploy job must
 explicitly build or obtain images, tag them, log in securely, and push only
 after `test-stage` succeeds.
 
+### Step 9 commit result
+
+After reviewing the file and passing `git diff --check`, the candidate staged
+only `.github/workflows/deploy.yml` and created a local commit:
+
+```text
+Keep build stage focused on validation
+```
+
+The temporary file `deploy.yml.step9-backup` was intentionally not staged or
+committed. It appeared as an untracked file after the commit, which is
+expected for a local safety copy. It must not be pushed as part of the exam
+repository. The commit confirms the Step 9 workflow correction is saved in
+local Git history; it does not yet mean that the edited workflow has run on
+GitHub Actions.
+
 ---
 
 ## Beginner Walkthrough — Understanding the Step 9 Workflow Edit

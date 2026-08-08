@@ -499,6 +499,20 @@ the Docker Hub repositories, expose credentials, or complete the Deploy stage.
 The future Deploy job must explicitly rebuild or obtain images, tag them, log in
 securely, and push only after the Test job succeeds.
 
+### Step 9 commit confirmation
+
+The candidate passed the final whitespace check, staged only
+`.github/workflows/deploy.yml`, and created the local commit:
+
+```text
+Keep build stage focused on validation
+```
+
+The temporary `deploy.yml.step9-backup` file remained untracked and was not
+included in the commit. It is a safety copy only and must not be pushed to the
+exam repository. The Step 9 edit is therefore saved locally; a GitHub Actions
+run has not yet been claimed.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
