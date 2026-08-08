@@ -72,7 +72,7 @@ workflow.
 | Build API and UI images | GitHub Actions built both images successfully on `staging` | ✅ CI confirmed |
 | Image tagging | Images listed with commit SHA, `latest`, and `staging` tags | ✅ CI confirmed |
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
-| Automated tests and linting | Not yet added/verified | ⏳ Pending |
+| Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
 | Staging deployment | Not yet added/verified | ⏳ Pending |
 | Container registry/artifact storage | Not yet configured | ⏳ Pending |
@@ -271,8 +271,265 @@ test/security stage:
 - npm reported a newer major npm version (`10.8.2` to `12.0.2`).
 
 These are not local build failures. The vulnerability result is especially
-important for the upcoming test/security stage and should be investigated
-before the pipeline is marked complete.
+important for the optional security-scan decision and should not be silently
+ignored.
+
+---
+
+## Task 4 — Test Stage: Automated Checks and Smoke Tests
+
+### Objective
+
+The exam PDF requires a Test Stage that runs automated tests and code-quality
+checks, and that fails the pipeline when a required check fails. The cloned
+applications did not include a complete API test suite, so the workflow uses
+honest, executable smoke tests against the real containerized services:
+
+- UI dependency installation and lint/code-quality checking;
+- API root endpoint verification;
+- API `/trip` endpoint verification;
+- UI root page verification;
+- Docker Compose service-status verification.
+
+This is not a fabricated unit-test result. It checks that the built
+applications can start and respond through their published ports on a fresh
+GitHub-hosted runner.
+
+### Test job dependency
+
+The test job is declared after the build job:
+
+```yaml
+test-stage:
+  name: Test applications
+  needs: build-images
+  runs-on: ubuntu-latest
+```
+
+| Configuration | Meaning |
+|---|---|
+| `name: Test applications` | Human-readable job name shown in GitHub Actions |
+| `needs: build-images` | The test job starts only after the image-build job succeeds |
+| `runs-on: ubuntu-latest` | The test runs on a clean GitHub-hosted Linux runner |
+
+Each job gets a fresh runner. Therefore, the test job cannot assume that
+Docker images built in the earlier job still exist locally. The test command
+uses `--build` so the API and UI images are rebuilt in the test job before
+starting the services.
+
+### Test step 1 — UI dependency installation and linting
+
+```yaml
+- name: Install UI dependencies and run lint
+  working-directory: part2-docker/ui-src
+  run: |
+    npm ci
+    npm run lint
+```
+
+`working-directory` makes the commands run inside the cloned Next.js
+application rather than the repository root.
+
+- `npm ci` installs exactly the versions recorded in `package-lock.json`.
+  This is preferred in CI because it is reproducible and does not rewrite the
+  lock file.
+- `npm run lint` executes the UI project's `next lint` script.
+- If linting returns a non-zero exit code, GitHub Actions stops the job and the
+  pipeline fails.
+
+The supplied run continued to the smoke-test step and completed cleanup, so
+the preceding test-stage command did not fail. The same run also shows the
+Next.js production build performing “Linting and checking validity of types”.
+
+### Test step 2 — Start the real services
+
+```bash
+set -e
+
+docker compose \
+  -f part2-docker/docker-compose.yml \
+  up -d --build db api ui
+```
+
+What happens:
+
+1. `set -e` makes the shell stop if a command fails.
+2. `-f` selects the repository's Compose file.
+3. `up` creates or starts the services.
+4. `-d` runs them in the background so the workflow can execute HTTP checks.
+5. `--build` rebuilds the API and UI images in this fresh test job.
+6. `db api ui` starts MySQL, the FastAPI API, and the Next.js UI.
+
+The log shows the runner pulling the `mysql:8.0` image in multiple filesystem
+layers. `Pulling`, `Downloading`, checksum verification, extraction, and
+`db Pulled` are normal first-run Docker behavior, not errors. The hosted
+runner starts without the candidate's local Docker cache.
+
+The log then confirms:
+
+```text
+api  Built
+ui   Built
+Network ... Created
+Volume ... Created
+Container devops_db Created
+Container devops_api Created
+Container devops_ui Created
+Container devops_db Started
+Container devops_api Started
+Container devops_ui Started
+```
+
+This proves the test job did not merely inspect files. It rebuilt and started
+the actual application stack.
+
+### Test step 3 — Automatic cleanup registration
+
+```bash
+trap 'docker compose -f part2-docker/docker-compose.yml down -v' EXIT
+```
+
+`trap ... EXIT` schedules cleanup when the shell exits, whether the test
+passes or fails. The `down -v` command stops and removes the containers,
+removes the temporary network, and removes the temporary MySQL volume.
+
+This prevents a CI runner from leaving behind application processes or test
+database data. The final log confirms that all three containers, the MySQL
+volume, and the Compose network were removed.
+
+### Test step 4 — Readiness loop
+
+```bash
+echo "Waiting for API and UI services..."
+
+for attempt in {1..30}; do
+  if curl -fsS http://localhost:8000/ >/tmp/api-root.json \
+    && curl -fsS http://localhost:3000/ >/tmp/ui-root.html; then
+    break
+  fi
+  sleep 5
+done
+```
+
+Containers can be “started” before the applications are ready to accept
+requests. The loop gives the API and UI up to 30 attempts, waiting 5 seconds
+between attempts.
+
+The curl flags mean:
+
+| Flag | Meaning |
+|---|---|
+| `-f` | Treat HTTP 4xx/5xx responses as failures |
+| `-s` | Suppress progress output |
+| `-S` | Still show errors when a request fails |
+
+The two `curl: (56) Recv failure: Connection reset by peer` messages happened
+while the services were still starting. They were handled by the retry loop.
+They did not become a pipeline failure because a later retry succeeded.
+
+### Test step 5 — Assertions
+
+```bash
+test -s /tmp/api-root.json
+test -s /tmp/ui-root.html
+
+grep -q "Fast Api Exam api v1" /tmp/api-root.json
+
+curl -fsS http://localhost:8000/trip >/tmp/api-trips.json
+test -s /tmp/api-trips.json
+```
+
+These commands turn responses into explicit pass/fail conditions:
+
+- `test -s` verifies that the response file exists and is not empty.
+- `grep -q` verifies that the API returned the expected application message.
+- `/trip` is requested separately to verify a database-backed API route, not
+  only the static root endpoint.
+- `curl -f` fails on an HTTP error response.
+- Because `set -e` is active, any failed assertion stops the job.
+
+The successful output is:
+
+```text
+API root endpoint passed.
+API trip endpoint passed.
+UI root endpoint passed.
+```
+
+This proves:
+
+1. The API process started.
+2. The API returned the expected root response.
+3. The API could reach MySQL well enough to serve `/trip`.
+4. The UI process started and served its root page.
+
+### Test step 6 — Service inspection
+
+```bash
+docker compose \
+  -f part2-docker/docker-compose.yml \
+  ps
+```
+
+The captured status showed:
+
+| Service | Image | Result |
+|---|---|---|
+| `devops_api` | `api-app:latest` | Running; health check starting |
+| `devops_db` | `mysql:8.0` | Running and healthy |
+| `devops_ui` | `ui-app:latest` | Running and healthy |
+
+The API was still marked `health: starting` at that exact instant, but its
+HTTP root and `/trip` checks had already passed. This is a timing difference
+between the Compose health-check schedule and the direct smoke-test request;
+it is not evidence that the API test failed.
+
+### Final Test Stage result
+
+The supplied GitHub Actions output confirms:
+
+- database image pulled successfully;
+- API and UI images rebuilt successfully;
+- database, API, and UI containers started;
+- UI lint/quality step did not fail;
+- API root smoke test passed;
+- API `/trip` smoke test passed;
+- UI root smoke test passed;
+- Compose service status was printed;
+- cleanup ran successfully;
+- temporary containers, network, and database volume were removed.
+
+The raw evidence is preserved at:
+
+`evidence/part3/task13-test-stage-output.txt`
+
+### Warnings versus failures
+
+| Log message | Classification | Explanation |
+|---|---|---|
+| Docker image layers downloading | Normal operation | The clean hosted runner had to pull the MySQL base image |
+| `Connection reset by peer` during first curl attempts | Recoverable startup condition | The readiness loop retried until the services were ready |
+| `pip` running as root during image build | Warning | Build-stage warning; the runtime image still uses a non-root user |
+| 13 npm vulnerabilities | Security finding | Important follow-up; not a build/test failure |
+| Outdated `caniuse-lite` | Maintenance warning | Does not fail the application build |
+| Node.js 20 deprecation warning for `actions/checkout@v4` | Platform warning | The workflow still completed successfully |
+| `API root endpoint passed` / `API trip endpoint passed` / `UI root endpoint passed` | Successful assertions | The actual application checks passed |
+
+### Learning summary
+
+The Build Stage answers: “Can a clean runner build the images?”
+
+The Test Stage answers: “Can those applications start and respond correctly
+when run together with their database?”
+
+The readiness loop matters because `docker compose up` only means containers
+were launched. It does not guarantee that MySQL is ready, that the API has
+connected to MySQL, or that Next.js is accepting HTTP requests. The smoke
+tests provide that additional evidence.
+
+The Test Stage is now **confirmed complete**. The optional Docker image
+security scan is still pending, and the PDF's Deploy Stage and Notifications
+requirements remain to be implemented or documented as partial work.
 
 ---
 
@@ -331,14 +588,13 @@ docker image ls | grep -E 'REPOSITORY|api-app|ui-app'
 
 The next implementation work is to complete and verify:
 
-1. API and UI Docker builds in GitHub Actions;
-2. automated tests and lint/code-quality checks;
-3. staging deployment;
-4. container registry/artifact storage;
-5. secrets management without exposing credentials;
-6. rollback strategy;
-7. success and failure notifications;
-8. final full-pipeline screenshots and documentation update.
+1. optional Docker image security scanning;
+2. staging deployment;
+3. container registry/artifact storage;
+4. secrets management without exposing credentials;
+5. rollback strategy;
+6. success and failure notifications;
+7. final full-pipeline screenshots and documentation update.
 
 Part 3 must not be marked complete until these stages are implemented or
 explicitly documented as partial submission items.
@@ -353,10 +609,13 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 24 evidence files: 12 GitHub setup/history screenshots,
-12 staging/workflow/build and Test Stage preparation screenshots.
+The folder contains 24 screenshot evidence files: 12 GitHub setup/history
+screenshots and 12 staging/workflow/build and Test Stage preparation
+screenshots. The raw Test Stage output is preserved separately at:
 
-The latest preparation evidence is:
+`evidence/part3/task13-test-stage-output.txt`
+
+The latest screenshot preparation evidence is:
 
 - [Test Stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
 

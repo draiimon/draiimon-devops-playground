@@ -187,7 +187,7 @@ Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not i
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Step 13 complete; Test Stage next
+### Current position — Test Stage complete; Deploy Stage next
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -200,12 +200,17 @@ The first real Part 3 workflow was created locally at:
 .github/workflows/deploy.yml
 ```
 
-It currently contains only the starter verification job and:
+The workflow now contains the starter verification, Docker Build Stage, and
+Test Stage jobs. It:
 
 - triggers automatically on pushes to `staging`;
 - supports the optional manual `workflow_dispatch` trigger;
 - checks out the repository;
-- prints the branch and commit information.
+- prints the branch and commit information;
+- builds and tags the API and UI images;
+- runs UI quality checks;
+- starts the Compose stack for API/UI smoke tests;
+- removes the temporary test containers, volume, and network.
 
 The starter workflow was committed locally on the personal computer:
 
@@ -228,7 +233,7 @@ The local build recorded non-blocking warnings: Docker's legacy builder
 deprecation, pip running as root during image construction, outdated
 `caniuse-lite`, a newer npm version notice, and 13 npm dependency
 vulnerabilities (3 moderate, 9 high, 1 critical). The vulnerability result is
-pending investigation in the Part 3 test/security stage.
+documented as a follow-up for the optional security-scan decision.
 
 The final local image listing confirmed:
 
@@ -259,12 +264,40 @@ The Replit-side evidence files are:
 - `documentation/screenshots/part3/task11-github-actions-built-images.png`
 - `documentation/screenshots/part3/task12-test-stage-pre-push-check.png`
 
+### Confirmed Test Stage evidence
+
+The Test Stage was pushed and completed successfully in GitHub Actions. The
+supplied output confirms:
+
+- the clean runner pulled the MySQL image;
+- the API and UI images were rebuilt in the test job;
+- the MySQL, API, and UI containers started;
+- UI lint/quality checks did not fail;
+- API root smoke test passed;
+- API `/trip` smoke test passed;
+- UI root smoke test passed;
+- `docker compose ps` showed the services;
+- the cleanup trap stopped and removed all containers;
+- the temporary MySQL volume and Compose network were removed.
+
+Two early `curl: (56) Recv failure: Connection reset by peer` messages were
+transient startup responses. The readiness loop retried, later requests
+succeeded, and the job completed successfully. They are documented as a
+recoverable startup condition, not a pipeline failure.
+
+Raw output:
+
+`documentation/evidence/part3/task13-test-stage-output.txt`
+
+The Test Stage now satisfies the required automated test/code-quality portion
+of the PDF. The optional image security scan remains pending.
+
 ### Next exact actions on the personal WSL computer
 
-The local Docker preflight and the GitHub Actions Docker build are complete. Do
-not repeat the build unless a later change requires it. The next Part 3 work is
-the Test Stage from the exam PDF: add and verify automated tests, linting/code
-quality checks, and any selected security scan. Continue documenting only work
+The local Docker preflight, GitHub Actions Docker build, and Test Stage are
+complete. Do not repeat them unless a later change requires it. The next Part 3
+work is the Deploy Stage from the exam PDF: staging deployment, registry/image
+storage, and a documented update strategy. Continue documenting only work
 shown by local or GitHub evidence.
 
 The previous commands that completed this checkpoint were:
@@ -281,10 +314,9 @@ git push origin staging
 The GitHub Actions run and built-image evidence are now recorded above. The
 GitHub runner built fresh images; it did not reuse the local image IDs.
 
-The Test Stage workflow has been prepared locally. The pre-push validation
-confirmed that `git diff --check` returned no errors and that only
-`.github/workflows/deploy.yml` was modified. The Test Stage itself remains
-pending until its commit is pushed and the GitHub Actions run succeeds.
+The Test Stage workflow was pushed and verified successfully. Its raw output
+is preserved in the Replit-side evidence folder and explained in the Part 3
+documentation.
 
 The attempted command `docker image ls api-app ui-app` returned a Docker usage
 error because this local Docker version accepts at most one repository
@@ -439,13 +471,13 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build job verified in CI | ✅ Starter trigger and Docker build documented; Test/Deploy stages pending | ✅ 24 evidence files | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI | ✅ Trigger, Build, and Test documented; Deploy/Notifications pending | ✅ 24 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Commit and push the prepared Test Stage workflow to `staging`.
-2. Verify the GitHub Actions test results and capture the evidence.
-3. Decide whether to add the optional Docker image security scan.
-4. Add and verify deploy, registry/secrets, rollback, and notification
+1. Decide whether to add the optional Docker image security scan.
+2. Add and verify the Deploy Stage: registry/image storage and staging update.
+3. Document a rollback strategy based on immutable image tags.
+4. Add and verify success/failure notifications
    requirements incrementally, documenting only work shown by evidence.
