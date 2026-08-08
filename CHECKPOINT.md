@@ -187,7 +187,7 @@ Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not i
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Test Stage complete; Deploy Stage next
+### Current position — Core Deploy Stage complete; final gaps remain
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -646,12 +646,32 @@ a failed pipeline result.
 Docker Hub publishing is now CI-confirmed. Staging service update, rollback,
 and success/failure notifications remain separate exam requirements.
 
+### Final evidence-based handoff — August 8, 2026
+
+Part 3's core CI/CD pipeline is now confirmed through Docker Hub publishing:
+
+```text
+Verify → Build → Test → Push images to Docker Hub
+```
+
+The successful run was on `staging`, lasted approximately 4 minutes 14 seconds,
+and showed all four jobs passing. Four non-blocking Node.js 20 deprecation
+warnings were recorded. The evidence does not prove that a separate running
+staging environment was updated, and no external notification service is
+configured or verified.
+
+The rollback strategy is documented in
+`documentation/Part3-CICD-Documentation.md`: restore the last known-good
+commit-SHA image tags, restart the staging services, and rerun the smoke tests.
+The strategy is not represented as a live rollback test.
+
 ### Next exact actions on the personal WSL computer
 
-The local Docker preflight, GitHub Actions Docker build, and Test Stage are
-complete. Do not repeat them unless a later change requires it. The next Part 3
-work is the Deploy Stage from the exam PDF: staging deployment, registry/image
-storage, and a documented update strategy. Continue documenting only work
+The local Docker preflight, GitHub Actions Docker build, Test Stage, and Docker
+Hub publishing are complete. Do not repeat them unless a later change requires
+it. The remaining Part 3 work is optional image scanning, updating a real
+staging environment, configuring external success/failure notifications, and
+testing the documented rollback procedure. Continue documenting only work
 shown by local or GitHub evidence.
 
 The previous commands that completed this checkpoint were:
@@ -825,13 +845,12 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub repositories, PAT, and both encrypted secrets created | ✅ Trigger, Build, Test, registry setup, Docker Hub tutorial, GitHub Secrets, workflow baseline, draft review, and post-correction review documented; image push/Deploy/Notifications pending | ✅ 29 screenshots plus 4 raw logs | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, and Docker Hub publishing verified in CI | ✅ Trigger, Build, Test, registry publishing, warnings, rollback strategy, and evidence boundary documented; live staging update and external notifications remain unverified | ✅ 29 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; PARTIAL** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
-**Immediate priority for next session:**
+**Remaining optional or unverified work:**
 1. Decide whether to add the optional Docker image security scan.
-2. Add and verify the Deploy Stage: registry/image storage and staging update.
-3. Document a rollback strategy based on immutable image tags.
-4. Add and verify success/failure notifications
-   requirements incrementally, documenting only work shown by evidence.
+2. Update and verify a separate staging environment using the published images.
+3. Configure and verify success/failure notifications through an external service.
+4. Test the documented immutable-tag rollback procedure on staging.

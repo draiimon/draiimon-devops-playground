@@ -76,12 +76,40 @@ workflow.
 | Container image security scan | Optional; not yet added | ⏳ Pending |
 | Staging deployment | Staging service update is not yet added or verified | ⏳ Pending |
 | Container registry/artifact storage | Deploy job completed the Docker Hub login/tag/push sequence successfully | ✅ CI confirmed |
-| Rollback strategy | Not yet documented/implemented | ⏳ Pending |
+| Rollback strategy | Immutable commit-SHA image tags provide a documented rollback path; live rollback not tested | ✅ Strategy documented |
 | Success/failure notifications | Not yet configured | ⏳ Pending |
 
-**Overall status: Part 3 is in progress.** The GitHub Actions setup and starter
-verification are complete, but the full build → test → deploy pipeline is not
-yet complete.
+**Overall status: Core CI/CD pipeline complete; Part 3 remains a documented
+partial submission.** The verified pipeline now runs
+**Verify → Build → Test → Push images to Docker Hub** on `staging`. A separate
+live staging-service update and external success/failure notifications are not
+verified in the supplied evidence and are therefore not claimed as complete.
+
+### Final Evidence-Based Handoff — August 8, 2026
+
+The latest supplied evidence confirms:
+
+- automatic execution on pushes to `staging`;
+- optional manual execution through `workflow_dispatch`;
+- successful API and UI Docker image builds;
+- successful UI linting and API/UI/Compose smoke tests;
+- successful Docker Hub authentication and image publishing;
+- commit-SHA, branch, and `latest` image tags;
+- a successful full GitHub Actions run lasting approximately 4 minutes 14 seconds;
+- four non-blocking Node.js 20 deprecation warnings.
+
+The following items are intentionally still open:
+
+1. No evidence confirms that a separate running staging environment was updated
+   from the newly published images.
+2. No external notification service has been configured or verified.
+3. The optional Docker image security scan has not been added.
+4. The rollback procedure below is documented, but a live rollback test has not
+   been performed.
+
+This is the correct submission boundary: the core pipeline and registry
+publishing are complete, while unverified infrastructure and integrations remain
+clearly identified instead of being overstated.
 
 ---
 
@@ -1582,20 +1610,41 @@ docker image ls | grep -E 'REPOSITORY|api-app|ui-app'
 
 ---
 
-## Remaining Work
+## Submission Status and Remaining Work
 
-The next implementation work is to complete and verify:
+### Completed and evidenced
 
-1. optional Docker image security scanning;
-2. staging deployment;
-3. container registry/artifact storage;
-4. secrets management without exposing credentials;
-5. rollback strategy;
-6. success and failure notifications;
-7. final full-pipeline screenshots and documentation update.
+1. Automatic `staging` trigger and optional manual trigger.
+2. Pipeline-as-code workflow stored at `.github/workflows/deploy.yml`.
+3. API and UI image build, tagging, validation, linting, and smoke tests.
+4. Docker Hub registry publishing through encrypted GitHub Secrets.
+5. A documented immutable-tag rollback strategy.
 
-Part 3 must not be marked complete until these stages are implemented or
-explicitly documented as partial submission items.
+### Still pending or not verified
+
+1. Optional Docker image security scanning.
+2. Updating a separate running staging environment with the published images.
+3. Configuring and verifying an external success/failure notification service.
+4. Testing the rollback procedure against a live staging environment.
+
+Part 3 should be submitted as a strong partial completion unless additional
+screenshots or logs prove the remaining staging and notification requirements.
+
+### Rollback Strategy — Immutable Image Tags
+
+Every successful publish includes an image tag based on the exact
+`GITHUB_SHA`, in addition to the moving `staging` and `latest` tags. If a
+staging release is unhealthy, the operator should:
+
+1. identify the last known-good commit-SHA tag;
+2. update the staging service configuration to use that exact API and UI tag;
+3. redeploy or restart the services using those immutable tags;
+4. run the API root, API `/trip`, and UI smoke checks;
+5. record the failed commit and the restored commit in the deployment log.
+
+This avoids guessing which image was previously deployed. The strategy is
+documented and technically supported by the published commit tags, but no live
+rollback execution is claimed from the current evidence.
 
 ---
 
