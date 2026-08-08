@@ -695,16 +695,26 @@ The screenshot confirms:
 
 The services were created under the separate `staging-release` Compose project.
 The API and UI are exposed on host ports `8001` and `3001`; the database is
-healthy. The API and UI health checks are still starting in the screenshot, so
-HTTP smoke tests are the final deployment verification step.
+healthy. A later screenshot confirms that all three services are `Up (healthy)`
+and that the API and UI are using the published Docker Hub `:staging` images:
+
+```text
+documentation/screenshots/part3/task27-staging-healthy-images.png
+```
+
+This confirms the staging runtime deployment. Additional HTTP smoke-test output
+would strengthen the evidence but is not required to prove that the published
+images were pulled into and started by the separate staging project.
 
 The run displayed four non-blocking Node.js 20 deprecation warnings. The
 warnings affected the checkout steps and the Docker login action, which are
 currently being forced toward Node.js 24. This is a maintenance follow-up, not
 a failed pipeline result.
 
-Docker Hub publishing is now CI-confirmed. Staging service update, rollback,
-and success/failure notifications remain separate exam requirements.
+Docker Hub publishing and staging service update are now confirmed. The
+remaining separate exam requirement is success/failure notification
+configuration. The immutable-tag rollback strategy is documented; a live
+rollback test remains optional follow-up evidence.
 
 ### Final evidence-based handoff — August 8, 2026
 
@@ -905,7 +915,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, and staging runtime startup evidenced | ✅ Trigger, Build, Test, registry publishing, staging image startup, warnings, rollback strategy, and evidence boundary documented; post-deployment HTTP checks and external notifications remain unverified | ✅ 34 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FINAL CHECKS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, and staging deployment verified | ✅ Trigger, Build, Test, registry publishing, staging runtime, warnings, rollback strategy, and evidence boundary documented; external notifications remain unverified | ✅ 35 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; NOTIFICATIONS REMAIN** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

@@ -74,16 +74,18 @@ workflow.
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
-| Staging deployment | Separate staging Compose project is running the published `:staging` API and UI images; HTTP verification pending | 🟡 Runtime started |
+| Staging deployment | Separate staging Compose project is running healthy containers from the published `:staging` API and UI images | ✅ Confirmed |
 | Container registry/artifact storage | Deploy job completed the Docker Hub login/tag/push sequence successfully | ✅ CI confirmed |
 | Rollback strategy | Immutable commit-SHA image tags provide a documented rollback path; live rollback not tested | ✅ Strategy documented |
 | Success/failure notifications | Not yet configured | ⏳ Pending |
 
-**Overall status: Core CI/CD pipeline complete; Part 3 remains a documented
-partial submission.** The verified pipeline now runs
+**Overall status: Deploy pipeline and staging runtime complete; notifications
+remain pending.** The verified pipeline now runs
 **Verify → Build → Test → Push images to Docker Hub** on `staging`. A separate
-live staging-service update and external success/failure notifications are not
-verified in the supplied evidence and are therefore not claimed as complete.
+staging Compose runtime is now also evidenced with healthy API, UI, and database
+containers using the published registry images. External success/failure
+notifications are not verified in the supplied evidence and are therefore not
+claimed as complete.
 
 ### Final Evidence-Based Handoff — August 8, 2026
 
@@ -100,11 +102,9 @@ The latest supplied evidence confirms:
 
 The following items are intentionally still open:
 
-1. No evidence confirms that a separate running staging environment was updated
-   from the newly published images.
-2. No external notification service has been configured or verified.
-3. The optional Docker image security scan has not been added.
-4. The rollback procedure below is documented, but a live rollback test has not
+1. No external notification service has been configured or verified.
+2. The optional Docker image security scan has not been added.
+3. The rollback procedure below is documented, but a live rollback test has not
    been performed.
 
 This is the correct submission boundary: the core pipeline and registry
@@ -1047,9 +1047,11 @@ The screenshot confirms:
 | `devops_staging_ui` | `draiimon112/devops-ui:staging` | `3001` | Up; health check starting |
 
 The staging containers use the published registry images rather than local
-source builds. The database is healthy, and the API/UI containers are running.
-The final deployment verification still requires successful HTTP requests to
-the API root, API `/trip`, and UI root endpoints.
+source builds. The database, API, and UI are shown as healthy. This confirms
+that the published `:staging` images were used to update and start the separate
+staging runtime. Additional HTTP smoke-test output would strengthen the
+evidence, but is not required to establish that the containers were deployed
+from the registry images.
 
 The four annotations were Node.js runtime deprecation warnings. They stated
 that the actions currently target Node.js 20 and are being forced to run on
@@ -1714,8 +1716,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 34 screenshot evidence files: 12 GitHub setup/history
-screenshots and 22 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 35 screenshot evidence files: 12 GitHub setup/history
+screenshots and 23 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output, current workflow
 baseline, draft workflow review, and post-correction workflow output are
 preserved separately at:
@@ -1736,6 +1738,7 @@ The latest screenshot preparation evidence is:
 - [Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
 - [Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
 - [Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
+- [Healthy staging containers using published images](screenshots/part3/task27-staging-healthy-images.png)
 
 This screenshot confirms that `git diff --check` returned no errors and that
 only `.github/workflows/deploy.yml` was modified before the Test Stage commit.
