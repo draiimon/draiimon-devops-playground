@@ -399,6 +399,21 @@ jobs, including the staging trigger, Docker image builds, linting, smoke tests,
 and cleanup. It does not contain Docker Hub login, `docker push`, or a Deploy
 job. This is the baseline for the next workflow change.
 
+### Draft workflow review
+
+The next workflow draft added Docker Hub tagging, login, and push commands, and
+its raw output is preserved at:
+
+```text
+documentation/evidence/part3/task20-workflow-with-dockerhub-push-draft.txt
+```
+
+The Docker Hub secret names and image repository names are correct. However,
+the draft placed the push inside `build-images`, before the Test Stage. It is
+not accepted as the final workflow. The login/push steps must move to a
+separate Deploy job that depends on the successful Test job. No image push is
+claimed from this draft.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
@@ -578,7 +593,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub repositories, PAT, and both encrypted secrets created | ✅ Trigger, Build, Test, registry setup, Docker Hub tutorial, GitHub Secrets, and workflow baseline documented; image push/Deploy/Notifications pending | ✅ 29 screenshots plus 2 raw logs | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub repositories, PAT, and both encrypted secrets created | ✅ Trigger, Build, Test, registry setup, Docker Hub tutorial, GitHub Secrets, workflow baseline, and draft review documented; image push/Deploy/Notifications pending | ✅ 29 screenshots plus 3 raw logs | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

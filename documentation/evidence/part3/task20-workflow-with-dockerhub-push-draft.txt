@@ -1,0 +1,130 @@
+draiimon@Aloof:~/devops-exam$ nano .github/workflows/deploy.yml
+draiimon@Aloof:~/devops-exam$ cat .github/workflows/deploy.yml
+name: CI/CD Pipeline - 2026
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-workflow:
+    name: Verify workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Confirm CI/CD starts
+        run: |
+          echo "Part 3 CI/CD workflow started successfully."
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Commit: $GITHUB_SHA"
+
+  build-images:
+    name: Build Docker images
+    needs: verify-workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            config --quiet
+
+      - name: Build API and UI images
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            build api ui
+
+      - name: Tag images for Docker Hub
+        run: |
+          docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_SHA}"
+          docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_SHA}"
+
+          docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_REF_NAME}"
+          docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_REF_NAME}"
+
+          docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:latest"
+          docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:latest"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push images to Docker Hub
+        run: |
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_SHA}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_REF_NAME}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:latest"
+
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_SHA}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_REF_NAME}"
+          docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:latest"
+      - name: Show built images
+        run: |
+          docker image ls api-app
+          docker image ls ui-app
+  test-stage:
+    name: Test applications
+    needs: build-images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install UI dependencies and run lint
+        working-directory: part2-docker/ui-src
+        run: |
+          npm ci
+          npm run lint
+
+      - name: Run API and UI smoke tests
+        run: |
+          set -e
+
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            up -d --build db api ui
+
+          trap 'docker compose -f part2-docker/docker-compose.yml down -v' EXIT
+
+          echo "Waiting for API and UI services..."
+
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8000/ >/tmp/api-root.json \
+              && curl -fsS http://localhost:3000/ >/tmp/ui-root.html; then
+              break
+            fi
+            sleep 5
+          done
+
+          test -s /tmp/api-root.json
+          test -s /tmp/ui-root.html
+
+          grep -q "Fast Api Exam api v1" /tmp/api-root.json
+
+          curl -fsS http://localhost:8000/trip >/tmp/api-trips.json
+          test -s /tmp/api-trips.json
+
+          echo "API root endpoint passed."
+          echo "API trip endpoint passed."
+          echo "UI root endpoint passed."
+
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            ps
+draiimon@Aloof:~/devops-exam$

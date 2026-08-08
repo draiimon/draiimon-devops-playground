@@ -710,6 +710,33 @@ credential.
 
 ---
 
+## Task 9 — Draft Workflow Review: Keep Deploy After Test
+
+The candidate printed a draft workflow after adding Docker Hub tags, login, and
+push commands. The raw draft is preserved at:
+
+```text
+evidence/part3/task20-workflow-with-dockerhub-push-draft.txt
+```
+
+The Docker Hub commands use the correct encrypted secret names and the
+repository names are correct. However, the draft places login and push inside
+the `build-images` job. That would push images before the Test Stage runs,
+which does not match the exam's required Build → Test → Deploy sequence.
+
+There is a second CI design detail: GitHub Actions jobs use fresh runners, so
+images built in `build-images` are not automatically available to a later
+Deploy job. The final Deploy job must therefore build or otherwise receive the
+images explicitly after the Test job succeeds.
+
+### Review result
+
+The draft is **not yet the final workflow**. The Docker Hub login and push
+steps must be moved into a separate Deploy job that depends on `test-stage`.
+No image push has been claimed from this draft.
+
+---
+
 ## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
 
 The successful Docker build from Part 2 and the Docker build in Part 3 serve
@@ -788,12 +815,14 @@ documentation/screenshots/part3/
 
 The folder contains 29 screenshot evidence files: 12 GitHub setup/history
 screenshots and 17 staging/workflow/build, Test Stage, and Deploy Stage
-preparation screenshots. The raw Test Stage output and current workflow
-baseline are preserved separately at:
+preparation screenshots. The raw Test Stage output, current workflow
+baseline, and draft workflow review are preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`
 
 `evidence/part3/task19-current-workflow-output.txt`
+
+`evidence/part3/task20-workflow-with-dockerhub-push-draft.txt`
 
 The latest screenshot preparation evidence is:
 
