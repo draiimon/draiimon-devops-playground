@@ -23,6 +23,9 @@
 | Working directory | `~/devops-exam` |
 | Docker | `29.1.3` |
 | Local Compose command | Legacy `docker-compose` `1.29.2` |
+| Docker Python client | `docker-py 5.0.3` |
+| Local Python | `CPython 3.12.3` |
+| Local OpenSSL | `3.0.13` |
 | CI/CD platform | GitHub Actions |
 | Workflow file | `.github/workflows/deploy.yml` |
 | Trigger branch | `staging` |
@@ -31,6 +34,31 @@ The local WSL environment does not support the `docker compose` v2
 subcommand, but provides the legacy `docker-compose` command. Therefore,
 `docker-compose` is used for local validation. The GitHub Actions workflow
 uses `docker compose`, which is available on the GitHub-hosted runner.
+
+### Versioning and Reproducibility
+
+Version information is recorded because the local WSL environment and the
+GitHub-hosted runner are different environments.
+
+| Component | Version or tag | Where used |
+|---|---|---|
+| GitHub Actions checkout | `actions/checkout@v4` | Workflow repository checkout |
+| Docker runner image | `ubuntu-latest` | GitHub Actions jobs |
+| API build base image | `python:3.11-slim` | API Dockerfile |
+| Database image | `mysql:8.0` | Docker Compose |
+| Local Docker | `29.1.3` | WSL preflight validation |
+| Local Compose | `docker-compose 1.29.2` | WSL preflight validation |
+| Image tags | `${GITHUB_SHA}`, `${GITHUB_REF_NAME}` | CI build output |
+
+The workflow uses commit-SHA and branch-name tags so that an image can be
+identified by the source revision and environment branch. The
+`ubuntu-latest` runner is intentionally used for the GitHub-hosted CI job;
+the exact hosted runner tool versions can change independently from the
+candidate's local WSL versions.
+
+GitHub displayed a Node.js runtime deprecation warning for the checkout
+action. This was recorded as a warning and did not fail the successful starter
+workflow.
 
 ---
 

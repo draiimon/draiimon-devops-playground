@@ -230,6 +230,13 @@ clean GitHub Actions runner can rebuild them automatically from the repository.
 The local Part 3 build is only a preflight check; it does not transfer local
 images into GitHub Actions.
 
+**Versioning note:** Confirmed versions must remain visible in the Part 3
+documentation: WSL Ubuntu 24.04, Docker 29.1.3, legacy
+`docker-compose` 1.29.2, `actions/checkout@v4`, API base image
+`python:3.11-slim`, database image `mysql:8.0`, and CI image tags based on
+`GITHUB_SHA` and `GITHUB_REF_NAME`. Local tool versions and the
+GitHub-hosted runner environment are documented separately.
+
 ---
 
 ## ❌ PART 4 — High Availability — FILES DONE, DOCUMENTATION NEEDED
