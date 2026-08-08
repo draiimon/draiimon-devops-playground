@@ -187,7 +187,7 @@ Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not i
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Step 12 (build stage in progress)
+### Current position — Step 12 complete locally; Step 13 pending
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -237,6 +237,24 @@ The final local image listing confirmed:
 
 The supporting screenshot is
 `documentation/screenshots/part3/task09-local-image-verification.png`.
+
+### Next exact actions on the personal WSL computer
+
+The local Docker preflight is complete. Do not repeat the build unless a later
+change requires it. The next commands are:
+
+```bash
+cd ~/devops-exam
+git diff --check
+git status --short
+git add .github/workflows/deploy.yml
+git commit -m "Add Docker image build stage"
+git push origin staging
+```
+
+After the push, open the GitHub Actions run and capture evidence that the
+`Verify workflow` and `Build Docker images` jobs pass. The GitHub runner will
+build fresh images; it does not reuse the local image IDs.
 
 The attempted command `docker image ls api-app ui-app` returned a Docker usage
 error because this local Docker version accepts at most one repository
@@ -391,12 +409,13 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | 🔄 Starter workflow committed locally | 🔄 In progress from Step 11 | ⏳ First push/run evidence pending | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | 🔄 Build job added locally | 🔄 Starter run complete; build CI verification pending | ✅ 21 evidence files | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Continue Step 11: push the committed starter workflow from local `staging`.
-2. Verify the first GitHub Actions run.
-3. Continue incrementally with the remaining PDF requirements, documenting only
-   the work shown by the candidate's local screenshots.
+1. On the personal WSL computer, run `git diff --check` and inspect `git status`.
+2. Commit and push the updated Docker build workflow to `staging`.
+3. Verify the GitHub Actions build job and capture the result.
+4. Add and verify test, deploy, registry/secrets, rollback, and notification
+   requirements incrementally, documenting only work shown by evidence.
