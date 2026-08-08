@@ -711,10 +711,12 @@ warnings affected the checkout steps and the Docker login action, which are
 currently being forced toward Node.js 24. This is a maintenance follow-up, not
 a failed pipeline result.
 
-Docker Hub publishing and staging service update are now confirmed. The
-remaining separate exam requirement is success/failure notification
-configuration. The immutable-tag rollback strategy is documented; a live
-rollback test remains optional follow-up evidence.
+Docker Hub publishing and staging service update are now confirmed. GitHub
+Actions email notifications are enabled and a successful workflow email for
+Attempt #2 is preserved as `documentation/screenshots/part3/task28-success-email-notification.png`.
+The failure-email proof has not yet been captured. The immutable-tag rollback
+strategy is documented; a live rollback test remains optional follow-up
+evidence.
 
 ### Final evidence-based handoff — August 8, 2026
 
@@ -726,9 +728,9 @@ Verify → Build → Test → Push images to Docker Hub
 
 The successful run was on `staging`, lasted approximately 4 minutes 14 seconds,
 and showed all four jobs passing. Four non-blocking Node.js 20 deprecation
-warnings were recorded. The evidence does not prove that a separate running
-staging environment was updated, and no external notification service is
-configured or verified.
+warnings were recorded. The evidence also includes a successful GitHub Actions
+email notification for Attempt #2. A failure-email notification has not yet
+been captured.
 
 The rollback strategy is documented in
 `documentation/Part3-CICD-Documentation.md`: restore the last known-good
@@ -737,12 +739,12 @@ The strategy is not represented as a live rollback test.
 
 ### Next exact actions on the personal WSL computer
 
-The local Docker preflight, GitHub Actions Docker build, Test Stage, and Docker
-Hub publishing are complete. Do not repeat them unless a later change requires
-it. The remaining Part 3 work is optional image scanning, updating a real
-staging environment, configuring external success/failure notifications, and
-testing the documented rollback procedure. Continue documenting only work
-shown by local or GitHub evidence.
+The local Docker preflight, GitHub Actions Docker build, Test Stage, Docker Hub
+publishing, staging runtime, and success-email notification are complete. Do
+not repeat them unless a later change requires it. The remaining Part 3 work is
+the failure-email proof, optional image scanning, and testing the documented
+rollback procedure. Continue documenting only work shown by local or GitHub
+evidence.
 
 The previous commands that completed this checkpoint were:
 
@@ -915,12 +917,11 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, and staging deployment verified | ✅ Trigger, Build, Test, registry publishing, staging runtime, warnings, rollback strategy, and evidence boundary documented; external notifications remain unverified | ✅ 35 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; NOTIFICATIONS REMAIN** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure-email proof remains open | ✅ 36 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FAILURE EMAIL PROOF REMAINS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
-1. Decide whether to add the optional Docker image security scan.
-2. Update and verify a separate staging environment using the published images.
-3. Configure and verify success/failure notifications through an external service.
-4. Test the documented immutable-tag rollback procedure on staging.
+1. Capture a failure-workflow email notification without fabricating evidence.
+2. Decide whether to add the optional Docker image security scan.
+3. Test the documented immutable-tag rollback procedure on staging.
