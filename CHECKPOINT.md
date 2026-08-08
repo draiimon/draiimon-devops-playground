@@ -230,6 +230,14 @@ deprecation, pip running as root during image construction, outdated
 vulnerabilities (3 moderate, 9 high, 1 critical). The vulnerability result is
 pending investigation in the Part 3 test/security stage.
 
+The final local image listing confirmed:
+
+- `api-app:latest` with image ID `2f9c65110975`
+- `ui-app:latest` with image ID `7c5044be6886`
+
+The supporting screenshot is
+`documentation/screenshots/part3/task09-local-image-verification.png`.
+
 The attempted command `docker image ls api-app ui-app` returned a Docker usage
 error because this local Docker version accepts at most one repository
 argument. This was only a listing-command syntax issue, not a build failure.

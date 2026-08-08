@@ -215,6 +215,15 @@ The screenshot captures the build in progress, while the pasted terminal
 output records the final successful result. The legacy Docker builder
 deprecation message is a warning and did not stop either build.
 
+The separate image verification confirmed both resulting local tags:
+
+```text
+api-app:latest  2f9c65110975
+ui-app:latest   7c5044be6886
+```
+
+Evidence: [Local image verification](screenshots/part3/task09-local-image-verification.png)
+
 ### Build warnings recorded
 
 The build completed, but the following warnings require attention in the
@@ -312,5 +321,5 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 20 evidence files: 12 GitHub setup/history screenshots
-and 8 staging/workflow/build screenshots.
+The folder contains 21 evidence files: 12 GitHub setup/history screenshots
+and 9 staging/workflow/build screenshots.
