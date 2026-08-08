@@ -292,6 +292,25 @@ Raw output:
 The Test Stage now satisfies the required automated test/code-quality portion
 of the PDF. The optional image security scan remains pending.
 
+### First Deploy Stage evidence — Docker Hub API repository
+
+The Docker Hub API repository was created under the user's namespace:
+
+```text
+draiimon112/devops-api
+```
+
+This is the first verified Deploy Stage setup step. The screenshot is stored
+at:
+
+```text
+documentation/screenshots/part3/task14-dockerhub-api-repository.png
+```
+
+This proves repository creation only. It does not yet prove that a Docker
+image was pushed. The UI repository, GitHub Secrets authentication, image
+push, staging update, rollback, and notifications remain pending.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
@@ -471,7 +490,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI | ✅ Trigger, Build, and Test documented; Deploy/Notifications pending | ✅ 24 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub API repository created | ✅ Trigger, Build, Test, and first registry setup step documented; Deploy/Notifications pending | ✅ 25 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
