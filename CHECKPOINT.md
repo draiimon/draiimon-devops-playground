@@ -3,7 +3,7 @@
 **Candidate:** draiimon  
 **Machine:** Aloof — WSL2 (Ubuntu 24.04 on Windows)  
 **Exam:** Junior DevOps Engineer Exam 2026  
-**Last Updated:** August 7, 2026
+**Last Updated:** August 8, 2026
 
 > ⚠️ **For the next maintainer:** Read this file FIRST before doing anything. It tells you exactly where we are, what's done, what's pending, and the rules to follow. Cross-reference everything against the exam PDF at `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`.
 
@@ -47,7 +47,10 @@ repository-root/
 │   │   └── Dockerfile         ✅ production build, non-root (nextjs), HEALTHCHECK
 │   ├── ui-src/                ✅ Cloned Next.js application source
 │   └── docker-compose.yml     ✅ 3-service (api + ui + MySQL db), named network, healthchecks
-├── part3-cicd/                                      ⏳ Part 3 not started
+├── .github/
+│   └── workflows/
+│       └── deploy.yml                               ⏳ Created locally in Step 8; not yet pushed
+├── part3-cicd/                                      ⏳ Retained as an empty legacy directory
 ├── part4-ha/
 │   ├── k8s/                   ✅ Full Kubernetes manifests (8 files)
 │   ├── helm/                  ✅ Helm chart + values.yaml + values.staging.yaml
@@ -177,11 +180,42 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 
 ---
 
-## ⏳ PART 3 — CI/CD Pipeline — NOT STARTED
+## 🔄 PART 3 — CI/CD Pipeline — IN PROGRESS
 
-No Part 3 workflow or documentation has been created for the current walkthrough.
-We will begin from the exam PDF requirements and document the candidate's local
-computer work as screenshots are provided.
+Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not in
+this Replit workspace. Uploaded terminal screenshots and user-provided command
+output are the source of truth for what has actually been completed.
+
+### Current position — Step 11
+
+The repository was safely re-cloned locally from the current GitHub repository.
+The old Part 3 draft documentation and nested workflow were removed locally,
+committed, and pushed to `main`. A new `staging` branch was then created and
+pushed to GitHub.
+
+The first real Part 3 workflow was created locally at:
+
+```text
+.github/workflows/deploy.yml
+```
+
+It currently contains only the starter verification job and:
+
+- triggers automatically on pushes to `staging`;
+- supports the optional manual `workflow_dispatch` trigger;
+- checks out the repository;
+- prints the branch and commit information.
+
+The starter workflow was committed locally on the personal computer:
+
+```text
+c84f2ee Add initial GitHub Actions workflow
+```
+
+**Important:** This commit has not been pushed to GitHub yet. The next action is
+Step 11: run `git push origin staging`, then verify the workflow in the GitHub
+Actions tab. Do not document a successful GitHub Actions run until the user
+provides the result or screenshot.
 
 ---
 
@@ -316,9 +350,12 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ⏳ Not started | ⏳ Pending local walkthrough | ⏳ None | ⏳ **NOT STARTED** |
+| Part 3 | CI/CD Pipeline (5 requirements) | 🔄 Starter workflow committed locally | 🔄 In progress from Step 11 | ⏳ First push/run evidence pending | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Begin Part 3 on the candidate's local computer and document each screenshot.
+1. Continue Step 11: push the committed starter workflow from local `staging`.
+2. Verify the first GitHub Actions run.
+3. Continue incrementally with the remaining PDF requirements, documenting only
+   the work shown by the candidate's local screenshots.
