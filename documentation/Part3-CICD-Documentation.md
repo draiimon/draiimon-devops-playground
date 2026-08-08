@@ -865,6 +865,32 @@ The screenshot is evidence of the successful local commit and backup cleanup,
 but not evidence that the repository is ready to push. No Deploy job or Docker
 Hub image push has been claimed from this checkpoint.
 
+### Inspection result for the remaining untracked path
+
+The candidate inspected the untracked path from the WSL directory:
+
+```text
+/home/draiimon/devops-exam/.github/workflows
+```
+
+The inspection showed:
+
+```text
+.github/workflows/deploy.yml
+size: 0 bytes
+```
+
+This is a nested accidental `.github/workflows` directory inside the real
+`.github/workflows` directory. The real workflow is the parent file:
+
+```text
+/home/draiimon/devops-exam/.github/workflows/deploy.yml
+```
+
+The nested file is empty and is not the committed workflow. This confirms
+that the untracked path can be removed as cleanup, but only that exact nested
+`.github` directory should be removed. A broad `git clean` must not be used.
+
 ---
 
 ## Beginner Walkthrough — Understanding the Step 9 Workflow Edit

@@ -533,6 +533,19 @@ not to ignore the status output and not to run a broad `git clean`; inspect the
 path, confirm whether it is accidental, remove only the confirmed accidental
 path, and verify `git status --short` again.
 
+The inspection confirmed that the nested path contains only:
+
+```text
+.github/workflows/deploy.yml
+```
+
+with a file size of `0 bytes`. Because the command was run from the real
+`.github/workflows` directory, this is an accidental nested
+`.github/workflows` folder, not the actual workflow file. The real workflow is
+the parent `deploy.yml`, which was already committed. Only the nested
+untracked `.github` directory should be removed; no broad `git clean` should
+be used.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
