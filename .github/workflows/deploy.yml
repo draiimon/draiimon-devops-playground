@@ -1,0 +1,23 @@
+name: CI/CD Pipeline — 2026
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  verify-workflow:
+    name: Verify workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Confirm CI/CD starts
+        run: |
+          echo "Part 3 CI/CD workflow started successfully."
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Commit: $GITHUB_SHA"
+
