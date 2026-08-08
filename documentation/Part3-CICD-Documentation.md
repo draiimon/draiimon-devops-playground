@@ -580,21 +580,24 @@ The UI image repository was also created:
 draiimon112/devops-ui
 ```
 
-Both repositories are public and ready to receive tagged images. Creating the
-repositories alone does not yet prove that images were pushed; later workflow
-evidence must show successful `docker push` commands.
+Both repositories are public and contain the published API and UI images. The
+uploaded GitHub Actions runner log records successful `docker push` commands,
+and the Docker Hub screenshots independently show the resulting tags.
 
 ### Evidence
 
 - [Docker Hub API repository](screenshots/part3/task14-dockerhub-api-repository.png)
 - [Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
+- [Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
+- [Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
 
 ### Current status
 
-These are the first Deploy Stage setup steps. Next comes Docker Hub
-authentication through GitHub Secrets and actual image-push evidence from
-GitHub Actions. No password or access token is recorded in this
-documentation.
+Docker Hub registry publishing is **confirmed complete**. Both screenshots
+show the `latest`, `staging`, and commit-SHA tags in the corresponding
+repository. The screenshots do not prove that a separate staging service was
+updated; that remains a distinct requirement. No password or access token is
+recorded in this documentation.
 
 ---
 
@@ -992,6 +995,38 @@ completed successfully. The screenshot is a workflow-summary view, so it does
 not show the individual `docker push` log lines or the final contents of the
 Docker Hub repositories. Those details should be captured separately if
 repository-level proof is required.
+
+### Detailed Docker Hub push log evidence
+
+The uploaded runner log provides the repository-level proof that the summary
+view does not show. It is preserved in this Repl at:
+
+```text
+attached_assets/Pasted-Current-runner-version-2-336-0-Runner-Image-Provisioner_1786164927904.txt
+```
+
+The log confirms:
+
+- the checked-out commit was
+  `f5d58e1c5530c852eaf91ec930c9b238f1bea3ba`;
+- `docker/login-action@v3` completed with `Login Succeeded!`;
+- the API image was pushed with the commit, `staging`, and `latest` tags;
+- the UI image was pushed with the commit, `staging`, and `latest` tags;
+- the API image digest was
+  `sha256:7a879407d3914823163176309754b5588437845273cf09e29c1ec82a5028b0bf`;
+- the UI image digest was
+  `sha256:97bd032de18a1a1d2d5836e0510e99ebd788fe92dd1ef6f2511d0fbdec783e`;
+- each push completed with a Docker Hub digest and image size;
+- Docker logout and post-job cleanup completed.
+
+The exact UI digest in the uploaded log is:
+
+```text
+sha256:97bd032de18a1a1d2d5836e0510e99ebd788fe92dd1ef6f2511d0fbdec783e
+```
+
+The successful `Pushed` lines and the `staging` and `latest` digest lines
+confirm that both repositories received the images.
 
 The four annotations were Node.js runtime deprecation warnings. They stated
 that the actions currently target Node.js 20 and are being forced to run on
@@ -1656,8 +1691,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 29 screenshot evidence files: 12 GitHub setup/history
-screenshots and 17 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 31 screenshot evidence files: 12 GitHub setup/history
+screenshots and 19 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output, current workflow
 baseline, draft workflow review, and post-correction workflow output are
 preserved separately at:
@@ -1673,6 +1708,8 @@ preserved separately at:
 The latest screenshot preparation evidence is:
 
 - [Test Stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
+- [Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
+- [Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
 
 This screenshot confirms that `git diff --check` returned no errors and that
 only `.github/workflows/deploy.yml` was modified before the Test Stage commit.

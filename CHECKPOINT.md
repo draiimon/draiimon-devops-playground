@@ -638,6 +638,32 @@ job completed successfully after the Test job. The screenshot does not show
 individual `docker push` log lines or the resulting Docker Hub repository
 contents, so those are not separately claimed here.
 
+The detailed uploaded runner log now supplies that repository-level evidence:
+
+```text
+attached_assets/Pasted-Current-runner-version-2-336-0-Runner-Image-Provisioner_1786164927904.txt
+```
+
+It confirms `Login Succeeded!`, successful pushes for both
+`draiimon112/devops-api` and `draiimon112/devops-ui`, and successful commit,
+`staging`, and `latest` tags for the checked-out commit
+`f5d58e1c5530c852eaf91ec930c9b238f1bea3ba`. Docker logout and runner cleanup
+also completed. This upgrades the Docker Hub publishing evidence from a
+workflow-summary confirmation to detailed push-log confirmation.
+
+The two accompanying Docker Hub screenshots provide independent repository
+confirmation:
+
+```text
+documentation/screenshots/part3/task22-dockerhub-ui-published-tags.png
+documentation/screenshots/part3/task23-dockerhub-api-published-tags.png
+```
+
+Both repositories visibly contain the `latest`, `staging`, and
+`f5d58e1c5530c852e...` commit-SHA tags. Docker Hub registry publishing is
+therefore complete and documented. These screenshots do not prove that a
+separate running staging service was updated.
+
 The run displayed four non-blocking Node.js 20 deprecation warnings. The
 warnings affected the checkout steps and the Docker login action, which are
 currently being forced toward Node.js 24. This is a maintenance follow-up, not
@@ -845,7 +871,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, and Docker Hub publishing verified in CI | ✅ Trigger, Build, Test, registry publishing, warnings, rollback strategy, and evidence boundary documented; live staging update and external notifications remain unverified | ✅ 29 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; PARTIAL** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, and Docker Hub publishing verified in CI | ✅ Trigger, Build, Test, registry publishing, warnings, rollback strategy, and evidence boundary documented; live staging update and external notifications remain unverified | ✅ 31 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; PARTIAL** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
