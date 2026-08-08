@@ -1,10 +1,13 @@
-name: CI/CD Pipeline — 2026
+name: CI/CD Pipeline - 2026
 
 on:
   push:
     branches:
       - staging
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   verify-workflow:
@@ -21,3 +24,35 @@ jobs:
           echo "Branch: $GITHUB_REF_NAME"
           echo "Commit: $GITHUB_SHA"
 
+  build-images:
+    name: Build Docker images
+    needs: verify-workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            config --quiet
+
+      - name: Build API and UI images
+        run: |
+          docker compose \
+            -f part2-docker/docker-compose.yml \
+            build api ui
+
+      - name: Tag images with commit SHA and branch
+        run: |
+          docker image tag api-app:latest "api-app:${GITHUB_SHA}"
+          docker image tag ui-app:latest "ui-app:${GITHUB_SHA}"
+          docker image tag api-app:latest "api-app:${GITHUB_REF_NAME}"
+          docker image tag ui-app:latest "ui-app:${GITHUB_REF_NAME}"
+
+      - name: Show built images
+        run: |
+          docker image ls api-app
+          docker image ls ui-app
