@@ -667,6 +667,49 @@ and staging deployment remain pending.
 
 ---
 
+## Task 8 — Current Workflow Baseline Before Deploy Changes
+
+The current workflow was printed from the candidate's WSL repository before
+adding the Docker Hub Deploy Stage. The raw output is preserved at:
+
+```text
+evidence/part3/task19-current-workflow-output.txt
+```
+
+The output confirms that the current workflow contains these jobs:
+
+1. `verify-workflow`
+2. `build-images`
+3. `test-stage`
+
+It also confirms the existing behavior:
+
+- automatic trigger on pushes to `staging`;
+- optional `workflow_dispatch` trigger;
+- Docker Compose configuration validation;
+- API and UI image builds;
+- commit-SHA and branch-name local image tags;
+- UI linting;
+- API root, API `/trip`, and UI smoke tests;
+- Compose cleanup through the `EXIT` trap.
+
+No Docker Hub login, registry image tags, `docker push`, staging update, or
+Deploy job appears in this baseline output. This is useful evidence because it
+clearly separates the completed Build/Test work from the next Deploy work.
+
+### Evidence
+
+- [Current workflow raw output](evidence/part3/task19-current-workflow-output.txt)
+
+### Current status
+
+The workflow is ready to be extended with a Docker Hub authentication and
+image-push step. The next change must use the encrypted
+`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets and must not print either
+credential.
+
+---
+
 ## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
 
 The successful Docker build from Part 2 and the Docker build in Part 3 serve
@@ -745,9 +788,12 @@ documentation/screenshots/part3/
 
 The folder contains 29 screenshot evidence files: 12 GitHub setup/history
 screenshots and 17 staging/workflow/build, Test Stage, and Deploy Stage
-preparation screenshots. The raw Test Stage output is preserved separately at:
+preparation screenshots. The raw Test Stage output and current workflow
+baseline are preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`
+
+`evidence/part3/task19-current-workflow-output.txt`
 
 The latest screenshot preparation evidence is:
 
