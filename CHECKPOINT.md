@@ -446,6 +446,38 @@ the result, run the whitespace check, review the diff, and commit only after
 the YAML is confirmed. Docker credentials must never be placed in the
 workflow, documentation, screenshots, or chat.
 
+### Step 9 learning notes — what the workflow code means
+
+The Part 3 documentation now includes a full beginner walkthrough of the
+workflow code used for Step 9. It explains:
+
+- `on.push.branches: staging` and `workflow_dispatch`;
+- the `verify-workflow`, `build-images`, and `test-stage` jobs;
+- how `needs` creates the `Verify → Build → Test` order;
+- why each GitHub Actions job uses a fresh runner;
+- `docker compose config --quiet`, `build`, `up`, and cleanup with `trap`;
+- `npm ci`, linting, `curl` readiness checks, `test`, and `grep`;
+- the difference between `docker tag` and `docker push`;
+- commit-SHA, branch, and `latest` Docker tags;
+- why `${{ secrets.DOCKERHUB_USERNAME }}` is a secret reference rather than
+  a value that should be pasted into the file;
+- why Step 9 removes premature Docker Hub tagging without claiming that the
+  final Deploy job is complete;
+- both the educational Nano method and the safer boundary-checked
+  copy-paste method;
+- the exact verification commands to run before committing or pushing.
+
+The important design lesson is:
+
+```text
+Build validates → Test proves behavior → Deploy publishes
+```
+
+Removing the tagging block is therefore a pipeline-order correction. It does
+not delete the Docker Hub repositories, expose credentials, or complete the
+Deploy stage. The future Deploy job must explicitly rebuild or obtain images,
+tag them, log in securely, and push only after the Test job succeeds.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are

@@ -766,6 +766,378 @@ Deploy job explicitly build/tag/login/push after `test-stage` succeeds.
 
 ---
 
+## Beginner Walkthrough — Understanding the Step 9 Workflow Edit
+
+This section explains the exact workflow that was inspected before Step 9. The
+goal is not only to edit YAML successfully, but to understand what each part
+does and why the Docker Hub tagging step is being removed from the Build job.
+
+### What the workflow file is
+
+`.github/workflows/deploy.yml` is a GitHub Actions workflow file. It is a set
+of instructions that GitHub's runner executes automatically. The `.yml`
+extension means the file uses YAML syntax, where indentation shows structure.
+YAML indentation is significant: spaces are part of the meaning, so tabs
+should not be used.
+
+The first lines are:
+
+```yaml
+name: CI/CD Pipeline - 2026
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+```
+
+Meaning:
+
+| YAML | Beginner explanation |
+|---|---|
+| `name` | The display name shown in the GitHub Actions page. |
+| `on` | The event that starts the workflow. |
+| `push` | Start automatically after a push. |
+| `branches: staging` | Only pushes to the `staging` branch start it automatically. |
+| `workflow_dispatch` | Adds a button so the workflow can also be started manually. |
+
+The workflow also declares:
+
+```yaml
+permissions:
+  contents: read
+```
+
+This gives the workflow read access to repository contents. It is a
+least-privilege setting: the workflow does not automatically receive broad
+write permission just because it runs.
+
+### The three jobs and their order
+
+The inspected workflow has three jobs:
+
+```text
+verify-workflow → build-images → test-stage
+```
+
+The arrows come from the `needs` lines:
+
+```yaml
+build-images:
+  needs: verify-workflow
+
+test-stage:
+  needs: build-images
+```
+
+`needs` means “do not start this job until the named job succeeds.” This is
+how the workflow expresses its sequence. A job is a group of steps running on
+one GitHub Actions runner.
+
+Important: jobs normally run on fresh runners. An image created inside
+`build-images` is not automatically available inside `test-stage` or a future
+Deploy job. A later job must build the image again or receive it through an
+explicit artifact/registry mechanism.
+
+### Job 1 — `verify-workflow`
+
+```yaml
+verify-workflow:
+  name: Verify workflow
+  runs-on: ubuntu-latest
+```
+
+This gives the job a readable name and requests a clean Ubuntu runner.
+Its steps check out the repository and print the branch and commit:
+
+```yaml
+- name: Check out repository
+  uses: actions/checkout@v4
+
+- name: Confirm CI/CD starts
+  run: |
+    echo "Part 3 CI/CD workflow started successfully."
+    echo "Branch: $GITHUB_REF_NAME"
+    echo "Commit: $GITHUB_SHA"
+```
+
+`uses: actions/checkout@v4` is a reusable GitHub Action that downloads the
+repository into the runner. `run: |` means “run the following indented lines
+as shell commands.” `$GITHUB_REF_NAME` and `$GITHUB_SHA` are GitHub-provided
+environment variables containing the branch name and commit identifier.
+
+This job does not build or deploy anything. It is an intentionally simple
+first check that confirms the workflow started and the repository can be
+checked out.
+
+### Job 2 — `build-images`
+
+The Build job first checks out the repository, then validates the Compose
+file:
+
+```yaml
+- name: Validate Docker Compose configuration
+  run: |
+    docker compose \
+      -f part2-docker/docker-compose.yml \
+      config --quiet
+```
+
+Breakdown:
+
+- `docker compose` calls Docker Compose.
+- `-f part2-docker/docker-compose.yml` selects the project's Compose file.
+- `config` reads and validates the Compose configuration.
+- `--quiet` suppresses normal output and returns an error if the configuration
+  is invalid.
+- The backslash (`\`) continues one shell command onto the next line. It is
+  only formatting; the shell still sees one command.
+
+The next step builds the real API and UI images:
+
+```yaml
+- name: Build API and UI images
+  run: |
+    docker compose \
+      -f part2-docker/docker-compose.yml \
+      build api ui
+```
+
+`api` and `ui` refer to services in the Compose file. The command uses the
+repository's Dockerfiles and source code to create local runner images. It
+does not upload them anywhere.
+
+The remaining Build step displays the images:
+
+```yaml
+- name: Show built images
+  run: |
+    docker image ls api-app
+    docker image ls ui-app
+```
+
+`docker image ls` lists locally available images. These two commands are
+separate because some Docker versions accept only one repository argument at a
+time.
+
+### What the removed Docker Hub block was doing
+
+The Step 9 block looked like this:
+
+```yaml
+- name: Tag images for Docker Hub
+  run: |
+    docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_SHA}"
+    docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_SHA}"
+
+    docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${GITHUB_REF_NAME}"
+    docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:${GITHUB_REF_NAME}"
+
+    docker tag api-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-api:latest"
+    docker tag ui-app:latest "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:latest"
+```
+
+Read one command from right to left:
+
+```bash
+docker tag api-app:latest USERNAME/devops-api:COMMIT_ID
+```
+
+It gives the same local image a second name. It does not copy the image and
+it does not upload the image. A Docker image name has this general shape:
+
+```text
+registry-or-username/repository:tag
+```
+
+In this workflow:
+
+| Part | Meaning |
+|---|---|
+| `api-app:latest` | The local API image produced by Compose. |
+| `${{ secrets.DOCKERHUB_USERNAME }}` | GitHub Actions securely inserts the Docker Hub username; the value is hidden. |
+| `devops-api` / `devops-ui` | The Docker Hub repository names. |
+| `${GITHUB_SHA}` | An exact commit-based tag for traceability. |
+| `${GITHUB_REF_NAME}` | A branch-based tag such as `staging`. |
+| `latest` | A moving tag that normally means the newest published image. |
+
+There are three tags for each image because they serve different purposes:
+
+- **Commit tag:** identifies exactly which source commit produced the image.
+- **Branch tag:** identifies the branch version, such as `staging`.
+- **`latest` tag:** convenient for a default/current image, but it changes over
+  time and is less precise.
+
+`tag` and `push` are different:
+
+```text
+docker tag  = give a local image another name
+docker push = upload a named image to a registry
+```
+
+The removed block only performed `docker tag`. It used the Docker Hub secret
+name because the final image name needed the Docker Hub namespace, but it did
+not log in and did not push. Passwords and token values must never be written
+into this YAML file.
+
+### Why Step 9 removes the block
+
+This edit is a workflow-design correction, not a claim that Docker Hub is no
+longer needed. The Build job should validate that the project can build. The
+Test job should validate linting and runtime behavior. Publishing belongs
+after those checks:
+
+```text
+Build → Test → Deploy
+```
+
+If image tagging and publishing are placed in the Build job, the pipeline can
+prepare a registry image before the application tests pass. That is the wrong
+order for a safe CI/CD pipeline.
+
+There is also a runner-isolation reason. Because a later Deploy job receives a
+fresh runner, tags created in `build-images` will not magically appear there.
+The eventual Deploy job must explicitly build or obtain the images, tag them,
+log in using encrypted secrets, and push them only after `test-stage`
+succeeds. Step 9 removes the premature tags so the workflow is ready for that
+proper Deploy design. Step 9 does **not** complete the Deploy job.
+
+### Job 3 — `test-stage`
+
+The Test job waits for the Build job:
+
+```yaml
+test-stage:
+  needs: build-images
+```
+
+It installs UI dependencies and runs lint:
+
+```yaml
+working-directory: part2-docker/ui-src
+run: |
+  npm ci
+  npm run lint
+```
+
+`working-directory` changes into the UI source directory for that step.
+`npm ci` installs the exact dependency versions from the lockfile. `npm run
+lint` checks the UI source for code-quality problems.
+
+The smoke-test step starts the services:
+
+```yaml
+docker compose \
+  -f part2-docker/docker-compose.yml \
+  up -d --build db api ui
+```
+
+- `up` creates and starts the services.
+- `-d` runs them in the background.
+- `--build` rebuilds images if needed.
+- `db api ui` lists the services to start.
+
+This line registers cleanup:
+
+```bash
+trap 'docker compose -f part2-docker/docker-compose.yml down -v' EXIT
+```
+
+It tells the shell to stop the Compose stack when the step exits, including
+when a test fails. `down -v` also removes the temporary Compose volumes. This
+keeps one CI run from leaving containers or test data behind for another run.
+
+The loop repeatedly requests the API and UI until they respond or the attempts
+are exhausted:
+
+```bash
+for attempt in {1..30}; do
+  if curl -fsS http://localhost:8000/ >/tmp/api-root.json \
+    && curl -fsS http://localhost:3000/ >/tmp/ui-root.html; then
+    break
+  fi
+  sleep 5
+done
+```
+
+`curl -f` treats HTTP errors as failures, `-sS` keeps output readable while
+still showing errors, and the `&&` means both endpoints must respond
+successfully. The following `test` and `grep` commands then check that files
+contain data and that the expected API response is present. This is stronger
+evidence than merely proving that containers started.
+
+### Two safe ways to perform Step 9
+
+**Nano method, useful for learning:**
+
+```bash
+nano .github/workflows/deploy.yml
+```
+
+1. Press `Ctrl + W`.
+2. Search for `Tag images for Docker Hub`.
+3. Press `Enter`.
+4. Use `Ctrl + A` to move to the beginning of the current line.
+5. Press `Ctrl + K` once for each line in that block.
+6. Stop before `- name: Show built images`.
+7. Press `Ctrl + O`, then `Enter` to save.
+8. Press `Ctrl + X` to exit.
+
+`Ctrl + A` does **not** select the whole file in Nano; it moves to the
+beginning of the current line. `Ctrl + K` cuts one line at a time. This is
+why counting lines can be error-prone.
+
+**Safer terminal method, useful when the block boundaries are known:**
+
+```bash
+cp .github/workflows/deploy.yml .github/workflows/deploy.yml.step9-backup
+
+python3 - <<'PY'
+from pathlib import Path
+
+file = Path(".github/workflows/deploy.yml")
+text = file.read_text()
+start_marker = "      - name: Tag images for Docker Hub"
+end_marker = "\n      - name: Show built images"
+start = text.find(start_marker)
+end = text.find(end_marker, start)
+if start == -1 or end == -1:
+    raise SystemExit("Expected Step 9 block was not found; no edit made.")
+file.write_text(text[:start] + text[end + 1:])
+print("Step 9 complete; backup retained.")
+PY
+```
+
+This method stops with an error rather than guessing if either boundary is
+missing. It also creates a backup before editing.
+
+### Verify before commit or push
+
+After either method, run:
+
+```bash
+sed -n '38,68p' .github/workflows/deploy.yml
+grep -n "Tag images for Docker Hub" .github/workflows/deploy.yml \
+  || echo "OK: Docker Hub tagging block is absent."
+git diff --check
+git diff -- .github/workflows/deploy.yml
+```
+
+The expected order is:
+
+```text
+Build API and UI images
+Show built images
+Test applications
+```
+
+Do not commit or push until the displayed section and diff match the intended
+change. A local edit proves only that the file changed; a GitHub Actions run
+is needed to prove that GitHub accepted and executed the workflow.
+
+---
+
 ## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
 
 The successful Docker build from Part 2 and the Docker build in Part 3 serve
