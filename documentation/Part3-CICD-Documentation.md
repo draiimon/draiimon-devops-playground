@@ -75,7 +75,7 @@ workflow.
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
 | Staging deployment | Not yet added/verified | ⏳ Pending |
-| Container registry/artifact storage | Docker Hub `draiimon112/devops-api` repository created; image push not yet verified | 🔄 Started |
+| Container registry/artifact storage | Docker Hub repositories `draiimon112/devops-api` and `draiimon112/devops-ui` created; image push not yet verified | 🔄 Started |
 | Rollback strategy | Not yet documented/implemented | ⏳ Pending |
 | Success/failure notifications | Not yet configured | ⏳ Pending |
 
@@ -546,20 +546,27 @@ The API image repository was created under the Docker Hub namespace:
 draiimon112/devops-api
 ```
 
-The repository is public and ready to receive tagged API images. Creating the
-repository alone does not yet prove that an image was pushed; later workflow
-evidence must show a successful `docker push`.
+The UI image repository was also created:
+
+```text
+draiimon112/devops-ui
+```
+
+Both repositories are public and ready to receive tagged images. Creating the
+repositories alone does not yet prove that images were pushed; later workflow
+evidence must show successful `docker push` commands.
 
 ### Evidence
 
 - [Docker Hub API repository](screenshots/part3/task14-dockerhub-api-repository.png)
+- [Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
 
 ### Current status
 
-This is the first Deploy Stage setup step. The UI repository still needs to be
-created, followed by Docker Hub authentication through GitHub Secrets and
-actual image-push evidence from GitHub Actions. No password or access token is
-recorded in this documentation.
+These are the first Deploy Stage setup steps. Next comes Docker Hub
+authentication through GitHub Secrets and actual image-push evidence from
+GitHub Actions. No password or access token is recorded in this
+documentation.
 
 ---
 
@@ -639,8 +646,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 25 screenshot evidence files: 12 GitHub setup/history
-screenshots and 13 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 26 screenshot evidence files: 12 GitHub setup/history
+screenshots and 14 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output is preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`

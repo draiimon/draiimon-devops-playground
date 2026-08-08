@@ -33,7 +33,7 @@ repository-root/
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
 │       ├── part2/   ← 14 screenshots present (all done)
-│       └── part3/   ← 20 screenshots present (setup, workflow, build evidence)
+│       └── part3/   ← 26 screenshots present (setup, workflow, build, test, and registry evidence)
 ├── part1-linux/
 │   ├── system_health.sh       ✅ chmod +x already applied
 │   ├── backup.sh              ✅ chmod +x already applied
@@ -308,8 +308,23 @@ documentation/screenshots/part3/task14-dockerhub-api-repository.png
 ```
 
 This proves repository creation only. It does not yet prove that a Docker
-image was pushed. The UI repository, GitHub Secrets authentication, image
-push, staging update, rollback, and notifications remain pending.
+image was pushed. GitHub Secrets authentication, image push, staging update,
+rollback, and notifications remain pending.
+
+The UI Docker Hub repository was also created:
+
+```text
+draiimon112/devops-ui
+```
+
+Its screenshot is stored at:
+
+```text
+documentation/screenshots/part3/task15-dockerhub-ui-repository.png
+```
+
+Together, these two screenshots prove Docker Hub repository setup only. They
+do not yet prove that CI successfully pushed images.
 
 ### Next exact actions on the personal WSL computer
 
@@ -490,7 +505,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub API repository created | ✅ Trigger, Build, Test, and first registry setup step documented; Deploy/Notifications pending | ✅ 25 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub API and UI repositories created | ✅ Trigger, Build, Test, and registry setup documented; Deploy/Notifications pending | ✅ 26 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
