@@ -751,18 +751,62 @@ the Test Stage. The Build job still validates Compose, builds the API and UI,
 and displays the local images. The Test job still performs linting, smoke
 tests, and service inspection.
 
-The workflow is still not final because the Docker Hub image-tagging commands
-remain in `build-images`. Since every GitHub Actions job gets a fresh runner,
-those tagged images will not be available to a later Deploy job. The final
-workflow should keep Build and Test focused on validation, then have the
-Deploy job explicitly build/tag/login/push after `test-stage` succeeds.
+The next local Step 9 edit removed the remaining image-tagging step from
+`build-images`. In the actual WSL file, that step was named
+`Tag images with commit SHA and branch` and created four local tags:
+
+```text
+api-app:${GITHUB_SHA}
+ui-app:${GITHUB_SHA}
+api-app:${GITHUB_REF_NAME}
+ui-app:${GITHUB_REF_NAME}
+```
+
+This wording differs from an earlier draft that called the step `Tag images
+for Docker Hub` and included Docker Hub namespace tags. The project record
+follows the actual file that was edited, not the earlier example wording.
+Both are image-tagging operations; neither is a `docker push`.
 
 ### Review result
 
 - Early Docker Hub push: removed correctly.
 - Build/Test order: preserved.
-- Docker Hub image push: not yet implemented in the correct Deploy job.
+- Build-job image tagging: removed from the actual WSL workflow.
+- Docker Hub image push: not implemented or claimed.
 - Staging deployment: still pending.
+
+### Step 9 local verification result
+
+The candidate verified the actual file from:
+
+```text
+/home/draiimon/devops-exam/.github/workflows/deploy.yml
+```
+
+The command output confirmed:
+
+```text
+OK: Natanggal ang Docker Hub tagging block.
+OK: Wala na ang Docker Hub tagging block.
+```
+
+`git diff --check` returned no error. The resulting order in the Build job is:
+
+```text
+Validate Docker Compose configuration
+Build API and UI images
+Show built images
+```
+
+The full workflow inspection also confirmed that `test-stage` still follows
+`build-images`, runs UI linting, starts the database/API/UI services, waits for
+the API and UI endpoints, checks the API response, checks `/trip`, and prints
+the Compose service status. No test commands were removed during Step 9.
+
+This is a successful **local file edit and verification**. It is not yet
+evidence of a successful GitHub Actions run. The eventual Deploy job must
+explicitly build or obtain images, tag them, log in securely, and push only
+after `test-stage` succeeds.
 
 ---
 

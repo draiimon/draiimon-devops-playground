@@ -473,10 +473,31 @@ The important design lesson is:
 Build validates → Test proves behavior → Deploy publishes
 ```
 
-Removing the tagging block is therefore a pipeline-order correction. It does
-not delete the Docker Hub repositories, expose credentials, or complete the
-Deploy stage. The future Deploy job must explicitly rebuild or obtain images,
-tag them, log in securely, and push only after the Test job succeeds.
+The actual WSL workflow was then verified at:
+
+```text
+/home/draiimon/devops-exam/.github/workflows/deploy.yml
+```
+
+Step 9 successfully removed the actual Build-job step named
+`Tag images with commit SHA and branch`. The four local commit/branch tag
+commands were removed, while these steps remained intact:
+
+```text
+Validate Docker Compose configuration
+Build API and UI images
+Show built images
+```
+
+The full `test-stage` job also remained intact, including UI linting, Compose
+startup, readiness checks, API assertions, and cleanup. `git diff --check`
+returned no error. This proves the local YAML edit and formatting check; it
+does not claim that GitHub Actions has run the edited workflow.
+
+Removing the tagging block is a pipeline-order correction. It does not delete
+the Docker Hub repositories, expose credentials, or complete the Deploy stage.
+The future Deploy job must explicitly rebuild or obtain images, tag them, log in
+securely, and push only after the Test job succeeds.
 
 ### Next exact actions on the personal WSL computer
 
