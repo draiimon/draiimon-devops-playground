@@ -9,3 +9,4 @@ artifacts/
 lib/
 scripts/
 *.tsbuildinfo
+replit.md
