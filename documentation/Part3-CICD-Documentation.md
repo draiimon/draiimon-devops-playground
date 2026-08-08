@@ -824,6 +824,47 @@ repository. The commit confirms the Step 9 workflow correction is saved in
 local Git history; it does not yet mean that the edited workflow has run on
 GitHub Actions.
 
+### Post-commit cleanup verification
+
+The candidate then moved the temporary backup out of the repository:
+
+```text
+OK: Backup moved safely to /tmp.
+```
+
+The same verification output confirmed:
+
+```text
+Current branch: staging
+Last commit: 7a51dac Keep build stage focused on validation
+```
+
+However, `git status --short` still showed this untracked path:
+
+```text
+?? .github/workflows/.github/
+```
+
+This means the Step 9 commit is safely saved in local Git history, but the
+working tree is not completely clean yet. The nested `.github` directory must
+be inspected before any push. It may be an accidental directory created while
+working from inside `.github/workflows`; it must not be deleted without first
+checking whether it contains a file that belongs in the project.
+
+The safe cleanup sequence is:
+
+```text
+inspect the untracked path
+→ confirm it is accidental
+→ remove only that confirmed path
+→ run git status again
+→ push only when the status is understood
+```
+
+The screenshot is evidence of the successful local commit and backup cleanup,
+but not evidence that the repository is ready to push. No Deploy job or Docker
+Hub image push has been claimed from this checkpoint.
+
 ---
 
 ## Beginner Walkthrough — Understanding the Step 9 Workflow Edit

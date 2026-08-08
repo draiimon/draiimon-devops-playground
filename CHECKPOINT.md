@@ -513,6 +513,26 @@ included in the commit. It is a safety copy only and must not be pushed to the
 exam repository. The Step 9 edit is therefore saved locally; a GitHub Actions
 run has not yet been claimed.
 
+The candidate then moved that backup safely to `/tmp`. The local branch and
+commit were confirmed as:
+
+```text
+staging
+7a51dac (HEAD -> staging) Keep build stage focused on validation
+```
+
+The follow-up status check still showed:
+
+```text
+?? .github/workflows/.github/
+```
+
+Therefore the repository has one remaining untracked nested `.github` path.
+This must be inspected before deletion or pushing. The correct next action is
+not to ignore the status output and not to run a broad `git clean`; inspect the
+path, confirm whether it is accidental, remove only the confirmed accidental
+path, and verify `git status --short` again.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
