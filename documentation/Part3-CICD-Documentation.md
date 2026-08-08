@@ -1672,91 +1672,109 @@ pipeline automatically. The optional `workflow_dispatch` trigger allows a
 manual run from the GitHub Actions page. The `verify-workflow` job prints the
 branch and commit so each run can be traced to source control.
 
+#### How to read this task
+
+Task 1 is about the **starting point of CI/CD**: the workflow must exist in the
+correct repository location, Git must record the change, and a push to
+`staging` must reach GitHub Actions. When reading the screenshots below, follow
+this chain:
+
+```text
+prepare the repository
+→ create the root workflow
+→ commit and push the change
+→ GitHub receives the staging event
+→ Actions checks out and verifies the source
+```
+
+The screenshots are ordered to show that chain. They are not separate
+unrelated activities.
+
 #### 📸 Screenshots
 
 ![GitHub CLI installation](screenshots/part3/setup-01-github-cli-installation.png)
 
-**Screenshot Explanation:** The terminal shows GitHub CLI installation and version verification in the WSL environment. This proves the tool required for repository and Actions work was available.
+**Screenshot Explanation:** **What you can see:** The terminal shows GitHub CLI being installed and its version being checked. **What you learn:** Before using `gh` for repository or Actions work, verify that the command-line tool is actually available. A version output is a useful environment check, not proof that the pipeline has run yet.
 
 ![Repository folder check](screenshots/part3/setup-02-repository-folder-check.png)
 
-**Screenshot Explanation:** The terminal shows the initial repository directory structure. This proves the candidate confirmed the working location before changing Part 3 files.
+**Screenshot Explanation:** **What you can see:** The terminal lists the initial repository folders and files. **What you learn:** Always confirm your working directory before editing or deleting anything. This prevents a correct command from being applied to the wrong copy of the project.
 
 ![Pre-Part-3 backup](screenshots/part3/setup-03-pre-part3-backup.png)
 
-**Screenshot Explanation:** The terminal shows the backup command before the Part 3 reset. This proves the earlier project state was preserved before cleanup.
+**Screenshot Explanation:** **What you can see:** A backup is created before the old Part 3 material is reset. **What you learn:** A backup is a safety boundary for a cleanup operation. It lets you remove obsolete files deliberately without losing the earlier working state.
 
 ![Remote and branch check](screenshots/part3/setup-04-remote-branch-check.png)
 
-**Screenshot Explanation:** The terminal shows the configured Git remote and current branch. This proves the work was connected to the intended GitHub repository and branch.
+**Screenshot Explanation:** **What you can see:** Git prints the configured remote and the current branch. **What you learn:** Check both the destination repository and branch before pushing. A successful push to the wrong remote or branch is still the wrong result.
 
 ![Fresh repository clone](screenshots/part3/setup-05-fresh-repository-clone.png)
 
-**Screenshot Explanation:** The terminal shows the repository being cloned into a clean working directory. This proves the Part 3 walkthrough started from a fresh checkout.
+**Screenshot Explanation:** **What you can see:** The repository is cloned into a clean working directory. **What you learn:** A fresh checkout removes uncertainty from old local files and makes the starting state reproducible. In CI/CD work, reproducibility is more important than relying on an already-prepared folder.
 
 ![Old Part 3 detection](screenshots/part3/setup-06-old-part3-detection.png)
 
-**Screenshot Explanation:** The file listing shows the previous Part 3 files and workflow locations. This proves the old documentation and nested workflow were identified before removal.
+**Screenshot Explanation:** **What you can see:** The file listing identifies the previous Part 3 documentation and workflow locations. **What you learn:** Inspect first, delete second. You should know exactly which files are obsolete before performing a cleanup.
 
 ![Old Part 3 cleanup](screenshots/part3/setup-07-old-part3-cleanup.png)
 
-**Screenshot Explanation:** The terminal shows the targeted cleanup of the old Part 3 material. This proves the reset removed only the identified legacy files.
+**Screenshot Explanation:** **What you can see:** The terminal performs a targeted cleanup of the identified old files. **What you learn:** Prefer a narrow removal command over a broad destructive cleanup. The goal is to remove only the old Part 3 material while preserving the application source and required project files.
 
 ![Staged cleanup check](screenshots/part3/setup-08-staged-cleanup-check.png)
 
-**Screenshot Explanation:** The staged-file check shows the cleanup changes before committing. This proves the candidate reviewed what Git was going to record.
+**Screenshot Explanation:** **What you can see:** Git shows the files staged for the cleanup commit. **What you learn:** Staging is a review checkpoint. Before committing, confirm that the list contains the intended changes and does not include secrets, unrelated files, or an accidentally broad deletion.
 
 ![Clean main status](screenshots/part3/setup-09-clean-main-status.png)
 
-**Screenshot Explanation:** The terminal shows the clean repository status after the reset preparation. This proves no unintended files remained before the new workflow was created.
+**Screenshot Explanation:** **What you can see:** The repository status is clean after the reset preparation. **What you learn:** A clean status means Git sees no uncommitted or untracked changes at that checkpoint. It gives you a known baseline before creating the new workflow.
 
 ![Part 3 reset commit](screenshots/part3/setup-10-reset-part3-commit.png)
 
-**Screenshot Explanation:** The terminal shows the commit that recorded the Part 3 reset. This proves the cleanup was saved in Git history.
+**Screenshot Explanation:** **What you can see:** Git records the reset in a commit. **What you learn:** A commit turns a local file change into a traceable point in project history. Good commit messages explain what state was created, such as resetting Part 3 for a new walkthrough.
 
 ![Push main reset](screenshots/part3/setup-11-push-main-reset.png)
 
-**Screenshot Explanation:** The terminal shows the reset commit being pushed to `main`. This proves the cleaned baseline was synchronized with GitHub.
+**Screenshot Explanation:** **What you can see:** The reset commit is pushed to `main`. **What you learn:** Pushing synchronizes the local Git history with the remote repository. This matters because GitHub Actions can only run code that GitHub has received.
 
 ![Root workflow created](screenshots/part3/setup-12-root-workflow-created.png)
 
-**Screenshot Explanation:** The terminal shows the root `.github/workflows/deploy.yml` being created and inspected. This proves the pipeline was implemented as repository code in the required location.
+**Screenshot Explanation:** **What you can see:** The root `.github/workflows/deploy.yml` file is created and inspected. **What you learn:** GitHub Actions discovers workflow YAML files from `.github/workflows/`. Putting a file somewhere else may make it valid YAML but not an active repository workflow.
 
 ![Push staging success](screenshots/part3/task01-push-staging-success.png)
 
-**Screenshot Explanation:** The terminal shows the successful push to the `staging` branch. This is the source-control event that triggers the automatic CI/CD workflow.
+**Screenshot Explanation:** **What you can see:** Git reports a successful push to `staging`. **What you learn:** This push is the event that starts the automatic pipeline. The important relationship is `push to staging → workflow run`, not merely “the command finished without an error.”
 
 ![Workflow success summary](screenshots/part3/task02-workflow-success-summary.png)
 
-**Screenshot Explanation:** GitHub Actions shows the initial workflow run completed successfully. This proves GitHub accepted and executed the pipeline after the staging push.
+**Screenshot Explanation:** **What you can see:** GitHub Actions shows the workflow run with a successful result after the staging push. **What you learn:** A green Actions summary proves GitHub accepted and executed the workflow. It is stronger evidence than a local `git push` message because it confirms the remote automation responded.
 
 ![Workflow checkout log](screenshots/part3/task03-workflow-checkout-log.png)
 
-**Screenshot Explanation:** The Actions log shows the repository checkout and verification output. This proves the runner received the intended source and identified the branch and commit.
+**Screenshot Explanation:** **What you can see:** The Actions log shows the runner checking out the repository and printing branch/commit information. **What you learn:** Every CI run should be traceable to source control. Checkout plus branch and commit output tells you which code the runner actually tested.
 
 ![Workflow confirmation](screenshots/part3/task04-workflow-confirmation.png)
 
-**Screenshot Explanation:** The workflow page confirms the workflow name, staging branch, and successful verification job. This proves the Pipeline-as-Code trigger worked at the workflow level.
+**Screenshot Explanation:** **What you can see:** The workflow page connects the workflow name, `staging` branch, and successful verification job. **What you learn:** Read the run metadata, not only the green color. The branch and workflow name confirm that the correct pipeline responded to the correct event.
 
 ![Workflow editor opened](screenshots/part3/task40-workflow-editor-open.png)
 
-**Screenshot Explanation:** The workflow file is open in the editor before the pipeline changes. This proves the candidate worked on the root workflow file rather than an unrelated copy.
+**Screenshot Explanation:** **What you can see:** The workflow file is open in the editor at the repository's root workflow location. **What you learn:** Before editing YAML, verify the path and the file you are changing. A beautifully written workflow in an unrelated copy will not affect GitHub Actions.
 
 ![Workflow commit status](screenshots/part3/task35-workflow-commit-status.png)
 
-**Screenshot Explanation:** The terminal shows the Step 9 commit and Git status checks. This proves the workflow edit was committed while temporary files remained under review.
+**Screenshot Explanation:** **What you can see:** The terminal shows the workflow commit and the status output, including the temporary file being reviewed. **What you learn:** A commit can be valid even when the working tree still has an untracked safety file. Review that status before pushing so a backup or accidental file is not included.
 
 ![Step 9 post-commit status](screenshots/part3/task39-step9-post-commit-status.png)
 
-**Screenshot Explanation:** The terminal shows the branch, latest commit, and post-cleanup status. This proves the corrected workflow was saved and the temporary backup was moved outside the repository.
+**Screenshot Explanation:** **What you can see:** The terminal identifies the current branch, latest commit, and post-cleanup state after the backup is moved out of the repository. **What you learn:** Verify the final local state after cleanup, not only the state before it. The branch, commit, and status together show what is saved and what remains local.
 
 ![Untracked workflow folder inspection](screenshots/part3/task33-untracked-workflow-folder-inspection.png)
 
-**Screenshot Explanation:** The terminal inspects the accidental nested `.github/workflows` path and its empty file. This proves the candidate verified the untracked path before deleting it.
+**Screenshot Explanation:** **What you can see:** The accidental nested `.github/workflows` path is inspected and the file is shown to be empty. **What you learn:** Never remove an untracked path blindly. Inspect it first, confirm that it is accidental, and distinguish it from the real root workflow.
 
 ![Nested workflow cleanup](screenshots/part3/task36-nested-workflow-cleanup.png)
 
-**Screenshot Explanation:** The terminal confirms only the empty accidental nested workflow folder was removed. This proves cleanup was targeted rather than a broad destructive Git clean.
+**Screenshot Explanation:** **What you can see:** The terminal confirms that only the empty accidental nested workflow folder was removed. **What you learn:** Targeted cleanup protects the real `.github/workflows/deploy.yml`. After removal, run Git status again to confirm that the repository is clean and the real workflow still exists.
 
 ### Task 2 — Build Stage
 
@@ -1790,39 +1808,56 @@ parsed. The API and UI are built from the real cloned application source. The
 commit-SHA tag provides an immutable release reference, while the `staging` and
 `latest` tags support environment deployment and the current release.
 
+#### How to read this task
+
+Task 2 is about proving that the pipeline can create the application images,
+not just that the YAML file exists. Read the screenshots in this order:
+
+```text
+inspect the workflow
+→ confirm the local Docker/Compose tools
+→ build API and UI images
+→ verify the image tags
+→ confirm the same build succeeds on a clean CI runner
+```
+
+The local screenshots explain the preflight check. The GitHub Actions
+screenshots explain why a local build alone is not enough: CI must reproduce the
+build on a hosted runner.
+
 #### 📸 Screenshots
 
 ![Local workflow inspection](screenshots/part3/task05-local-workflow-inspection.png)
 
-**Screenshot Explanation:** The terminal shows the first local inspection of `deploy.yml`. This proves the workflow structure was reviewed before adding later pipeline stages.
+**Screenshot Explanation:** **What you can see:** The terminal prints the first local version of `deploy.yml`. **What you learn:** Inspect the workflow before changing it. Look for the trigger, job names, checkout step, and the commands that will run; this is how you catch a wrong path or incomplete job early.
 
 ![Local workflow reinspection](screenshots/part3/task06-local-workflow-reinspection.png)
 
-**Screenshot Explanation:** The second inspection shows the workflow after an edit or review pass. This proves the candidate checked the YAML structure incrementally.
+**Screenshot Explanation:** **What you can see:** The workflow is printed again after a review or edit pass. **What you learn:** Rechecking after an edit is a simple way to verify that the intended YAML block is present and that the file was not accidentally changed in the wrong location.
 
 ![Docker Compose version check](screenshots/part3/task07-docker-compose-version-check.png)
 
-**Screenshot Explanation:** The terminal shows the local Docker and legacy Compose versions. This explains why local validation used `docker-compose` while GitHub Actions used `docker compose`.
+**Screenshot Explanation:** **What you can see:** The terminal shows the local Docker version and the available legacy `docker-compose` command. **What you learn:** Local and CI environments may use different command names. Document the difference clearly: local validation used `docker-compose`, while the GitHub-hosted runner used `docker compose`.
 
 ![Docker build progress](screenshots/part3/task08-docker-build-progress.png)
 
-**Screenshot Explanation:** The terminal shows the API and UI image build progress. This proves both application images were built from the project Docker configuration.
+**Screenshot Explanation:** **What you can see:** Docker build output progresses for both the API and UI services. **What you learn:** Follow the service names and the final success lines. Build progress is evidence that Docker processed the Dockerfiles; the final tags are what identify the resulting artifacts.
 
 ![Local image verification](screenshots/part3/task09-local-image-verification.png)
 
-**Screenshot Explanation:** The terminal lists the resulting local API and UI images. This proves the local Build Stage produced the expected image tags.
+**Screenshot Explanation:** **What you can see:** The terminal lists the resulting API and UI images and their tags. **What you learn:** A build command succeeding is not the final check. List the images afterward to verify that the expected repositories and tags actually exist locally.
 
 ![GitHub Actions build success](screenshots/part3/task10-github-actions-build-success.png)
 
-**Screenshot Explanation:** GitHub Actions shows the hosted Build job completed successfully. This proves the images could be built on a clean CI runner.
+**Screenshot Explanation:** **What you can see:** The hosted GitHub Actions Build job is green. **What you learn:** CI build evidence proves the Docker build works on a clean runner, not only on the candidate's machine with its local cache and files.
 
 ![GitHub Actions built images](screenshots/part3/task11-github-actions-built-images.png)
 
-**Screenshot Explanation:** The Build job output shows the API and UI image names and tags. This proves the CI runner produced both required application images.
+**Screenshot Explanation:** **What you can see:** The Build job output names the API and UI images and their tags. **What you learn:** Read the artifact names and tags to confirm both services were produced. A pipeline that builds only one service is incomplete even if the job itself is green.
 
 ![Workflow history success run](screenshots/part3/task31-workflow-history-success-run.png)
 
-**Screenshot Explanation:** The Actions history shows the successful validation run and its `staging` branch context. This provides an additional record of the completed Build workflow.
+**Screenshot Explanation:** **What you can see:** Actions history records a successful validation run associated with `staging`. **What you learn:** The run history is an audit trail. It lets you connect the screenshot to a branch and completed workflow, rather than treating an isolated log image as the whole story.
 
 ### Task 3 — Test Stage
 
@@ -1861,25 +1896,42 @@ The Docker image security scan is optional in the exam brief. It was not added,
 so it is clearly recorded as optional rather than represented as a completed
 test.
 
+#### How to read this task
+
+Task 3 proves that the pipeline does more than build images: it checks whether
+the applications can actually run. Read the evidence as this sequence:
+
+```text
+install dependencies and lint
+→ start MySQL, API, and UI
+→ wait for the services to become ready
+→ check real HTTP endpoints
+→ inspect service status
+→ clean up containers, networks, and volumes
+```
+
+The key lesson is that a green build is not the same as a working application.
+The Test Stage connects the built artifacts to real runtime behavior.
+
 #### 📸 Screenshots
 
 - [Raw Test-stage output](evidence/part3/task13-test-stage-output.txt)
 
 ![Test-stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
 
-**Screenshot Explanation:** The terminal shows the workflow state before the Test Stage was finalized. This documents the validation checkpoint used before pushing the next workflow change.
+**Screenshot Explanation:** **What you can see:** The terminal shows the workflow state before the Test Stage was finalized and pushed. **What you learn:** Treat this as a checkpoint, not as final test proof. It shows that the workflow was reviewed before the next change, while the later Actions logs prove the completed Test job.
 
 ![Test-stage cleanup log](screenshots/part3/task32-test-stage-cleanup-log.png)
 
-**Screenshot Explanation:** The Test job log shows containers, volumes, and networks being stopped and removed. This proves the CI test environment cleaned itself after validation.
+**Screenshot Explanation:** **What you can see:** The Test job stops and removes the containers, network, and volume after validation. **What you learn:** CI environments must clean up after themselves. Cleanup prevents one run's database or containers from contaminating a later run and keeps the hosted runner reproducible.
 
 ![Local API and UI smoke-test commands](screenshots/part3/task34-local-staging-smoke-test-commands.png)
 
-**Screenshot Explanation:** The terminal shows the API root, API `/trip`, and UI smoke-test commands used against staging. This proves the deployed services were checked through their HTTP endpoints.
+**Screenshot Explanation:** **What you can see:** The terminal sends HTTP requests to the API root, the database-backed `/trip` endpoint, and the UI root page. **What you learn:** A smoke test checks the application from the outside, the way a user or another service reaches it. Checking multiple endpoints helps distinguish “the process is running” from “the application path works.”
 
 ![Wide Test-stage cleanup log](screenshots/part3/task38-test-stage-cleanup-log-wide.png)
 
-**Screenshot Explanation:** The wide Actions log view shows the Test job cleanup and post-checkout steps completing successfully. This provides a second detailed view of clean runner teardown.
+**Screenshot Explanation:** **What you can see:** The wider Actions log shows the Test job finishing its cleanup and post-job checkout steps successfully. **What you learn:** Use the job log to verify the complete lifecycle: test execution, cleanup, and job completion. Passing assertions without successful teardown is incomplete CI evidence.
 
 ### Task 4 — Deploy Stage
 
@@ -1923,57 +1975,76 @@ and the API/UI smoke tests rerun. A live rollback exercise was not performed,
 so the rollback item is documented as a strategy rather than claimed as a
 tested event.
 
+#### How to read this task
+
+Task 4 follows the tested images into a registry and then into a separate
+staging runtime. Read the evidence in this order:
+
+```text
+create registry destinations and protected credentials
+→ log in without exposing the token
+→ push API and UI tags
+→ verify tags and image manifests in Docker Hub
+→ start staging from the published :staging images
+→ confirm the full Verify → Build → Test → Push workflow
+```
+
+The commit-SHA tag is the stable history record. The `staging` tag is the
+environment reference, while `latest` is the moving current-release
+reference. The screenshots prove deployment evidence; they do not claim that a
+live rollback was executed.
+
 #### 📸 Screenshots
 
 - [Detailed Docker Hub push log](../attached_assets/Pasted-Current-runner-version-2-336-0-Runner-Image-Provisioner_1786164927904.txt)
 
 ![Docker Hub API repository](screenshots/part3/task14-dockerhub-api-repository.png)
 
-**Screenshot Explanation:** Docker Hub shows the `devops-api` repository under the candidate namespace. This proves the API image had a registry destination.
+**Screenshot Explanation:** **What you can see:** Docker Hub shows the `devops-api` repository under the candidate namespace. **What you learn:** Before an image can be pushed, the registry needs a destination repository. This proves the API artifact has a place to be published; it does not by itself prove that the latest workflow push succeeded.
 
 ![Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
 
-**Screenshot Explanation:** Docker Hub shows the `devops-ui` repository. This proves the UI image had its own registry destination.
+**Screenshot Explanation:** **What you can see:** Docker Hub shows a separate `devops-ui` repository. **What you learn:** The API and UI are separate deployable artifacts, so each needs an identifiable registry destination. Keeping them separate makes tagging, pulling, and rollback easier to understand.
 
 ![Docker Hub access token created](screenshots/part3/task16-dockerhub-access-token-created.png)
 
-**Screenshot Explanation:** Docker Hub shows the GitHub Actions token description and Read & Write permission. The secret value is not exposed in the screenshot or documentation.
+**Screenshot Explanation:** **What you can see:** Docker Hub shows the token description and its Read & Write permission, but not the token value. **What you learn:** A CI token should have only the permission required for the job and must never be copied into documentation, YAML, or chat. The screenshot proves configuration without exposing the credential.
 
 ![GitHub Docker Hub username secret](screenshots/part3/task17-github-dockerhub-username-secret.png)
 
-**Screenshot Explanation:** GitHub repository settings show the `DOCKERHUB_USERNAME` secret name. GitHub hides the value, proving the credential was stored without exposing it.
+**Screenshot Explanation:** **What you can see:** GitHub repository settings show the `DOCKERHUB_USERNAME` secret name while hiding its value. **What you learn:** Store credentials in GitHub Secrets and reference the secret by name from the workflow. The screenshot proves the secret exists without revealing sensitive data.
 
 ![GitHub Docker Hub token secret](screenshots/part3/task18-github-dockerhub-token-secret.png)
 
-**Screenshot Explanation:** GitHub repository settings show the `DOCKERHUB_TOKEN` secret entry. The token value remains hidden and is not recorded in the project.
+**Screenshot Explanation:** **What you can see:** GitHub shows the `DOCKERHUB_TOKEN` secret entry with the value hidden. **What you learn:** The token is an input to the deploy job, not project content. Never replace the secret reference with a hardcoded token just to make a workflow easier to read.
 
 ![Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
 
-**Screenshot Explanation:** The Docker Hub UI repository shows the published commit, `staging`, and `latest` tags. This proves the UI image was pushed to the registry.
+**Screenshot Explanation:** **What you can see:** The UI repository contains the commit, `staging`, and `latest` tags. **What you learn:** Tags are labels for the published artifact: the commit tag gives traceability, `staging` identifies the environment release, and `latest` points to the moving current release.
 
 ![Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
 
-**Screenshot Explanation:** The Docker Hub API repository shows the published commit, `staging`, and `latest` tags. This proves the API image was pushed to the registry.
+**Screenshot Explanation:** **What you can see:** The API repository contains the matching commit, `staging`, and `latest` tags. **What you learn:** Check both services, not just one. A deploy is incomplete if the API and UI do not have corresponding published artifacts.
 
 ![Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
 
-**Screenshot Explanation:** The UI `staging` tag detail page shows its manifest and image-layer information. This provides registry-level detail for the deployed UI artifact.
+**Screenshot Explanation:** **What you can see:** The UI `staging` tag detail page shows its manifest and image layers. **What you learn:** A tag-detail view gives stronger registry evidence than a repository name alone: it shows that Docker Hub has a concrete image manifest behind the tag.
 
 ![Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
 
-**Screenshot Explanation:** The API `staging` tag detail page shows its manifest and image-layer information. This provides registry-level detail for the deployed API artifact.
+**Screenshot Explanation:** **What you can see:** The API `staging` tag detail page shows its manifest and image layers. **What you learn:** Compare the API and UI registry evidence as a pair. Both required application images must resolve to published manifests before staging can pull them.
 
 ![Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
 
-**Screenshot Explanation:** The staging Compose output shows API and UI containers using the Docker Hub `:staging` images alongside MySQL. This proves the runtime used published artifacts rather than only local builds.
+**Screenshot Explanation:** **What you can see:** The staging Compose output shows the API and UI using Docker Hub `:staging` images alongside MySQL. **What you learn:** This distinguishes a registry-based staging deployment from a local source build. The running environment is using the artifact that CI published.
 
 ![Healthy staging images](screenshots/part3/task27-staging-healthy-images.png)
 
-**Screenshot Explanation:** The container status shows the staging services running successfully with the published images. This confirms the staging runtime reached a healthy state.
+**Screenshot Explanation:** **What you can see:** The staging container status shows the API, UI, and database services running successfully with the published images. **What you learn:** Read both the image source and the health/state columns. “Running” tells you a process exists; healthy status gives stronger evidence that the service passed its health check.
 
 ![Full Deploy workflow success](screenshots/part3/task37-full-deploy-workflow-success.png)
 
-**Screenshot Explanation:** GitHub Actions shows Verify, Build, Test, and Push images to Docker Hub all succeeded. This is the complete CI/CD pipeline success evidence.
+**Screenshot Explanation:** **What you can see:** GitHub Actions shows Verify, Build, Test, and Push images to Docker Hub all succeeded. **What you learn:** The job order is the deployment guardrail: images are pushed only after verification, build, and tests pass. This is the high-level proof of the complete pipeline; the other screenshots provide detailed registry and runtime evidence.
 
 ### Task 5 — Success Notifications
 
@@ -2017,23 +2088,39 @@ No failure simulation is required for this submission. The workflow will not be
 intentionally broken just to generate a failure email; the documented evidence
 focuses on the successful notification that was actually received.
 
+#### How to read this task
+
+Task 5 proves that the successful pipeline result reached the configured
+notification channel. Read it as:
+
+```text
+enable GitHub and email notifications
+→ run the workflow from staging
+→ confirm the successful run in Actions history
+→ confirm the success email lists every job
+```
+
+Failure simulation is intentionally not part of this submission. The lesson is
+to document the notification behavior that was actually evidenced, rather than
+breaking a working pipeline merely to create another screenshot.
+
 #### 📸 Screenshots
 
 ![GitHub Actions notification settings](screenshots/part3/task28-notification-settings.png)
 
-**Screenshot Explanation:** The GitHub notification settings show Actions notifications enabled for GitHub and email. This proves the selected notification channel was configured.
+**Screenshot Explanation:** **What you can see:** GitHub notification settings show Actions notifications enabled on GitHub and by email. **What you learn:** Configure the delivery channel before judging whether notifications work. Settings evidence explains why the later workflow run could produce an email.
 
 ![Workflow runs history](screenshots/part3/task29-workflow-runs-history.png)
 
-**Screenshot Explanation:** The Actions history shows successful CI/CD runs on the `staging` branch. This connects the notification evidence to an actual repository workflow run.
+**Screenshot Explanation:** **What you can see:** Actions history shows successful CI/CD runs for the `staging` branch. **What you learn:** Use run history to connect an email to a real workflow event. It confirms the branch, workflow, and success state that the notification should represent.
 
 ![Success email notification](screenshots/part3/task30-success-email-notification.png)
 
-**Screenshot Explanation:** The email view shows the successful GitHub Actions notification for Attempt #2. This proves a successful workflow notification was delivered.
+**Screenshot Explanation:** **What you can see:** The email view shows the successful GitHub Actions notification for Attempt #2. **What you learn:** This is delivery proof: the configured notification left GitHub Actions and reached the email inbox. It is different from a screenshot of settings or the Actions web page.
 
 ![Full success email notification](screenshots/part3/task41-success-email-notification-full.png)
 
-**Screenshot Explanation:** The full GitHub Actions email shows “Run succeeded: CI/CD Pipeline - 2026, Attempt #2” for the `staging` branch. It visibly lists Verify workflow, Build Docker images, Test applications, and Push images to Docker Hub as successful, providing direct email proof of the complete pipeline.
+**Screenshot Explanation:** **What you can see:** The full email says “Run succeeded: CI/CD Pipeline - 2026, Attempt #2” for `staging` and lists Verify, Build, Test, and Push as successful. **What you learn:** This is the strongest notification evidence because it combines the workflow identity, branch, attempt, overall result, and every job result in one message.
 
 #### Notification status
 
