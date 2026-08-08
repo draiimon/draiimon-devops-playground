@@ -428,6 +428,24 @@ workflow is not final yet because Docker Hub image tagging remains in the
 Build job, and each GitHub Actions job uses a fresh runner. The final Deploy
 job must explicitly build/tag/login/push after the Test job succeeds.
 
+### Beginner Nano and terminal tutorial
+
+The Part 3 documentation includes a reusable quick-reference section for the
+editing techniques used during this walkthrough:
+
+- `Ctrl + W` to search for text in Nano;
+- `Ctrl + A` to move to the start of the current line;
+- `Ctrl + K` to remove one line at a time;
+- right-click or `Shift + Insert` to paste;
+- `Ctrl + O`, `Enter`, and `Ctrl + X` to save and exit;
+- `sed`, `cat`, and `nl -ba` to inspect the result;
+- `git diff --check` and `git diff` before committing.
+
+It also records the safe sequence: search, edit a small block, save, inspect
+the result, run the whitespace check, review the diff, and commit only after
+the YAML is confirmed. Docker credentials must never be placed in the
+workflow, documentation, screenshots, or chat.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are

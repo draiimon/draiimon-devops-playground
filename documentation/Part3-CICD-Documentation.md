@@ -786,6 +786,130 @@ supporting validation rather than a replacement for the Part 3 CI build.
 
 ---
 
+## Beginner Tutorial — Nano and Terminal Quick Hacks
+
+These shortcuts were used while editing and checking the GitHub Actions
+workflow. They are useful when working in a WSL terminal without opening a
+full graphical editor.
+
+### Open a file in Nano
+
+```bash
+nano .github/workflows/deploy.yml
+```
+
+`nano` opens the file directly in the terminal. The shortcut guide is shown at
+the bottom of the screen. The `^` symbol means **Ctrl**. For example, `^W`
+means **Ctrl + W**.
+
+### Find text quickly
+
+Instead of scrolling through a long YAML file:
+
+1. Press **Ctrl + W**.
+2. Type a distinctive phrase, for example:
+
+   ```text
+   Tag images for Docker Hub
+   ```
+
+3. Press **Enter**.
+
+Nano jumps to the matching text. This is safer and faster than trying to find
+the correct section by scrolling.
+
+### Delete a whole block line by line
+
+To remove a block after finding its first line:
+
+1. Press **Ctrl + A** to move to the beginning of the current line.
+2. Press **Ctrl + K** once for each line that should be removed.
+3. Stop when the next line is the first line that must remain.
+
+Important: in Nano, **Ctrl + A does not select the entire file**. It moves to
+the beginning of the current line. **Ctrl + K** cuts the current line and
+places it in Nano's cut buffer.
+
+### Paste a YAML block
+
+After placing the cursor at the correct location, paste using either:
+
+- right-click in the terminal; or
+- **Shift + Insert**.
+
+Keep YAML indentation exactly as shown. Use spaces, not tabs. A job step
+usually has six spaces before `- name`, and commands under `run: |` usually
+have eight or ten spaces depending on their nesting level.
+
+### Save and exit safely
+
+After editing:
+
+1. Press **Ctrl + O** to write the file.
+2. Press **Enter** to confirm the existing filename.
+3. Press **Ctrl + X** to exit Nano.
+
+If Nano asks whether to save changes when exiting, choose `Y`, then press
+**Enter** to confirm the filename.
+
+### Verify the exact section after editing
+
+Do not immediately commit after leaving Nano. Print only the relevant lines:
+
+```bash
+sed -n '38,75p' .github/workflows/deploy.yml
+```
+
+For the whole workflow:
+
+```bash
+cat .github/workflows/deploy.yml
+```
+
+For a numbered view that makes indentation easier to inspect:
+
+```bash
+nl -ba .github/workflows/deploy.yml | sed -n '1,150p'
+```
+
+### Check for whitespace problems
+
+Before committing:
+
+```bash
+git diff --check
+```
+
+No output means the whitespace check passed. If it prints a line, fix that
+line before continuing.
+
+### Review the change before committing
+
+```bash
+git diff -- .github/workflows/deploy.yml
+git status --short
+```
+
+The safe beginner sequence is:
+
+```text
+Search → edit a small block → save → exit → print the section → diff check
+→ review diff → commit only after the YAML is confirmed
+```
+
+### Safety rules used in this walkthrough
+
+- Do not paste Docker Hub passwords or tokens into the workflow file.
+- Do not send token values in chat or screenshots.
+- Do not commit immediately after editing.
+- Do not push to GitHub until the workflow structure has been reviewed.
+- Treat a pasted terminal output as evidence of what was displayed, not as
+  proof that a workflow run succeeded.
+- A workflow edit is not a successful deployment until GitHub Actions actually
+  runs it and the logs show the expected result.
+
+---
+
 ## Important Commands and Explanations
 
 | Command | Purpose |
