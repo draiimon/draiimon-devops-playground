@@ -160,7 +160,7 @@ jobs:
           docker push "${{ secrets.DOCKERHUB_USERNAME }}/devops-ui:latest"
 
   notify:
-    name: Pipeline notification
+    name: Discord pipeline notification
     if: ${{ always() }}
     needs:
       - verify-workflow
@@ -176,6 +176,7 @@ jobs:
           BUILD_RESULT: ${{ needs.build-images.result }}
           TEST_RESULT: ${{ needs.test-stage.result }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           set -e
 
@@ -185,6 +186,14 @@ jobs:
               overall="failure"
             fi
           done
+
+          if [ "$overall" = "success" ]; then
+            title="Part 3 CI/CD succeeded"
+            color=5763719
+          else
+            title="Part 3 CI/CD failed"
+            color=15548997
+          fi
 
           {
             echo "## CI/CD pipeline notification"
@@ -204,6 +213,39 @@ jobs:
             echo
             echo "**Run:** [Open workflow run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
           } | tee pipeline-notification.txt >> "$GITHUB_STEP_SUMMARY"
+
+          payload="$(jq -n \
+            --arg title "$title" \
+            --arg overall "$overall" \
+            --arg verify "$VERIFY_RESULT" \
+            --arg build "$BUILD_RESULT" \
+            --arg test "$TEST_RESULT" \
+            --arg deploy "$DEPLOY_RESULT" \
+            --arg branch "$GITHUB_REF_NAME" \
+            --arg commit "$GITHUB_SHA" \
+            --arg url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --argjson color "$color" \
+            '{
+              username: "Part 3 CI/CD",
+              embeds: [{
+                title: $title,
+                color: $color,
+                fields: [
+                  {name: "Overall result", value: $overall, inline: true},
+                  {name: "Branch", value: $branch, inline: true},
+                  {name: "Verify", value: $verify, inline: true},
+                  {name: "Build", value: $build, inline: true},
+                  {name: "Test", value: $test, inline: true},
+                  {name: "Deploy", value: $deploy, inline: true}
+                ],
+                description: ("Commit: `" + $commit + "`\\n[Open workflow run](" + $url + ")")
+              }]
+            }')"
+
+          curl --fail-with-body --silent --show-error \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$DISCORD_WEBHOOK_URL"
 
           if [ "$overall" != "success" ]; then
             exit 1
