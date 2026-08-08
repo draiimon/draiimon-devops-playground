@@ -737,6 +737,35 @@ No image push has been claimed from this draft.
 
 ---
 
+## Task 10 — Workflow After Removing the Early Push
+
+The workflow was printed again after removing the Docker Hub login and push
+steps from the `build-images` job. The raw output is preserved at:
+
+```text
+evidence/part3/task21-workflow-after-removing-early-push.txt
+```
+
+This correction is valid because the workflow no longer pushes images before
+the Test Stage. The Build job still validates Compose, builds the API and UI,
+and displays the local images. The Test job still performs linting, smoke
+tests, and service inspection.
+
+The workflow is still not final because the Docker Hub image-tagging commands
+remain in `build-images`. Since every GitHub Actions job gets a fresh runner,
+those tagged images will not be available to a later Deploy job. The final
+workflow should keep Build and Test focused on validation, then have the
+Deploy job explicitly build/tag/login/push after `test-stage` succeeds.
+
+### Review result
+
+- Early Docker Hub push: removed correctly.
+- Build/Test order: preserved.
+- Docker Hub image push: not yet implemented in the correct Deploy job.
+- Staging deployment: still pending.
+
+---
+
 ## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
 
 The successful Docker build from Part 2 and the Docker build in Part 3 serve
@@ -816,13 +845,16 @@ documentation/screenshots/part3/
 The folder contains 29 screenshot evidence files: 12 GitHub setup/history
 screenshots and 17 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output, current workflow
-baseline, and draft workflow review are preserved separately at:
+baseline, draft workflow review, and post-correction workflow output are
+preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`
 
 `evidence/part3/task19-current-workflow-output.txt`
 
 `evidence/part3/task20-workflow-with-dockerhub-push-draft.txt`
+
+`evidence/part3/task21-workflow-after-removing-early-push.txt`
 
 The latest screenshot preparation evidence is:
 
