@@ -664,6 +664,18 @@ Both repositories visibly contain the `latest`, `staging`, and
 therefore complete and documented. These screenshots do not prove that a
 separate running staging service was updated.
 
+Additional tag-detail screenshots now show the `staging` tag manifest digest and
+image layers for both repositories:
+
+```text
+documentation/screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png
+documentation/screenshots/part3/task25-dockerhub-api-staging-tag-detail.png
+```
+
+These confirm the contents of the published Docker Hub tags. They remain
+registry evidence, not proof that a separate staging runtime pulled and started
+the images.
+
 The run displayed four non-blocking Node.js 20 deprecation warnings. The
 warnings affected the checkout steps and the Docker login action, which are
 currently being forced toward Node.js 24. This is a maintenance follow-up, not
@@ -871,7 +883,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, and Docker Hub publishing verified in CI | ✅ Trigger, Build, Test, registry publishing, warnings, rollback strategy, and evidence boundary documented; live staging update and external notifications remain unverified | ✅ 31 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; PARTIAL** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, and Docker Hub publishing verified in CI | ✅ Trigger, Build, Test, registry publishing, warnings, rollback strategy, and evidence boundary documented; live staging update and external notifications remain unverified | ✅ 33 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; PARTIAL** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

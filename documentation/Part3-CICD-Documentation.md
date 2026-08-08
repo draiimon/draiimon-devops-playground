@@ -590,14 +590,17 @@ and the Docker Hub screenshots independently show the resulting tags.
 - [Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
 - [Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
 - [Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
+- [Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
+- [Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
 
 ### Current status
 
 Docker Hub registry publishing is **confirmed complete**. Both screenshots
 show the `latest`, `staging`, and commit-SHA tags in the corresponding
-repository. The screenshots do not prove that a separate staging service was
-updated; that remains a distinct requirement. No password or access token is
-recorded in this documentation.
+repository. The additional tag-detail screenshots show the `staging` tag
+manifest digest and image layers for both repositories. The screenshots do not
+prove that a separate staging service was updated; that remains a distinct
+requirement. No password or access token is recorded in this documentation.
 
 ---
 
@@ -1691,8 +1694,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 31 screenshot evidence files: 12 GitHub setup/history
-screenshots and 19 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 33 screenshot evidence files: 12 GitHub setup/history
+screenshots and 21 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output, current workflow
 baseline, draft workflow review, and post-correction workflow output are
 preserved separately at:
@@ -1710,6 +1713,8 @@ The latest screenshot preparation evidence is:
 - [Test Stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
 - [Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
 - [Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
+- [Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
+- [Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
 
 This screenshot confirms that `git diff --check` returned no errors and that
 only `.github/workflows/deploy.yml` was modified before the Test Stage commit.
