@@ -565,6 +565,26 @@ the real workflow or the Step 9 commit. The local repository is now ready for
 the next reviewed change. It does not yet prove a GitHub Actions run or a
 Docker Hub image push.
 
+### Step 9 GitHub Actions success evidence
+
+After the clean Step 9 commit was pushed to `staging`, the GitHub Actions page
+showed a green successful run:
+
+```text
+Workflow: CI/CD Pipeline — 2026
+Branch: staging
+Commit: 7a51dac
+Message: Keep build stage focused on validation
+Duration shown: approximately 2 minutes 56 seconds
+```
+
+This confirms that GitHub accepted and executed the committed workflow after
+the Step 9 cleanup. It does not confirm a Docker Hub upload. The current
+workflow still contains the Verify, Build, and Test jobs only; it has no
+`docker login`, registry tagging, or `docker push` command. Docker Hub setup
+and encrypted secrets are ready for the separate Deploy Stage, which must
+depend on successful `test-stage`.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are

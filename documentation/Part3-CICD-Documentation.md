@@ -70,7 +70,7 @@ workflow.
 | Optional manual trigger | `workflow_dispatch` is present | ✅ Confirmed |
 | Pipeline as Code | Root `.github/workflows/deploy.yml` | ✅ Confirmed |
 | Build API and UI images | GitHub Actions built both images successfully on `staging` | ✅ CI confirmed |
-| Image tagging | Images listed with commit SHA, `latest`, and `staging` tags | ✅ CI confirmed |
+| Image tagging | Build-job commit/branch tagging was removed in Step 9; registry tagging/push is reserved for the future Deploy job | 🔄 Deploy pending |
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
@@ -864,6 +864,39 @@ inspect the untracked path
 The screenshot is evidence of the successful local commit and backup cleanup,
 but not evidence that the repository is ready to push. No Deploy job or Docker
 Hub image push has been claimed from this checkpoint.
+
+### Step 9 GitHub Actions run result
+
+After the clean local commit was pushed to the `staging` branch, GitHub Actions
+showed a successful workflow run:
+
+| Item | Confirmed result |
+|---|---|
+| Workflow | `CI/CD Pipeline — 2026` |
+| Branch | `staging` |
+| Commit | `7a51dac` |
+| Commit message | `Keep build stage focused on validation` |
+| Workflow status | Success (green check) |
+| Run duration shown | Approximately 2 minutes 56 seconds |
+| Docker Hub upload | Not shown and not claimed |
+
+The green workflow result confirms that GitHub accepted and successfully
+executed the committed Step 9 workflow. The screenshot is workflow-level
+evidence; it does not show the detailed logs for every individual step, and it
+does not show `docker login`, `docker tag` for registry names, or `docker push`.
+Those commands are intentionally not in the current workflow.
+
+This run therefore confirms the current CI validation path:
+
+```text
+Verify workflow → Build Docker images → Test applications
+```
+
+Docker Hub repositories and encrypted credentials remain setup for the future
+Deploy stage. The next Deploy implementation must be a separate job that
+depends on `test-stage`, then explicitly builds or obtains images on its fresh
+runner, tags them with the Docker Hub repository names, logs in through GitHub
+Secrets, and pushes them only after tests succeed.
 
 ### Inspection result for the remaining untracked path
 
