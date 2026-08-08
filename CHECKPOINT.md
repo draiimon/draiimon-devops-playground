@@ -676,6 +676,28 @@ These confirm the contents of the published Docker Hub tags. They remain
 registry evidence, not proof that a separate staging runtime pulled and started
 the images.
 
+### Staging runtime deployment evidence
+
+The candidate then started a separate staging Compose project using the
+published Docker Hub images. Evidence:
+
+```text
+documentation/screenshots/part3/task26-staging-containers-published-images.png
+```
+
+The screenshot confirms:
+
+```text
+/devops_staging_api -> draiimon112/devops-api:staging
+/devops_staging_ui  -> draiimon112/devops-ui:staging
+/devops_staging_db  -> mysql:8.0
+```
+
+The services were created under the separate `staging-release` Compose project.
+The API and UI are exposed on host ports `8001` and `3001`; the database is
+healthy. The API and UI health checks are still starting in the screenshot, so
+HTTP smoke tests are the final deployment verification step.
+
 The run displayed four non-blocking Node.js 20 deprecation warnings. The
 warnings affected the checkout steps and the Docker login action, which are
 currently being forced toward Node.js 24. This is a maintenance follow-up, not
@@ -883,7 +905,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, and Docker Hub publishing verified in CI | ✅ Trigger, Build, Test, registry publishing, warnings, rollback strategy, and evidence boundary documented; live staging update and external notifications remain unverified | ✅ 33 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; PARTIAL** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, and staging runtime startup evidenced | ✅ Trigger, Build, Test, registry publishing, staging image startup, warnings, rollback strategy, and evidence boundary documented; post-deployment HTTP checks and external notifications remain unverified | ✅ 34 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FINAL CHECKS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

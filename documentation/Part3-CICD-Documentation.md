@@ -74,7 +74,7 @@ workflow.
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
-| Staging deployment | Staging service update is not yet added or verified | ⏳ Pending |
+| Staging deployment | Separate staging Compose project is running the published `:staging` API and UI images; HTTP verification pending | 🟡 Runtime started |
 | Container registry/artifact storage | Deploy job completed the Docker Hub login/tag/push sequence successfully | ✅ CI confirmed |
 | Rollback strategy | Immutable commit-SHA image tags provide a documented rollback path; live rollback not tested | ✅ Strategy documented |
 | Success/failure notifications | Not yet configured | ⏳ Pending |
@@ -1031,6 +1031,26 @@ sha256:97bd032de18a1a1d2d5836e0510e99ebd788fe92dd1ef6f2511d0fbdec783e
 The successful `Pushed` lines and the `staging` and `latest` digest lines
 confirm that both repositories received the images.
 
+### Staging Runtime Deployment Evidence
+
+The published Docker Hub images were then started in a separate staging Compose
+project on the candidate's WSL computer. The evidence is:
+
+- [Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
+
+The screenshot confirms:
+
+| Staging service | Image | Host port | State shown |
+|---|---|---:|---|
+| `devops_staging_api` | `draiimon112/devops-api:staging` | `8001` | Up; health check starting |
+| `devops_staging_db` | `mysql:8.0` | `3306` | Up; healthy |
+| `devops_staging_ui` | `draiimon112/devops-ui:staging` | `3001` | Up; health check starting |
+
+The staging containers use the published registry images rather than local
+source builds. The database is healthy, and the API/UI containers are running.
+The final deployment verification still requires successful HTTP requests to
+the API root, API `/trip`, and UI root endpoints.
+
 The four annotations were Node.js runtime deprecation warnings. They stated
 that the actions currently target Node.js 20 and are being forced to run on
 Node.js 24. The warnings appeared for `actions/checkout@v4` in the Verify,
@@ -1694,8 +1714,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 33 screenshot evidence files: 12 GitHub setup/history
-screenshots and 21 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 34 screenshot evidence files: 12 GitHub setup/history
+screenshots and 22 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output, current workflow
 baseline, draft workflow review, and post-correction workflow output are
 preserved separately at:
@@ -1715,6 +1735,7 @@ The latest screenshot preparation evidence is:
 - [Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
 - [Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
 - [Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
+- [Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
 
 This screenshot confirms that `git diff --check` returned no errors and that
 only `.github/workflows/deploy.yml` was modified before the Test Stage commit.
