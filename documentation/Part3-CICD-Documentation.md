@@ -266,6 +266,24 @@ supporting validation rather than a replacement for the Part 3 CI build.
 | `docker image tag` | Adds commit-SHA and branch tags to built images |
 | `q` in `(END)` | Exits the `less` terminal viewer |
 
+### Docker image listing note
+
+The local command `docker image ls api-app ui-app` returned a usage error
+because this Docker version accepts at most one repository argument for
+`docker image ls`. This was a command-syntax issue, not a failed image build.
+The images can be checked separately:
+
+```bash
+docker image ls api-app
+docker image ls ui-app
+```
+
+Or together with a filtered list:
+
+```bash
+docker image ls | grep -E 'REPOSITORY|api-app|ui-app'
+```
+
 ---
 
 ## Remaining Work

@@ -230,6 +230,12 @@ deprecation, pip running as root during image construction, outdated
 vulnerabilities (3 moderate, 9 high, 1 critical). The vulnerability result is
 pending investigation in the Part 3 test/security stage.
 
+The attempted command `docker image ls api-app ui-app` returned a Docker usage
+error because this local Docker version accepts at most one repository
+argument. This was only a listing-command syntax issue, not a build failure.
+Use `docker image ls api-app` and `docker image ls ui-app` separately, or
+filter the complete image list.
+
 **Beginner workflow note:** The Part 2 local Docker build and the Part 3
 GitHub Actions build are intentionally separate evidence. Part 2 proves that
 the containers work on the candidate's WSL computer. Part 3 proves that a
