@@ -610,6 +610,42 @@ workflow. It should confirm that each job appears once and that `deploy`
 depends on `test-stage`, then parse the YAML if a parser is available. It must
 not print secret values or contact Docker Hub.
 
+### Docker Hub Deploy Stage success evidence
+
+The reviewed workflow was pushed to `staging` and GitHub Actions completed the
+full pipeline successfully:
+
+```text
+Verify workflow
+→ Build Docker images
+→ Test applications
+→ Push images to Docker Hub
+```
+
+The GitHub Actions summary showed:
+
+```text
+Workflow run: Add Docker Hub deploy stage #5
+Branch: staging
+Status: Success
+Duration shown: 4 minutes 14 seconds
+Jobs: Verify workflow, Build Docker images, Test applications,
+      Push images to Docker Hub
+```
+
+The green `Push images to Docker Hub` job confirms that the Docker Hub Deploy
+job completed successfully after the Test job. The screenshot does not show
+individual `docker push` log lines or the resulting Docker Hub repository
+contents, so those are not separately claimed here.
+
+The run displayed four non-blocking Node.js 20 deprecation warnings. The
+warnings affected the checkout steps and the Docker login action, which are
+currently being forced toward Node.js 24. This is a maintenance follow-up, not
+a failed pipeline result.
+
+Docker Hub publishing is now CI-confirmed. Staging service update, rollback,
+and success/failure notifications remain separate exam requirements.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are

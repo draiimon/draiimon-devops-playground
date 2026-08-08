@@ -70,12 +70,12 @@ workflow.
 | Optional manual trigger | `workflow_dispatch` is present | ✅ Confirmed |
 | Pipeline as Code | Root `.github/workflows/deploy.yml` | ✅ Confirmed |
 | Build API and UI images | GitHub Actions built both images successfully on `staging` | ✅ CI confirmed |
-| Image tagging | Build-job commit/branch tagging was removed in Step 9; registry tagging/push is reserved for the future Deploy job | 🔄 Deploy pending |
+| Image tagging | Deploy job tagged API and UI images with commit, branch, and `latest` Docker Hub tags | ✅ CI confirmed |
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
-| Staging deployment | Not yet added/verified | ⏳ Pending |
-| Container registry/artifact storage | Docker Hub repositories created and a GitHub Actions access token generated; image push not yet verified | 🔄 Started |
+| Staging deployment | Staging service update is not yet added or verified | ⏳ Pending |
+| Container registry/artifact storage | Deploy job completed the Docker Hub login/tag/push sequence successfully | ✅ CI confirmed |
 | Rollback strategy | Not yet documented/implemented | ⏳ Pending |
 | Success/failure notifications | Not yet configured | ⏳ Pending |
 
@@ -936,6 +936,46 @@ The next validation must therefore check the complete file structure, confirm
 that each job appears once, confirm that `deploy` depends on `test-stage`, and
 parse the YAML if a local YAML/actionlint parser is available. This validation
 must not print secret values and must not contact Docker Hub.
+
+### Deploy Stage run result
+
+The candidate pushed the reviewed Deploy workflow to `staging`. GitHub Actions
+completed the full workflow successfully:
+
+```text
+Verify workflow → Build Docker images → Test applications
+→ Push images to Docker Hub
+```
+
+The GitHub Actions summary showed:
+
+| Item | Confirmed result |
+|---|---|
+| Workflow run | `Add Docker Hub deploy stage #5` |
+| Branch | `staging` |
+| Overall status | Success |
+| Total duration shown | 4 minutes 14 seconds |
+| Jobs | Verify workflow, Build Docker images, Test applications, Push images to Docker Hub |
+| Docker Hub job | Green/successful |
+| Docker Hub credentials | Referenced through encrypted GitHub Secrets; values not exposed |
+
+This is strong CI evidence that the Deploy job ran after the Test job and
+completed successfully. The screenshot is a workflow-summary view, so it does
+not show the individual `docker push` log lines or the final contents of the
+Docker Hub repositories. Those details should be captured separately if
+repository-level proof is required.
+
+The four annotations were Node.js runtime deprecation warnings. They stated
+that the actions currently target Node.js 20 and are being forced to run on
+Node.js 24. The warnings appeared for `actions/checkout@v4` in the Verify,
+Build, and Test jobs, and for both `actions/checkout@v4` and
+`docker/login-action@v3` in the Docker Hub job. They did not fail this run, but
+the action versions should be reviewed before relying on this workflow long
+term.
+
+The run confirms registry publishing, but it does not by itself confirm that a
+separate staging environment was updated or that a rollback strategy exists.
+Those remain separate requirements from the exam PDF.
 
 ### Inspection result for the remaining untracked path
 
