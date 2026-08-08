@@ -353,5 +353,13 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 21 evidence files: 12 GitHub setup/history screenshots
-and 9 staging/workflow/build screenshots.
+The folder contains 24 evidence files: 12 GitHub setup/history screenshots,
+12 staging/workflow/build and Test Stage preparation screenshots.
+
+The latest preparation evidence is:
+
+- [Test Stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
+
+This screenshot confirms that `git diff --check` returned no errors and that
+only `.github/workflows/deploy.yml` was modified before the Test Stage commit.
+It does not yet prove that the GitHub Actions Test Stage passed.

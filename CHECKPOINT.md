@@ -257,6 +257,7 @@ The Replit-side evidence files are:
 
 - `documentation/screenshots/part3/task10-github-actions-build-success.png`
 - `documentation/screenshots/part3/task11-github-actions-built-images.png`
+- `documentation/screenshots/part3/task12-test-stage-pre-push-check.png`
 
 ### Next exact actions on the personal WSL computer
 
@@ -279,6 +280,11 @@ git push origin staging
 
 The GitHub Actions run and built-image evidence are now recorded above. The
 GitHub runner built fresh images; it did not reuse the local image IDs.
+
+The Test Stage workflow has been prepared locally. The pre-push validation
+confirmed that `git diff --check` returned no errors and that only
+`.github/workflows/deploy.yml` was modified. The Test Stage itself remains
+pending until its commit is pushed and the GitHub Actions run succeeds.
 
 The attempted command `docker image ls api-app ui-app` returned a Docker usage
 error because this local Docker version accepts at most one repository
@@ -433,14 +439,13 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build job verified in CI | ✅ Starter trigger and Docker build documented; Test/Deploy stages pending | ✅ 23 evidence files | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build job verified in CI | ✅ Starter trigger and Docker build documented; Test/Deploy stages pending | ✅ 24 evidence files | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Add the Part 3 Test Stage: automated application tests and lint/code-quality checks.
-2. Decide whether to add the optional Docker image security scan.
-3. Push the test-stage workflow change to `staging`.
-4. Verify the GitHub Actions test results and capture the evidence.
-5. Add and verify deploy, registry/secrets, rollback, and notification
+1. Commit and push the prepared Test Stage workflow to `staging`.
+2. Verify the GitHub Actions test results and capture the evidence.
+3. Decide whether to add the optional Docker image security scan.
+4. Add and verify deploy, registry/secrets, rollback, and notification
    requirements incrementally, documenting only work shown by evidence.
