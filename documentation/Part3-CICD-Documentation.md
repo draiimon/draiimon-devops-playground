@@ -651,15 +651,19 @@ created without exposing the value.
 
 ### Security rule
 
-Only the secret name is documented. The username secret value and Docker Hub
-PAT value are not stored in this repository or in chat. The PAT still needs to
-be added as a separate encrypted GitHub repository secret before the workflow
-can authenticate to Docker Hub.
+Only the secret names are documented. The username secret value and Docker Hub
+PAT value are not stored in this repository or in chat.
 
 ### Current status
 
-`DOCKERHUB_USERNAME` is confirmed. `DOCKERHUB_TOKEN` has not yet been added or
-verified. Image push and staging deployment remain pending.
+`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` are confirmed as encrypted
+repository secret names. The screenshot of the token secret does not expose
+its value. GitHub Actions login and image push are not yet verified; image push
+and staging deployment remain pending.
+
+### Evidence — Docker Hub token secret
+
+- [GitHub Docker Hub token secret](screenshots/part3/task18-github-dockerhub-token-secret.png)
 
 ---
 
@@ -739,8 +743,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 28 screenshot evidence files: 12 GitHub setup/history
-screenshots and 16 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 29 screenshot evidence files: 12 GitHub setup/history
+screenshots and 17 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output is preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`

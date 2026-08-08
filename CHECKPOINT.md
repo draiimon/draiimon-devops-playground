@@ -365,6 +365,26 @@ The secret name is visible, but its value is hidden. The Docker Hub PAT still
 needs to be added as a separate encrypted secret. No credential value is
 stored in this Repl, the repository, the documentation, or chat.
 
+### GitHub Actions token secret evidence
+
+The Docker Hub Personal Access Token was added to the GitHub repository's
+encrypted Actions secrets using the exact name:
+
+```text
+DOCKERHUB_TOKEN
+```
+
+The screenshot is stored at:
+
+```text
+documentation/screenshots/part3/task18-github-dockerhub-token-secret.png
+```
+
+The token value is hidden and is not stored in this Repl, the repository, the
+documentation, or chat. Both required credential secret names are now present.
+GitHub Actions login and Docker image push still need to be verified by a real
+workflow run.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are
@@ -544,7 +564,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub repositories, PAT, and username secret created | ✅ Trigger, Build, Test, registry setup, Docker Hub tutorial, and username secret documented; image push/Deploy/Notifications pending | ✅ 28 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build and Test jobs verified in CI; Docker Hub repositories, PAT, and both encrypted secrets created | ✅ Trigger, Build, Test, registry setup, Docker Hub tutorial, and GitHub Secrets documented; image push/Deploy/Notifications pending | ✅ 29 screenshots plus 1 raw test log | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
