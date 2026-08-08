@@ -546,6 +546,25 @@ the parent `deploy.yml`, which was already committed. Only the nested
 untracked `.github` directory should be removed; no broad `git clean` should
 be used.
 
+The candidate then removed only that confirmed empty nested path. The command
+reported:
+
+```text
+OK: Natanggal lamang ang empty accidental nested .github folder.
+```
+
+The subsequent `git status --short` produced no output, confirming that the
+working tree is clean. The last commit remained:
+
+```text
+7a51dac (HEAD -> staging) Keep build stage focused on validation
+```
+
+This proves that the accidental nested folder was removed without affecting
+the real workflow or the Step 9 commit. The local repository is now ready for
+the next reviewed change. It does not yet prove a GitHub Actions run or a
+Docker Hub image push.
+
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, and Test Stage are

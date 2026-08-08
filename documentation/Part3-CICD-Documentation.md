@@ -891,6 +891,36 @@ The nested file is empty and is not the committed workflow. This confirms
 that the untracked path can be removed as cleanup, but only that exact nested
 `.github` directory should be removed. A broad `git clean` must not be used.
 
+### Accidental nested workflow cleanup result
+
+The candidate removed only the confirmed empty nested file and its empty parent
+directories. The cleanup command completed with:
+
+```text
+OK: Natanggal lamang ang empty accidental nested .github folder.
+```
+
+The follow-up `git status --short` produced no output. In Git, an empty
+short-status section means there are no uncommitted changes and no untracked
+files in the working tree. The final verification still showed:
+
+```text
+7a51dac (HEAD -> staging) Keep build stage focused on validation
+```
+
+This confirms:
+
+- the accidental nested `.github` directory is gone;
+- the real `.github/workflows/deploy.yml` was not removed;
+- the Step 9 workflow edit remains saved in the `staging` branch;
+- the backup is outside the repository;
+- the local repository is clean;
+- no Docker Hub push or Deploy Stage run has been claimed yet.
+
+This is the correct state before reviewing or adding the next Deploy-stage
+change. A clean Git status does not itself prove that GitHub Actions has run;
+that requires a later push and a successful Actions run.
+
 ---
 
 ## Beginner Walkthrough — Understanding the Step 9 Workflow Edit
