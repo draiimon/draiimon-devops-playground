@@ -45,13 +45,6 @@ jobs:
             -f part2-docker/docker-compose.yml \
             build api ui
 
-      - name: Tag images with commit SHA and branch
-        run: |
-          docker image tag api-app:latest "api-app:${GITHUB_SHA}"
-          docker image tag ui-app:latest "ui-app:${GITHUB_SHA}"
-          docker image tag api-app:latest "api-app:${GITHUB_REF_NAME}"
-          docker image tag ui-app:latest "ui-app:${GITHUB_REF_NAME}"
-
       - name: Show built images
         run: |
           docker image ls api-app
