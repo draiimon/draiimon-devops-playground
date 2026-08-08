@@ -28,7 +28,7 @@ repository-root/
 ├── documentation/
 │   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete — now formatted consistently with Part 2
 │   ├── Part2-Docker-Containerization-Documentation.md  ✅ Complete
-│   ├── Part3-CICD-Documentation.md                   ✅ Complete
+│   ├── Part3-CICD-Documentation.md                   ⏳ Pending — begin local walkthrough
 │   ├── Part4-HA-Documentation.md                     ⏳ Pending — create after Part 3 verification
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
@@ -47,10 +47,7 @@ repository-root/
 │   │   └── Dockerfile         ✅ production build, non-root (nextjs), HEALTHCHECK
 │   ├── ui-src/                ✅ Cloned Next.js application source
 │   └── docker-compose.yml     ✅ 3-service (api + ui + MySQL db), named network, healthchecks
-├── part3-cicd/
-│   └── .github/
-│       └── workflows/
-│           └── deploy.yml     ✅ Full GitHub Actions pipeline (304 lines)
+├── part3-cicd/                                      ⏳ Part 3 not started
 ├── part4-ha/
 │   ├── k8s/                   ✅ Full Kubernetes manifests (8 files)
 │   ├── helm/                  ✅ Helm chart + values.yaml + values.staging.yaml
@@ -180,60 +177,11 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 
 ---
 
-## ✅ PART 3 — CI/CD Pipeline — CONFIGURATION AND DOCUMENTATION COMPLETE ✅
+## ⏳ PART 3 — CI/CD Pipeline — NOT STARTED
 
-**Pipeline file:** `part3-cicd/.github/workflows/deploy.yml` ✅ GitHub Actions workflow  
-**Documentation:** ✅ `documentation/Part3-CICD-Documentation.md` created in the same format as Part 1 and Part 2
-
-### What the pipeline covers (aligned to PDF requirements)
-
-| PDF Requirement | Our Implementation | Status |
-|-----------------|-------------------|--------|
-| Automatic triggering on `staging` branch | `on: push: branches: [staging]` | ✅ |
-| Manual trigger | `workflow_dispatch` with optional reason input | ✅ |
-| Build Stage — Docker images for both apps | Job `build` with matrix strategy (api + ui in parallel) | ✅ |
-| Image tagging (commit SHA + branch) | `docker/metadata-action` → full SHA tag + branch tag + `latest` | ✅ |
-| Build caching | `cache-from/cache-to: type=gha` (GitHub Actions cache backend) | ✅ |
-| Test Stage — application validation | Job `test` — Python compile/source checks, UI lint/build, and Docker Compose smoke test | ✅ |
-| Linting / code quality | UI `npm run lint` plus production build validation | ✅ |
-| Security scan | Job `scan` — Trivy CRITICAL/HIGH CVEs, SARIF to GitHub Security tab | ✅ |
-| Deploy Stage — push images to registry | Docker Hub push via `docker/build-push-action` | ✅ |
-| Deploy to staging via Helm | `helm upgrade --atomic` (auto-rollback on failure) | ✅ |
-| Rollback strategy | `--atomic` flag — Helm auto-rolls back if deploy fails | ✅ |
-| Notifications success | Slack success message with branch, commit SHA, actor, run link | ✅ |
-| Notifications failure | Slack failure message with same details | ✅ |
-
-### Pipeline Job Order
-
-```
-build (api + ui in parallel)
-  ↓
-scan (security) + test (source validation + UI build + Compose smoke test) — both run in parallel after build
-  ↓
-deploy (Helm upgrade to Kubernetes staging)
-  ↓
-notify (always runs — success or failure)
-```
-
-### Secrets required (for the pipeline to run on GitHub)
-
-| Secret name | What it is |
-|-------------|-----------|
-| `DOCKER_USERNAME` | Docker Hub username |
-| `DOCKER_PASSWORD` | Docker Hub password or access token |
-| `KUBE_CONFIG_STAGING` | kubeconfig for staging Kubernetes cluster |
-| `SLACK_WEBHOOK_URL` | Slack incoming webhook URL |
-
-### Part 3 documentation coverage
-
-The Part 3 document covers the five PDF requirements, the optional security
-scan, the GitHub secrets, the workflow job order, deployment rollback behavior,
-the actual cloned-source build contexts, and the local inspection commands.
-The workflow YAML remains the source of truth.
-
-**Part 3 configuration and documentation are complete.** A live GitHub Actions
-run screenshot can be added later as optional supporting evidence after the
-repository is connected and the required GitHub secrets are configured.
+No Part 3 workflow or documentation has been created for the current walkthrough.
+We will begin from the exam PDF requirements and document the candidate's local
+computer work as screenshots are provided.
 
 ---
 
@@ -335,10 +283,8 @@ Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
 - All scripts in `part1-linux/` are already `chmod +x`
 - The `docker-compose.yml` build contexts must point at `./api-src` and `./ui-src` (cloned from Bitbucket)
 - The cloned FastAPI application uses MySQL through `DB_CONNECTION_STRING`; the Compose database must match that driver instead of using PostgreSQL
-- Part 3 pipeline uses matrix strategy — API and UI are built in parallel jobs
 - Part 4 uses Kubernetes Option A (Recommended by the PDF) — NOT Docker Swarm or VM-based
 - The `image` field in `k8s/api-deployment.yaml` has placeholder `DOCKER_USERNAME/api-app:latest` — user must replace with their actual Docker Hub username
-- `part3-cicd/` folder has only one file: `.github/workflows/deploy.yml` — no other files exist
 - Git author preference: use `draiimon` / `Mark Andrei Castillo <99703880+draiimon@users.noreply.github.com>` for future commits and pushes
 
 ---
@@ -370,9 +316,9 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ deploy.yml | ✅ Complete | ⏳ Live workflow screenshot optional | ✅ **COMPLETE** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ⏳ Not started | ⏳ Pending local walkthrough | ⏳ None | ⏳ **NOT STARTED** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. Create `documentation/Part4-HA-Documentation.md`
+1. Begin Part 3 on the candidate's local computer and document each screenshot.
