@@ -179,6 +179,26 @@ result must still be captured after the command returns to the shell prompt.
 
 ---
 
+## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
+
+The successful Docker build from Part 2 and the Docker build in Part 3 serve
+different purposes:
+
+| Build | What it proves |
+|---|---|
+| Part 2 local build | The Dockerfiles, Compose file, and application containers work on the candidate's WSL computer |
+| Part 3 GitHub Actions build | The repository can be checked out and rebuilt automatically by a clean CI runner after a push |
+
+The local image is not uploaded automatically to GitHub Actions. The hosted
+runner builds a fresh image from the repository. The local Part 3 build is a
+preflight check: it catches incorrect paths or Dockerfile problems before the
+workflow is pushed, while the GitHub Actions run is the official CI evidence.
+
+Because the Part 2 build was already successful, repeating the local build is
+supporting validation rather than a replacement for the Part 3 CI build.
+
+---
+
 ## Important Commands and Explanations
 
 | Command | Purpose |

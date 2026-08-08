@@ -223,6 +223,13 @@ success still needs confirmation. The local WSL environment has Docker 29.1.3
 and legacy `docker-compose` 1.29.2, while the GitHub workflow uses the modern
 `docker compose` command available on the hosted runner.
 
+**Beginner workflow note:** The Part 2 local Docker build and the Part 3
+GitHub Actions build are intentionally separate evidence. Part 2 proves that
+the containers work on the candidate's WSL computer. Part 3 proves that a
+clean GitHub Actions runner can rebuild them automatically from the repository.
+The local Part 3 build is only a preflight check; it does not transfer local
+images into GitHub Actions.
+
 ---
 
 ## ❌ PART 4 — High Availability — FILES DONE, DOCUMENTATION NEEDED
