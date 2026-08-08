@@ -69,8 +69,8 @@ workflow.
 | Automatic trigger on `staging` | Workflow run triggered by a push to `staging` | ✅ Confirmed |
 | Optional manual trigger | `workflow_dispatch` is present | ✅ Confirmed |
 | Pipeline as Code | Root `.github/workflows/deploy.yml` | ✅ Confirmed |
-| Build API and UI images | Local Compose build completed for both images | ✅ Local preflight confirmed |
-| Image tagging | SHA and branch tag commands added to workflow | 🔄 Added, pending CI verification |
+| Build API and UI images | GitHub Actions built both images successfully on `staging` | ✅ CI confirmed |
+| Image tagging | Images listed with commit SHA, `latest`, and `staging` tags | ✅ CI confirmed |
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Not yet added/verified | ⏳ Pending |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
@@ -223,6 +223,38 @@ ui-app:latest   7c5044be6886
 ```
 
 Evidence: [Local image verification](screenshots/part3/task09-local-image-verification.png)
+
+### GitHub Actions build verification
+
+The updated workflow was committed and pushed to the `staging` branch. The
+GitHub Actions run completed successfully and verified the Docker build stage
+on a clean hosted runner.
+
+The successful run showed:
+
+| Item | Confirmed result |
+|---|---|
+| Workflow | `Add Docker image build stage` |
+| Branch | `staging` |
+| Commit-based image tag | `55cf266e1223b89cf5d436f51c93e18915590a79` |
+| API image | `api-app` built successfully |
+| UI image | `ui-app` built successfully |
+| API tags | Commit SHA, `latest`, and `staging` |
+| UI tags | Commit SHA, `latest`, and `staging` |
+| GitHub Actions status | Success |
+
+The build log also confirms the expected production build details:
+
+- API base image: `python:3.11-slim`
+- UI base image: `node:20-alpine`
+- Next.js production compilation completed successfully
+- API image size: approximately `180MB`
+- UI image size: approximately `722MB`
+
+Evidence:
+
+- [GitHub Actions build success](screenshots/part3/task10-github-actions-build-success.png)
+- [GitHub Actions built images and tags](screenshots/part3/task11-github-actions-built-images.png)
 
 ### Build warnings recorded
 

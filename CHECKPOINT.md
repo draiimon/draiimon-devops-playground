@@ -187,7 +187,7 @@ Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not i
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Step 12 complete locally; Step 13 pending
+### Current position — Step 13 complete; Test Stage next
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -238,10 +238,35 @@ The final local image listing confirmed:
 The supporting screenshot is
 `documentation/screenshots/part3/task09-local-image-verification.png`.
 
+### Confirmed CI build evidence
+
+The updated workflow was committed and pushed to the `staging` branch. The
+GitHub Actions build run completed successfully on the hosted runner.
+
+The run verified:
+
+- workflow: `Add Docker image build stage`;
+- branch: `staging`;
+- commit-based image tag:
+  `55cf266e1223b89cf5d436f51c93e18915590a79`;
+- API and UI images built successfully;
+- both images were tagged with the commit SHA, `latest`, and `staging`;
+- the final image listing was successful.
+
+The Replit-side evidence files are:
+
+- `documentation/screenshots/part3/task10-github-actions-build-success.png`
+- `documentation/screenshots/part3/task11-github-actions-built-images.png`
+
 ### Next exact actions on the personal WSL computer
 
-The local Docker preflight is complete. Do not repeat the build unless a later
-change requires it. The next commands are:
+The local Docker preflight and the GitHub Actions Docker build are complete. Do
+not repeat the build unless a later change requires it. The next Part 3 work is
+the Test Stage from the exam PDF: add and verify automated tests, linting/code
+quality checks, and any selected security scan. Continue documenting only work
+shown by local or GitHub evidence.
+
+The previous commands that completed this checkpoint were:
 
 ```bash
 cd ~/devops-exam
@@ -252,9 +277,8 @@ git commit -m "Add Docker image build stage"
 git push origin staging
 ```
 
-After the push, open the GitHub Actions run and capture evidence that the
-`Verify workflow` and `Build Docker images` jobs pass. The GitHub runner will
-build fresh images; it does not reuse the local image IDs.
+The GitHub Actions run and built-image evidence are now recorded above. The
+GitHub runner built fresh images; it did not reuse the local image IDs.
 
 The attempted command `docker image ls api-app ui-app` returned a Docker usage
 error because this local Docker version accepts at most one repository
@@ -409,13 +433,14 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | 🔄 Build job added locally | 🔄 Starter run complete; build CI verification pending | ✅ 21 evidence files | 🔄 **IN PROGRESS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Build job verified in CI | ✅ Starter trigger and Docker build documented; Test/Deploy stages pending | ✅ 23 evidence files | 🔄 **IN PROGRESS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Immediate priority for next session:**
-1. On the personal WSL computer, run `git diff --check` and inspect `git status`.
-2. Commit and push the updated Docker build workflow to `staging`.
-3. Verify the GitHub Actions build job and capture the result.
-4. Add and verify test, deploy, registry/secrets, rollback, and notification
+1. Add the Part 3 Test Stage: automated application tests and lint/code-quality checks.
+2. Decide whether to add the optional Docker image security scan.
+3. Push the test-stage workflow change to `staging`.
+4. Verify the GitHub Actions test results and capture the evidence.
+5. Add and verify deploy, registry/secrets, rollback, and notification
    requirements incrementally, documenting only work shown by evidence.
