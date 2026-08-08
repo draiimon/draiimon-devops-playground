@@ -717,6 +717,9 @@ Docker Hub publishing and staging service update are now confirmed. GitHub
 Actions email notifications are enabled, the workflow-runs history is
 preserved, and a successful workflow email for Attempt #2 is preserved as
 `documentation/screenshots/part3/task30-success-email-notification.png`.
+The full notification email view is also preserved as
+`documentation/screenshots/part3/task41-success-email-notification-full.png`;
+it shows the staging run and all four successful jobs.
 The notification settings and workflow history are preserved as
 `task28-notification-settings.png` and `task29-workflow-runs-history.png`.
 The failure-email proof has not yet been captured. The immutable-tag rollback
@@ -922,7 +925,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure-email proof remains open | ✅ 48 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FAILURE EMAIL PROOF REMAINS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure-email proof remains open | ✅ 49 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FAILURE EMAIL PROOF REMAINS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

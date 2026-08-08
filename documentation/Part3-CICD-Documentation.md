@@ -1882,6 +1882,7 @@ run the normal pipeline successfully again. Do not fabricate this evidence.
 - [GitHub Actions notification settings](screenshots/part3/task28-notification-settings.png)
 - [Workflow runs history](screenshots/part3/task29-workflow-runs-history.png)
 - [Successful GitHub Actions email notification](screenshots/part3/task30-success-email-notification.png)
+- [Full successful GitHub Actions notification email](screenshots/part3/task41-success-email-notification-full.png)
 
 #### Notification status
 
@@ -2001,7 +2002,7 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 48 screenshot evidence files. All 48 are listed below by
+The folder contains 49 screenshot evidence files. All 49 are listed below by
 their evidence filename and linked to the corresponding section of this
 document. The raw Test Stage output, current workflow baseline, draft workflow
 review, and post-correction workflow output are preserved separately at:
@@ -2014,59 +2015,309 @@ review, and post-correction workflow output are preserved separately at:
 
 `evidence/part3/task21-workflow-after-removing-early-push.txt`
 
-### Complete screenshot list
+### Screenshot Evidence Gallery
 
-- [Setup 01 — GitHub CLI installation](screenshots/part3/setup-01-github-cli-installation.png)
-- [Setup 02 — Repository folder check](screenshots/part3/setup-02-repository-folder-check.png)
-- [Setup 03 — Pre-Part-3 backup](screenshots/part3/setup-03-pre-part3-backup.png)
-- [Setup 04 — Remote and branch check](screenshots/part3/setup-04-remote-branch-check.png)
-- [Setup 05 — Fresh repository clone](screenshots/part3/setup-05-fresh-repository-clone.png)
-- [Setup 06 — Old Part 3 detection](screenshots/part3/setup-06-old-part3-detection.png)
-- [Setup 07 — Old Part 3 cleanup](screenshots/part3/setup-07-old-part3-cleanup.png)
-- [Setup 08 — Staged cleanup check](screenshots/part3/setup-08-staged-cleanup-check.png)
-- [Setup 09 — Clean main status](screenshots/part3/setup-09-clean-main-status.png)
-- [Setup 10 — Part 3 reset commit](screenshots/part3/setup-10-reset-part3-commit.png)
-- [Setup 11 — Push main reset](screenshots/part3/setup-11-push-main-reset.png)
-- [Setup 12 — Root workflow created](screenshots/part3/setup-12-root-workflow-created.png)
-- [Task 01 — Push staging success](screenshots/part3/task01-push-staging-success.png)
-- [Task 02 — Workflow success summary](screenshots/part3/task02-workflow-success-summary.png)
-- [Task 03 — Workflow checkout log](screenshots/part3/task03-workflow-checkout-log.png)
-- [Task 04 — Workflow confirmation](screenshots/part3/task04-workflow-confirmation.png)
-- [Task 05 — Local workflow inspection](screenshots/part3/task05-local-workflow-inspection.png)
-- [Task 06 — Local workflow reinspection](screenshots/part3/task06-local-workflow-reinspection.png)
-- [Task 07 — Docker Compose version check](screenshots/part3/task07-docker-compose-version-check.png)
-- [Task 08 — Docker build progress](screenshots/part3/task08-docker-build-progress.png)
-- [Task 09 — Local image verification](screenshots/part3/task09-local-image-verification.png)
-- [Task 10 — GitHub Actions build success](screenshots/part3/task10-github-actions-build-success.png)
-- [Task 11 — GitHub Actions built images](screenshots/part3/task11-github-actions-built-images.png)
-- [Task 12 — Test-stage pre-push check](screenshots/part3/task12-test-stage-pre-push-check.png)
-- [Task 14 — Docker Hub API repository](screenshots/part3/task14-dockerhub-api-repository.png)
-- [Task 15 — Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
-- [Task 16 — Docker Hub access token created](screenshots/part3/task16-dockerhub-access-token-created.png)
-- [Task 17 — Docker Hub username secret](screenshots/part3/task17-github-dockerhub-username-secret.png)
-- [Task 18 — Docker Hub token secret](screenshots/part3/task18-github-dockerhub-token-secret.png)
-- [Task 22 — Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
-- [Task 23 — Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
-- [Task 24 — Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
-- [Task 25 — Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
-- [Task 26 — Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
-- [Task 27 — Healthy staging images](screenshots/part3/task27-staging-healthy-images.png)
-- [Task 28 — Notification settings](screenshots/part3/task28-notification-settings.png)
-- [Task 29 — Workflow runs history](screenshots/part3/task29-workflow-runs-history.png)
-- [Task 30 — Success email notification](screenshots/part3/task30-success-email-notification.png)
-- [Task 31 — Workflow history success run](screenshots/part3/task31-workflow-history-success-run.png)
-- [Task 32 — Test-stage cleanup log](screenshots/part3/task32-test-stage-cleanup-log.png)
-- [Task 33 — Untracked workflow folder inspection](screenshots/part3/task33-untracked-workflow-folder-inspection.png)
-- [Task 34 — Local staging smoke-test commands](screenshots/part3/task34-local-staging-smoke-test-commands.png)
-- [Task 35 — Workflow commit status](screenshots/part3/task35-workflow-commit-status.png)
-- [Task 36 — Nested workflow cleanup](screenshots/part3/task36-nested-workflow-cleanup.png)
-- [Task 37 — Full Deploy workflow success](screenshots/part3/task37-full-deploy-workflow-success.png)
-- [Task 38 — Wide Test-stage cleanup log](screenshots/part3/task38-test-stage-cleanup-log-wide.png)
-- [Task 39 — Step 9 post-commit status](screenshots/part3/task39-step9-post-commit-status.png)
-- [Task 40 — Workflow editor opened](screenshots/part3/task40-workflow-editor-open.png)
+Every supplied Part 3 screenshot is embedded below as an actual image. Each
+image has a short explanation in the same format used in Part 2.
 
-The notification-settings, workflow-history, and success-email screenshots
+#### Setup 01 — GitHub CLI installation
+
+![GitHub CLI installation](screenshots/part3/setup-01-github-cli-installation.png)
+
+**Screenshot Explanation:** The terminal shows GitHub CLI installation and version verification in the WSL environment. This proves the tool required for repository and Actions work was available.
+
+#### Setup 02 — Repository folder check
+
+![Repository folder check](screenshots/part3/setup-02-repository-folder-check.png)
+
+**Screenshot Explanation:** The terminal shows the initial repository directory structure. This proves the candidate confirmed the working location before changing Part 3 files.
+
+#### Setup 03 — Pre-Part-3 backup
+
+![Pre-Part-3 backup](screenshots/part3/setup-03-pre-part3-backup.png)
+
+**Screenshot Explanation:** The terminal shows the backup command before the Part 3 reset. This proves the earlier project state was preserved before cleanup.
+
+#### Setup 04 — Remote and branch check
+
+![Remote and branch check](screenshots/part3/setup-04-remote-branch-check.png)
+
+**Screenshot Explanation:** The terminal shows the configured Git remote and current branch. This proves the work was connected to the intended GitHub repository and branch.
+
+#### Setup 05 — Fresh repository clone
+
+![Fresh repository clone](screenshots/part3/setup-05-fresh-repository-clone.png)
+
+**Screenshot Explanation:** The terminal shows the repository being cloned into a clean working directory. This proves the Part 3 walkthrough started from a fresh checkout.
+
+#### Setup 06 — Old Part 3 detection
+
+![Old Part 3 detection](screenshots/part3/setup-06-old-part3-detection.png)
+
+**Screenshot Explanation:** The file listing shows the previous Part 3 files and workflow locations. This proves the old documentation and nested workflow were identified before removal.
+
+#### Setup 07 — Old Part 3 cleanup
+
+![Old Part 3 cleanup](screenshots/part3/setup-07-old-part3-cleanup.png)
+
+**Screenshot Explanation:** The terminal shows the targeted cleanup of the old Part 3 material. This proves the reset removed only the identified legacy files.
+
+#### Setup 08 — Staged cleanup check
+
+![Staged cleanup check](screenshots/part3/setup-08-staged-cleanup-check.png)
+
+**Screenshot Explanation:** The staged-file check shows the cleanup changes before committing. This proves the candidate reviewed what Git was going to record.
+
+#### Setup 09 — Clean main status
+
+![Clean main status](screenshots/part3/setup-09-clean-main-status.png)
+
+**Screenshot Explanation:** The terminal shows the clean repository status after the reset preparation. This proves no unintended files remained before the new workflow was created.
+
+#### Setup 10 — Part 3 reset commit
+
+![Part 3 reset commit](screenshots/part3/setup-10-reset-part3-commit.png)
+
+**Screenshot Explanation:** The terminal shows the commit that recorded the Part 3 reset. This proves the cleanup was saved in Git history.
+
+#### Setup 11 — Push main reset
+
+![Push main reset](screenshots/part3/setup-11-push-main-reset.png)
+
+**Screenshot Explanation:** The terminal shows the reset commit being pushed to `main`. This proves the cleaned baseline was synchronized with GitHub.
+
+#### Setup 12 — Root workflow created
+
+![Root workflow created](screenshots/part3/setup-12-root-workflow-created.png)
+
+**Screenshot Explanation:** The terminal shows the root `.github/workflows/deploy.yml` being created and inspected. This proves the pipeline was implemented as repository code in the required location.
+
+#### Task 01 — Push staging success
+
+![Push staging success](screenshots/part3/task01-push-staging-success.png)
+
+**Screenshot Explanation:** The terminal shows the successful push to the `staging` branch. This is the source-control event that triggers the automatic CI/CD workflow.
+
+#### Task 02 — Workflow success summary
+
+![Workflow success summary](screenshots/part3/task02-workflow-success-summary.png)
+
+**Screenshot Explanation:** GitHub Actions shows the initial workflow run completed successfully. This proves GitHub accepted and executed the pipeline after the staging push.
+
+#### Task 03 — Workflow checkout log
+
+![Workflow checkout log](screenshots/part3/task03-workflow-checkout-log.png)
+
+**Screenshot Explanation:** The Actions log shows the repository checkout and verification output. This proves the runner received the intended source and identified the branch and commit.
+
+#### Task 04 — Workflow confirmation
+
+![Workflow confirmation](screenshots/part3/task04-workflow-confirmation.png)
+
+**Screenshot Explanation:** The workflow page confirms the workflow name, staging branch, and successful verification job. This proves the Pipeline-as-Code trigger worked at the workflow level.
+
+#### Task 05 — Local workflow inspection
+
+![Local workflow inspection](screenshots/part3/task05-local-workflow-inspection.png)
+
+**Screenshot Explanation:** The terminal shows the first local inspection of `deploy.yml`. This proves the workflow structure was reviewed before adding later pipeline stages.
+
+#### Task 06 — Local workflow reinspection
+
+![Local workflow reinspection](screenshots/part3/task06-local-workflow-reinspection.png)
+
+**Screenshot Explanation:** The second inspection shows the workflow after an edit or review pass. This proves the candidate checked the YAML structure incrementally instead of relying only on the final run.
+
+#### Task 07 — Docker Compose version check
+
+![Docker Compose version check](screenshots/part3/task07-docker-compose-version-check.png)
+
+**Screenshot Explanation:** The terminal shows the local Docker and legacy Compose versions. This explains why local validation used `docker-compose` while GitHub Actions used `docker compose`.
+
+#### Task 08 — Docker build progress
+
+![Docker build progress](screenshots/part3/task08-docker-build-progress.png)
+
+**Screenshot Explanation:** The terminal shows the API and UI image build progress. This proves both application images were built from the project Docker configuration.
+
+#### Task 09 — Local image verification
+
+![Local image verification](screenshots/part3/task09-local-image-verification.png)
+
+**Screenshot Explanation:** The terminal lists the resulting local API and UI images. This proves the local Build Stage produced the expected image tags.
+
+#### Task 10 — GitHub Actions build success
+
+![GitHub Actions build success](screenshots/part3/task10-github-actions-build-success.png)
+
+**Screenshot Explanation:** GitHub Actions shows the hosted Build job completed successfully. This proves the images could be built on a clean CI runner, not only on the candidate’s computer.
+
+#### Task 11 — GitHub Actions built images
+
+![GitHub Actions built images](screenshots/part3/task11-github-actions-built-images.png)
+
+**Screenshot Explanation:** The Build job output shows the API and UI image names and tags. This proves the CI runner produced both required application images.
+
+#### Task 12 — Test-stage pre-push check
+
+![Test-stage pre-push check](screenshots/part3/task12-test-stage-pre-push-check.png)
+
+**Screenshot Explanation:** The terminal shows the workflow state before the Test Stage was finalized. This documents the validation checkpoint used before pushing the next workflow change.
+
+#### Task 14 — Docker Hub API repository
+
+![Docker Hub API repository](screenshots/part3/task14-dockerhub-api-repository.png)
+
+**Screenshot Explanation:** Docker Hub shows the `devops-api` repository under the candidate namespace. This proves the API image had a registry destination.
+
+#### Task 15 — Docker Hub UI repository
+
+![Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
+
+**Screenshot Explanation:** Docker Hub shows the `devops-ui` repository. This proves the UI image had its own registry destination.
+
+#### Task 16 — Docker Hub access token created
+
+![Docker Hub access token created](screenshots/part3/task16-dockerhub-access-token-created.png)
+
+**Screenshot Explanation:** Docker Hub shows the GitHub Actions token description and Read & Write permission. The secret value is not exposed in the screenshot or documentation.
+
+#### Task 17 — Docker Hub username secret
+
+![GitHub Docker Hub username secret](screenshots/part3/task17-github-dockerhub-username-secret.png)
+
+**Screenshot Explanation:** GitHub repository settings show the `DOCKERHUB_USERNAME` secret name. GitHub hides the value, proving the credential was stored without exposing it.
+
+#### Task 18 — Docker Hub token secret
+
+![GitHub Docker Hub token secret](screenshots/part3/task18-github-dockerhub-token-secret.png)
+
+**Screenshot Explanation:** GitHub repository settings show the `DOCKERHUB_TOKEN` secret entry. The token value remains hidden and is not recorded in the project.
+
+#### Task 22 — Docker Hub UI published tags
+
+![Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
+
+**Screenshot Explanation:** The Docker Hub UI repository shows the published commit, `staging`, and `latest` tags. This proves the UI image was pushed to the registry.
+
+#### Task 23 — Docker Hub API published tags
+
+![Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
+
+**Screenshot Explanation:** The Docker Hub API repository shows the published commit, `staging`, and `latest` tags. This proves the API image was pushed to the registry.
+
+#### Task 24 — Docker Hub UI staging tag detail
+
+![Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
+
+**Screenshot Explanation:** The UI `staging` tag detail page shows its manifest and image-layer information. This provides registry-level detail for the deployed UI artifact.
+
+#### Task 25 — Docker Hub API staging tag detail
+
+![Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
+
+**Screenshot Explanation:** The API `staging` tag detail page shows its manifest and image-layer information. This provides registry-level detail for the deployed API artifact.
+
+#### Task 26 — Staging containers using published images
+
+![Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
+
+**Screenshot Explanation:** The staging Compose output shows API and UI containers using the Docker Hub `:staging` images alongside MySQL. This proves the runtime used published artifacts rather than only local builds.
+
+#### Task 27 — Healthy staging images
+
+![Healthy staging images](screenshots/part3/task27-staging-healthy-images.png)
+
+**Screenshot Explanation:** The container status shows the staging services running successfully with the published images. This confirms the staging runtime reached a healthy state.
+
+#### Task 28 — Notification settings
+
+![Notification settings](screenshots/part3/task28-notification-settings.png)
+
+**Screenshot Explanation:** The GitHub notification settings show Actions notifications enabled for GitHub and email. This proves the selected notification channel was configured.
+
+#### Task 29 — Workflow runs history
+
+![Workflow runs history](screenshots/part3/task29-workflow-runs-history.png)
+
+**Screenshot Explanation:** The Actions history shows successful CI/CD runs on the `staging` branch. This connects the notification evidence to an actual repository workflow run.
+
+#### Task 30 — Success email notification
+
+![Success email notification](screenshots/part3/task30-success-email-notification.png)
+
+**Screenshot Explanation:** The email view shows the successful GitHub Actions notification for Attempt #2. This proves a successful workflow notification was delivered.
+
+#### Task 31 — Workflow history success run
+
+![Workflow history success run](screenshots/part3/task31-workflow-history-success-run.png)
+
+**Screenshot Explanation:** The Actions run history shows the successful validation run and its staging branch context. This provides an additional record of the completed workflow execution.
+
+#### Task 32 — Test-stage cleanup log
+
+![Test-stage cleanup log](screenshots/part3/task32-test-stage-cleanup-log.png)
+
+**Screenshot Explanation:** The Test job log shows containers, volumes, and networks being stopped and removed. This proves the CI test environment cleaned itself after validation.
+
+#### Task 33 — Untracked workflow folder inspection
+
+![Untracked workflow folder inspection](screenshots/part3/task33-untracked-workflow-folder-inspection.png)
+
+**Screenshot Explanation:** The terminal inspects the accidental nested `.github/workflows` path and its empty file. This proves the candidate verified the untracked path before deleting it.
+
+#### Task 34 — Local staging smoke-test commands
+
+![Local staging smoke-test commands](screenshots/part3/task34-local-staging-smoke-test-commands.png)
+
+**Screenshot Explanation:** The terminal shows the API root, API `/trip`, and UI smoke-test commands used against staging. This proves the deployed services were checked through their HTTP endpoints.
+
+#### Task 35 — Workflow commit status
+
+![Workflow commit status](screenshots/part3/task35-workflow-commit-status.png)
+
+**Screenshot Explanation:** The terminal shows the Step 9 commit and Git status checks. This proves the workflow edit was committed while temporary files remained under review.
+
+#### Task 36 — Nested workflow cleanup
+
+![Nested workflow cleanup](screenshots/part3/task36-nested-workflow-cleanup.png)
+
+**Screenshot Explanation:** The terminal confirms only the empty accidental nested workflow folder was removed. This proves cleanup was targeted rather than a broad destructive Git clean.
+
+#### Task 37 — Full Deploy workflow success
+
+![Full Deploy workflow success](screenshots/part3/task37-full-deploy-workflow-success.png)
+
+**Screenshot Explanation:** GitHub Actions shows Verify, Build, Test, and Push images to Docker Hub all succeeded. This is the complete CI/CD pipeline success evidence.
+
+#### Task 38 — Wide Test-stage cleanup log
+
+![Wide Test-stage cleanup log](screenshots/part3/task38-test-stage-cleanup-log-wide.png)
+
+**Screenshot Explanation:** The wide Actions log view shows the Test job cleanup and post-checkout steps completing successfully. This provides a second detailed view of clean runner teardown.
+
+#### Task 39 — Step 9 post-commit status
+
+![Step 9 post-commit status](screenshots/part3/task39-step9-post-commit-status.png)
+
+**Screenshot Explanation:** The terminal shows the branch, latest commit, and post-cleanup status. This proves the corrected workflow was saved and the temporary backup was moved outside the repository.
+
+#### Task 40 — Workflow editor opened
+
+![Workflow editor opened](screenshots/part3/task40-workflow-editor-open.png)
+
+**Screenshot Explanation:** The workflow file is open in the editor before the pipeline changes. This proves the candidate worked on the root workflow file rather than an unrelated copy.
+
+#### Task 41 — Full success email notification
+
+![Full success email notification](screenshots/part3/task41-success-email-notification-full.png)
+
+**Screenshot Explanation:** The full GitHub Actions email shows “Run succeeded: CI/CD Pipeline - 2026, Attempt #2” for the `staging` branch. It visibly lists Verify workflow, Build Docker images, Test applications, and Push images to Docker Hub as successful, providing direct email proof of the complete pipeline.
+
+The notification-settings, workflow-history, and two success-email screenshots
 together confirm that GitHub Actions notifications were enabled, the successful
 run was visible in the repository history, and the successful Attempt #2 email
-was received. A failure-email screenshot is not included because it has not yet
-been captured.
+was received. The full email view also shows the repository, staging branch,
+workflow name, Attempt #2, the “All jobs were successful” result, and the
+successful Verify, Build, Test, and Docker Hub jobs. A failure-email screenshot
+is not included because it has not yet been captured.
