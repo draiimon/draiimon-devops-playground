@@ -310,8 +310,7 @@ documentation/screenshots/part3/task14-dockerhub-api-repository.png
 These first screenshots prove repository creation. At that earlier checkpoint,
 they did not yet prove that a Docker image was pushed. Later evidence in this
 checkpoint confirms GitHub Secrets authentication, image push, staging update,
-and success notifications; rollback testing and failure-email proof remain
-open.
+and success notifications; rollback testing remains an optional follow-up.
 
 The UI Docker Hub repository was also created:
 
@@ -722,9 +721,9 @@ The full notification email view is also preserved as
 it shows the staging run and all four successful jobs.
 The notification settings and workflow history are preserved as
 `task28-notification-settings.png` and `task29-workflow-runs-history.png`.
-The failure-email proof has not yet been captured. The immutable-tag rollback
-strategy is documented; a live rollback test remains optional follow-up
-evidence.
+Failure-email simulation is not required for this submission and will not be
+performed. The immutable-tag rollback strategy is documented; a live rollback
+test remains optional follow-up evidence.
 
 ### Final evidence-based handoff — August 8, 2026
 
@@ -737,8 +736,8 @@ Verify → Build → Test → Push images to Docker Hub
 The successful run was on `staging`, lasted approximately 4 minutes 14 seconds,
 and showed all four jobs passing. Four non-blocking Node.js 20 deprecation
 warnings were recorded. The evidence also includes a successful GitHub Actions
-email notification for Attempt #2. A failure-email notification has not yet
-been captured.
+email notification for Attempt #2. A failure simulation is not required for this
+submission and will not be performed.
 
 The rollback strategy is documented in
 `documentation/Part3-CICD-Documentation.md`: restore the last known-good
@@ -749,10 +748,9 @@ The strategy is not represented as a live rollback test.
 
 The local Docker preflight, GitHub Actions Docker build, Test Stage, Docker Hub
 publishing, staging runtime, and success-email notification are complete. Do
-not repeat them unless a later change requires it. The remaining Part 3 work is
-the failure-email proof, optional image scanning, and testing the documented
-rollback procedure. Continue documenting only work shown by local or GitHub
-evidence.
+not repeat them unless a later change requires it. The remaining optional Part
+3 work is image scanning and testing the documented rollback procedure.
+Continue documenting only work shown by local or GitHub evidence.
 
 The previous commands that completed this checkpoint were:
 
@@ -925,11 +923,10 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure-email proof remains open | ✅ 49 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FAILURE EMAIL PROOF REMAINS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure simulation is not required | ✅ 49 screenshots plus 4 raw logs | ✅ **CORE COMPLETE** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
-1. Capture a failure-workflow email notification without fabricating evidence.
-2. Decide whether to add the optional Docker image security scan.
-3. Test the documented immutable-tag rollback procedure on staging.
+1. Decide whether to add the optional Docker image security scan.
+2. Test the documented immutable-tag rollback procedure on staging.
