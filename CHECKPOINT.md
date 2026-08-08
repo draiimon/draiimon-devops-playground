@@ -307,9 +307,11 @@ at:
 documentation/screenshots/part3/task14-dockerhub-api-repository.png
 ```
 
-This proves repository creation only. It does not yet prove that a Docker
-image was pushed. GitHub Secrets authentication, image push, staging update,
-rollback, and notifications remain pending.
+These first screenshots prove repository creation. At that earlier checkpoint,
+they did not yet prove that a Docker image was pushed. Later evidence in this
+checkpoint confirms GitHub Secrets authentication, image push, staging update,
+and success notifications; rollback testing and failure-email proof remain
+open.
 
 The UI Docker Hub repository was also created:
 
@@ -712,8 +714,11 @@ currently being forced toward Node.js 24. This is a maintenance follow-up, not
 a failed pipeline result.
 
 Docker Hub publishing and staging service update are now confirmed. GitHub
-Actions email notifications are enabled and a successful workflow email for
-Attempt #2 is preserved as `documentation/screenshots/part3/task28-success-email-notification.png`.
+Actions email notifications are enabled, the workflow-runs history is
+preserved, and a successful workflow email for Attempt #2 is preserved as
+`documentation/screenshots/part3/task30-success-email-notification.png`.
+The notification settings and workflow history are preserved as
+`task28-notification-settings.png` and `task29-workflow-runs-history.png`.
 The failure-email proof has not yet been captured. The immutable-tag rollback
 strategy is documented; a live rollback test remains optional follow-up
 evidence.
@@ -917,7 +922,7 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure-email proof remains open | ✅ 36 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FAILURE EMAIL PROOF REMAINS** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure-email proof remains open | ✅ 48 screenshots plus 4 raw logs | 🟡 **CORE COMPLETE; FAILURE EMAIL PROOF REMAINS** |
 | Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 

@@ -650,9 +650,10 @@ recorded in this project.
 
 ### Current status
 
-The Docker Hub PAT has been created, but GitHub Actions authentication is not
-yet verified. The registry requirement remains incomplete until the workflow
-successfully logs in and pushes both tagged images.
+The Docker Hub PAT has been created, but GitHub Actions authentication was not
+yet verified at this point in the chronological walkthrough. Later evidence in
+this document confirms that the workflow successfully logged in and pushed both
+tagged images.
 
 ---
 
@@ -860,6 +861,8 @@ repository. The commit confirms the Step 9 workflow correction is saved in
 local Git history; it does not yet mean that the edited workflow has run on
 GitHub Actions.
 
+Evidence: [Step 9 commit and Git status](screenshots/part3/task35-workflow-commit-status.png)
+
 ### Post-commit cleanup verification
 
 The candidate then moved the temporary backup out of the repository:
@@ -886,6 +889,8 @@ working tree is not completely clean yet. The nested `.github` directory must
 be inspected before any push. It may be an accidental directory created while
 working from inside `.github/workflows`; it must not be deleted without first
 checking whether it contains a file that belongs in the project.
+
+Evidence: [Post-commit branch and status check](screenshots/part3/task39-step9-post-commit-status.png)
 
 The safe cleanup sequence is:
 
@@ -1093,6 +1098,8 @@ The nested file is empty and is not the committed workflow. This confirms
 that the untracked path can be removed as cleanup, but only that exact nested
 `.github` directory should be removed. A broad `git clean` must not be used.
 
+Evidence: [Inspection of the untracked nested workflow folder](screenshots/part3/task33-untracked-workflow-folder-inspection.png)
+
 ### Accidental nested workflow cleanup result
 
 The candidate removed only the confirmed empty nested file and its empty parent
@@ -1118,6 +1125,8 @@ This confirms:
 - the backup is outside the repository;
 - the local repository is clean;
 - no Docker Hub push or Deploy Stage run has been claimed yet.
+
+Evidence: [Nested workflow folder cleanup](screenshots/part3/task36-nested-workflow-cleanup.png)
 
 This is the correct state before reviewing or adding the next Deploy-stage
 change. A clean Git status does not itself prove that GitHub Actions has run;
@@ -1681,6 +1690,7 @@ branch and commit so each run can be traced to source control.
 - [Root workflow created](screenshots/part3/setup-12-root-workflow-created.png)
 - [Push to staging](screenshots/part3/task01-push-staging-success.png)
 - [Workflow success summary](screenshots/part3/task02-workflow-success-summary.png)
+- [Workflow editor opened for the deploy workflow](screenshots/part3/task40-workflow-editor-open.png)
 
 ### Task 2 — Build Stage
 
@@ -1721,6 +1731,7 @@ commit-SHA tag provides an immutable release reference, while the `staging` and
 - [Local image verification](screenshots/part3/task09-local-image-verification.png)
 - [GitHub Actions build success](screenshots/part3/task10-github-actions-build-success.png)
 - [GitHub Actions image tags](screenshots/part3/task11-github-actions-built-images.png)
+- [Successful workflow history after the validation run](screenshots/part3/task31-workflow-history-success-run.png)
 
 ### Task 3 — Test Stage
 
@@ -1763,7 +1774,9 @@ test.
 
 - [Test-stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
 - [Raw Test-stage output](evidence/part3/task13-test-stage-output.txt)
-- [GitHub Actions success email](screenshots/part3/task28-success-email-notification.png)
+- [Detailed Test-stage cleanup log](screenshots/part3/task32-test-stage-cleanup-log.png)
+- [Local API and UI smoke-test commands](screenshots/part3/task34-local-staging-smoke-test-commands.png)
+- [Wide Test-stage cleanup log](screenshots/part3/task38-test-stage-cleanup-log-wide.png)
 
 ### Task 4 — Deploy Stage
 
@@ -1816,7 +1829,9 @@ tested event.
 - [API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
 - [UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
 - [Healthy staging containers](screenshots/part3/task27-staging-healthy-images.png)
-- [Detailed Docker Hub push log](../../attached_assets/Pasted-Current-runner-version-2-336-0-Runner-Image-Provisioner_1786164927904.txt)
+- [Full Deploy workflow success](screenshots/part3/task37-full-deploy-workflow-success.png)
+- [Staging smoke-test commands](screenshots/part3/task34-local-staging-smoke-test-commands.png)
+- [Detailed Docker Hub push log](../attached_assets/Pasted-Current-runner-version-2-336-0-Runner-Image-Provisioner_1786164927904.txt)
 
 ### Task 5 — Success and Failure Notifications
 
@@ -1864,7 +1879,9 @@ run the normal pipeline successfully again. Do not fabricate this evidence.
 
 #### 📸 Screenshot
 
-- [Successful GitHub Actions email notification](screenshots/part3/task28-success-email-notification.png)
+- [GitHub Actions notification settings](screenshots/part3/task28-notification-settings.png)
+- [Workflow runs history](screenshots/part3/task29-workflow-runs-history.png)
+- [Successful GitHub Actions email notification](screenshots/part3/task30-success-email-notification.png)
 
 #### Notification status
 
@@ -1984,11 +2001,10 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 36 screenshot evidence files: 12 GitHub setup/history
-screenshots, 23 workflow/build/Test/Deploy screenshots, and the success-email
-notification screenshot. The raw Test Stage output, current workflow
-baseline, draft workflow review, and post-correction workflow output are
-preserved separately at:
+The folder contains 48 screenshot evidence files. All 48 are listed below by
+their evidence filename and linked to the corresponding section of this
+document. The raw Test Stage output, current workflow baseline, draft workflow
+review, and post-correction workflow output are preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`
 
@@ -1998,18 +2014,59 @@ preserved separately at:
 
 `evidence/part3/task21-workflow-after-removing-early-push.txt`
 
-The latest screenshot preparation evidence is:
+### Complete screenshot list
 
-- [Test Stage pre-push validation](screenshots/part3/task12-test-stage-pre-push-check.png)
-- [Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
-- [Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
-- [Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
-- [Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
-- [Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
-- [Healthy staging containers using published images](screenshots/part3/task27-staging-healthy-images.png)
-- [Successful GitHub Actions email notification](screenshots/part3/task28-success-email-notification.png)
+- [Setup 01 — GitHub CLI installation](screenshots/part3/setup-01-github-cli-installation.png)
+- [Setup 02 — Repository folder check](screenshots/part3/setup-02-repository-folder-check.png)
+- [Setup 03 — Pre-Part-3 backup](screenshots/part3/setup-03-pre-part3-backup.png)
+- [Setup 04 — Remote and branch check](screenshots/part3/setup-04-remote-branch-check.png)
+- [Setup 05 — Fresh repository clone](screenshots/part3/setup-05-fresh-repository-clone.png)
+- [Setup 06 — Old Part 3 detection](screenshots/part3/setup-06-old-part3-detection.png)
+- [Setup 07 — Old Part 3 cleanup](screenshots/part3/setup-07-old-part3-cleanup.png)
+- [Setup 08 — Staged cleanup check](screenshots/part3/setup-08-staged-cleanup-check.png)
+- [Setup 09 — Clean main status](screenshots/part3/setup-09-clean-main-status.png)
+- [Setup 10 — Part 3 reset commit](screenshots/part3/setup-10-reset-part3-commit.png)
+- [Setup 11 — Push main reset](screenshots/part3/setup-11-push-main-reset.png)
+- [Setup 12 — Root workflow created](screenshots/part3/setup-12-root-workflow-created.png)
+- [Task 01 — Push staging success](screenshots/part3/task01-push-staging-success.png)
+- [Task 02 — Workflow success summary](screenshots/part3/task02-workflow-success-summary.png)
+- [Task 03 — Workflow checkout log](screenshots/part3/task03-workflow-checkout-log.png)
+- [Task 04 — Workflow confirmation](screenshots/part3/task04-workflow-confirmation.png)
+- [Task 05 — Local workflow inspection](screenshots/part3/task05-local-workflow-inspection.png)
+- [Task 06 — Local workflow reinspection](screenshots/part3/task06-local-workflow-reinspection.png)
+- [Task 07 — Docker Compose version check](screenshots/part3/task07-docker-compose-version-check.png)
+- [Task 08 — Docker build progress](screenshots/part3/task08-docker-build-progress.png)
+- [Task 09 — Local image verification](screenshots/part3/task09-local-image-verification.png)
+- [Task 10 — GitHub Actions build success](screenshots/part3/task10-github-actions-build-success.png)
+- [Task 11 — GitHub Actions built images](screenshots/part3/task11-github-actions-built-images.png)
+- [Task 12 — Test-stage pre-push check](screenshots/part3/task12-test-stage-pre-push-check.png)
+- [Task 14 — Docker Hub API repository](screenshots/part3/task14-dockerhub-api-repository.png)
+- [Task 15 — Docker Hub UI repository](screenshots/part3/task15-dockerhub-ui-repository.png)
+- [Task 16 — Docker Hub access token created](screenshots/part3/task16-dockerhub-access-token-created.png)
+- [Task 17 — Docker Hub username secret](screenshots/part3/task17-github-dockerhub-username-secret.png)
+- [Task 18 — Docker Hub token secret](screenshots/part3/task18-github-dockerhub-token-secret.png)
+- [Task 22 — Docker Hub UI published tags](screenshots/part3/task22-dockerhub-ui-published-tags.png)
+- [Task 23 — Docker Hub API published tags](screenshots/part3/task23-dockerhub-api-published-tags.png)
+- [Task 24 — Docker Hub UI staging tag detail](screenshots/part3/task24-dockerhub-ui-staging-tag-detail.png)
+- [Task 25 — Docker Hub API staging tag detail](screenshots/part3/task25-dockerhub-api-staging-tag-detail.png)
+- [Task 26 — Staging containers using published images](screenshots/part3/task26-staging-containers-published-images.png)
+- [Task 27 — Healthy staging images](screenshots/part3/task27-staging-healthy-images.png)
+- [Task 28 — Notification settings](screenshots/part3/task28-notification-settings.png)
+- [Task 29 — Workflow runs history](screenshots/part3/task29-workflow-runs-history.png)
+- [Task 30 — Success email notification](screenshots/part3/task30-success-email-notification.png)
+- [Task 31 — Workflow history success run](screenshots/part3/task31-workflow-history-success-run.png)
+- [Task 32 — Test-stage cleanup log](screenshots/part3/task32-test-stage-cleanup-log.png)
+- [Task 33 — Untracked workflow folder inspection](screenshots/part3/task33-untracked-workflow-folder-inspection.png)
+- [Task 34 — Local staging smoke-test commands](screenshots/part3/task34-local-staging-smoke-test-commands.png)
+- [Task 35 — Workflow commit status](screenshots/part3/task35-workflow-commit-status.png)
+- [Task 36 — Nested workflow cleanup](screenshots/part3/task36-nested-workflow-cleanup.png)
+- [Task 37 — Full Deploy workflow success](screenshots/part3/task37-full-deploy-workflow-success.png)
+- [Task 38 — Wide Test-stage cleanup log](screenshots/part3/task38-test-stage-cleanup-log-wide.png)
+- [Task 39 — Step 9 post-commit status](screenshots/part3/task39-step9-post-commit-status.png)
+- [Task 40 — Workflow editor opened](screenshots/part3/task40-workflow-editor-open.png)
 
-The success-email screenshot confirms that the candidate is subscribed to the
-GitHub Actions notification thread and received the successful Attempt #2
-workflow notification. A failure-email screenshot is not included because it
-has not yet been captured.
+The notification-settings, workflow-history, and success-email screenshots
+together confirm that GitHub Actions notifications were enabled, the successful
+run was visible in the repository history, and the successful Attempt #2 email
+was received. A failure-email screenshot is not included because it has not yet
+been captured.
