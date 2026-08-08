@@ -28,11 +28,12 @@ repository-root/
 ├── documentation/
 │   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete — now formatted consistently with Part 2
 │   ├── Part2-Docker-Containerization-Documentation.md  ✅ Complete
-│   ├── Part3-CICD-Documentation.md                   ⏳ Pending — begin local walkthrough
+│   ├── Part3-CICD-Documentation.md                   🔄 In progress — setup and workflow evidence recorded
 │   ├── Part4-HA-Documentation.md                     ⏳ Pending — create after Part 3 verification
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
-│       └── part2/   ← 14 screenshots present (all done)
+│       ├── part2/   ← 14 screenshots present (all done)
+│       └── part3/   ← 20 screenshots present (setup, workflow, build evidence)
 ├── part1-linux/
 │   ├── system_health.sh       ✅ chmod +x already applied
 │   ├── backup.sh              ✅ chmod +x already applied
@@ -186,7 +187,7 @@ Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not i
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Step 11
+### Current position — Step 12 (build stage in progress)
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -212,10 +213,15 @@ The starter workflow was committed locally on the personal computer:
 c84f2ee Add initial GitHub Actions workflow
 ```
 
-**Important:** This commit has not been pushed to GitHub yet. The next action is
-Step 11: run `git push origin staging`, then verify the workflow in the GitHub
-Actions tab. Do not document a successful GitHub Actions run until the user
-provides the result or screenshot.
+The starter workflow was pushed to GitHub and the first Actions run succeeded.
+The provided evidence is stored in `documentation/screenshots/part3/` and
+summarized in `documentation/Part3-CICD-Documentation.md`.
+
+The workflow has since been extended with a Docker image build job for the API
+and UI. The latest local evidence shows the API build in progress; final build
+success still needs confirmation. The local WSL environment has Docker 29.1.3
+and legacy `docker-compose` 1.29.2, while the GitHub workflow uses the modern
+`docker compose` command available on the hosted runner.
 
 ---
 
