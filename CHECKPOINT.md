@@ -218,10 +218,17 @@ The provided evidence is stored in `documentation/screenshots/part3/` and
 summarized in `documentation/Part3-CICD-Documentation.md`.
 
 The workflow has since been extended with a Docker image build job for the API
-and UI. The latest local evidence shows the API build in progress; final build
-success still needs confirmation. The local WSL environment has Docker 29.1.3
-and legacy `docker-compose` 1.29.2, while the GitHub workflow uses the modern
+and UI. Local Compose validation completed successfully, and the final local
+build output confirmed both `api-app:latest` and `ui-app:latest` were built
+successfully. The local WSL environment has Docker 29.1.3 and legacy
+`docker-compose` 1.29.2, while the GitHub workflow uses the modern
 `docker compose` command available on the hosted runner.
+
+The local build recorded non-blocking warnings: Docker's legacy builder
+deprecation, pip running as root during image construction, outdated
+`caniuse-lite`, a newer npm version notice, and 13 npm dependency
+vulnerabilities (3 moderate, 9 high, 1 critical). The vulnerability result is
+pending investigation in the Part 3 test/security stage.
 
 **Beginner workflow note:** The Part 2 local Docker build and the Part 3
 GitHub Actions build are intentionally separate evidence. Part 2 proves that

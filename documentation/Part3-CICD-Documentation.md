@@ -69,9 +69,9 @@ workflow.
 | Automatic trigger on `staging` | Workflow run triggered by a push to `staging` | ✅ Confirmed |
 | Optional manual trigger | `workflow_dispatch` is present | ✅ Confirmed |
 | Pipeline as Code | Root `.github/workflows/deploy.yml` | ✅ Confirmed |
-| Build API and UI images | Build job added; local build was still running in latest screenshot | 🔄 In progress |
+| Build API and UI images | Local Compose build completed for both images | ✅ Local preflight confirmed |
 | Image tagging | SHA and branch tag commands added to workflow | 🔄 Added, pending CI verification |
-| Dockerfile validation | Compose config validation step added | 🔄 Added, pending CI verification |
+| Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Not yet added/verified | ⏳ Pending |
 | Container image security scan | Optional; not yet added | ⏳ Pending |
 | Staging deployment | Not yet added/verified | ⏳ Pending |
@@ -196,14 +196,42 @@ The local environment check is recorded in:
 
 - [Docker Compose version check](screenshots/part3/task07-docker-compose-version-check.png)
 
-The latest build screenshot shows the API build downloading Debian
-dependencies. It is progress evidence only; it does not prove final build
-success:
+The final pasted local build output confirms:
+
+```text
+Successfully built 2f9c65110975
+Successfully tagged api-app:latest
+Successfully built 7c5044be6886
+Successfully tagged ui-app:latest
+```
+
+The Next.js production build also reported `Compiled successfully` and
+generated the static pages successfully. This confirms the local preflight
+build for both application images:
 
 - [Docker build progress](screenshots/part3/task08-docker-build-progress.png)
 
-The legacy Docker builder deprecation message is a warning. The final build
-result must still be captured after the command returns to the shell prompt.
+The screenshot captures the build in progress, while the pasted terminal
+output records the final successful result. The legacy Docker builder
+deprecation message is a warning and did not stop either build.
+
+### Build warnings recorded
+
+The build completed, but the following warnings require attention in the
+test/security stage:
+
+- Docker's legacy builder is deprecated.
+- `pip` was upgraded inside the API image from `24.0` to `26.2.1`.
+- `pip` warned about running as root during image construction; the runtime
+  container switches to the non-root `appuser`.
+- `npm ci` reported 13 dependency vulnerabilities: 3 moderate, 9 high, and
+  1 critical. The build still passed, but this must not be silently ignored.
+- Next.js reported outdated `caniuse-lite` data.
+- npm reported a newer major npm version (`10.8.2` to `12.0.2`).
+
+These are not local build failures. The vulnerability result is especially
+important for the upcoming test/security stage and should be investigated
+before the pipeline is marked complete.
 
 ---
 
