@@ -620,6 +620,49 @@ successfully logs in and pushes both tagged images.
 
 ---
 
+## Task 7 — GitHub Actions Docker Hub Username Secret
+
+GitHub Actions must receive Docker Hub credentials through encrypted repository
+secrets rather than hardcoded values in the workflow file.
+
+### Tutorial — add the Docker Hub username secret
+
+1. Open the GitHub repository.
+2. Go to **Settings**.
+3. Open **Secrets and variables → Actions**.
+4. Select the **Secrets** tab.
+5. Select **New repository secret**.
+6. Set the name exactly to:
+
+   ```text
+   DOCKERHUB_USERNAME
+   ```
+
+7. Enter the Docker Hub username as the secret value.
+8. Select **Add secret**.
+
+The repository secret list now shows `DOCKERHUB_USERNAME`. GitHub hides the
+secret value after it is saved, so the screenshot proves the secret name was
+created without exposing the value.
+
+### Evidence
+
+- [GitHub Docker Hub username secret](screenshots/part3/task17-github-dockerhub-username-secret.png)
+
+### Security rule
+
+Only the secret name is documented. The username secret value and Docker Hub
+PAT value are not stored in this repository or in chat. The PAT still needs to
+be added as a separate encrypted GitHub repository secret before the workflow
+can authenticate to Docker Hub.
+
+### Current status
+
+`DOCKERHUB_USERNAME` is confirmed. `DOCKERHUB_TOKEN` has not yet been added or
+verified. Image push and staging deployment remain pending.
+
+---
+
 ## Beginner Note — Why Part 2 and Part 3 Both Build Docker Images
 
 The successful Docker build from Part 2 and the Docker build in Part 3 serve
@@ -696,8 +739,8 @@ All currently supplied Part 3 screenshots are stored in:
 documentation/screenshots/part3/
 ```
 
-The folder contains 27 screenshot evidence files: 12 GitHub setup/history
-screenshots and 15 staging/workflow/build, Test Stage, and Deploy Stage
+The folder contains 28 screenshot evidence files: 12 GitHub setup/history
+screenshots and 16 staging/workflow/build, Test Stage, and Deploy Stage
 preparation screenshots. The raw Test Stage output is preserved separately at:
 
 `evidence/part3/task13-test-stage-output.txt`
