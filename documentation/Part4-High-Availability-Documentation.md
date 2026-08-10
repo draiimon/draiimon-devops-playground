@@ -141,14 +141,22 @@ The captured preflight output confirms:
 - The host reports 4 CPUs.
 - No Minikube profile exists yet.
 - No Kubernetes context is configured yet, which is expected at this stage.
-- Only about 1.9 GiB of memory is available in WSL, with approximately 83 MiB
-  free at the time of the check.
-- Four Part 3 Docker containers are still running.
+- The initial check showed about 1.9 GiB of memory in WSL, with approximately
+  83 MiB free, while four Part 3 Docker containers were still running.
 
 ![Part 4 Minikube preflight check](screenshots/part4/step02-minikube-preflight.png)
 
-**Evidence status:** Preflight captured. Minikube is not ready to start until
-memory is freed or the WSL memory limit is increased.
+After the Part 3 containers were stopped, the clean preflight showed:
+
+- Docker has no running containers.
+- WSL still reports only 1.9 GiB total memory.
+- Approximately 1.3 GiB is available, but swap remains disabled at 0 B.
+- No Minikube profile or Kubernetes context exists yet.
+
+![Clean Part 4 Minikube preflight check](screenshots/part4/step02-minikube-preflight-clean.png)
+
+**Evidence status:** Clean preflight captured. Minikube is not ready to start
+until the WSL memory limit is increased.
 
 The original preflight command and output are recorded as:
 
@@ -156,11 +164,38 @@ The original preflight command and output are recorded as:
 documentation/screenshots/part4/step02-minikube-preflight.png
 ```
 
-Do not run `minikube start` yet. Stop the Part 3 containers from the local
-machine first, or close other memory-heavy applications. If WSL still reports
-less than approximately 4 GiB total memory afterward, increase the WSL/Docker
+Do not run `minikube start` yet. The Part 3 containers are already stopped. If
+WSL reports less than approximately 4 GiB total memory, increase the WSL/Docker
 memory allocation before continuing. Re-run the same preflight check and
-capture the clean result before Step 3.
+capture the updated result before Step 3.
+
+### Step 2A — Increase the WSL memory allocation
+
+The clean preflight still reports only 1.9 GiB total memory and no swap. Run
+the following in **Windows PowerShell**, not inside WSL:
+
+```powershell
+@"
+[wsl2]
+memory=6GB
+processors=4
+swap=4GB
+"@ | Set-Content "$env:USERPROFILE\.wslconfig"
+
+wsl --shutdown
+```
+
+Close and reopen Ubuntu/WSL after `wsl --shutdown`. If Docker Desktop is
+running, restart it as well so it reconnects to the restarted WSL backend.
+Then verify from WSL:
+
+```bash
+free -h
+```
+
+The target is approximately 6 GiB total memory and 4 GiB swap. After that,
+repeat the Step 2 preflight command and capture the updated output before
+starting Minikube.
 
 ---
 
