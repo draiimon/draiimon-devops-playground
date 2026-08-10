@@ -221,11 +221,44 @@ node on this machine.
 
 ```bash
 minikube start --nodes 2 --driver=docker --cpus=2 --memory=1800mb
+```
+
+The command completed successfully and configured kubectl to use the
+`minikube` context. The captured output confirms:
+
+- Minikube `v1.38.1`
+- Kubernetes `v1.35.1`
+- Docker driver on Docker `29.2.1`
+- One control-plane node: `minikube`
+- One worker node: `minikube-m02`
+
+![Two-node Minikube cluster started successfully](screenshots/part4/step03-minikube-start-success.png)
+
+**Evidence status:** Step 3 completed. The two-node Minikube cluster exists and
+kubectl is configured for it. The warning about 1800 MB being below the
+recommended 1900 MB was noted, but the cluster completed successfully.
+
+### 2. Enable the required Minikube add-ons
+
+Enable Ingress for domain routing and Metrics Server for HPA metrics:
+
+```bash
 minikube addons enable ingress
 minikube addons enable metrics-server
 ```
 
-### 2. Apply the manifests
+### 3. Verify the cluster nodes and add-ons
+
+```bash
+kubectl get nodes -o wide
+kubectl get pods -n kube-system
+minikube addons list | grep -E 'ingress|metrics-server'
+```
+
+Both nodes should show `Ready`. The Ingress controller and Metrics Server may
+need a short time to reach `Running`.
+
+### 4. Apply the manifests
 
 Apply the namespace first. This avoids errors when the other files refer to
 the `devops-exam` namespace.
@@ -242,7 +275,7 @@ draiimon112/devops-api:staging
 draiimon112/devops-ui:staging
 ```
 
-### 3. Check that the application is running
+### 5. Check that the application is running
 
 ```bash
 kubectl get nodes -o wide
@@ -252,7 +285,7 @@ kubectl get svc,ingress,hpa,pdb -n devops-exam
 
 Wait until the API and UI pods show `Running` and `READY 1/1`.
 
-### 4. Use k9s for the live cluster view
+### 6. Use k9s for the live cluster view
 
 `k9s` is only a terminal dashboard for Kubernetes. It does not replace
 `kubectl`, Minikube, or the cluster itself.
@@ -283,7 +316,7 @@ only if you need details, and use `kubectl delete pod <pod-name> -n
 devops-exam` in another terminal. Keep k9s open to show the replacement pod
 appearing.
 
-### 5. Configure the local domains
+### 7. Configure the local domains
 
 ```bash
 echo "$(minikube ip) api.myapp.local ui.myapp.local" | sudo tee -a /etc/hosts
@@ -297,7 +330,7 @@ curl http://api.myapp.local/healthz
 curl -I http://ui.myapp.local/
 ```
 
-### 6. Perform the simple failover test
+### 8. Perform the simple failover test
 
 ```bash
 kubectl get pods -n devops-exam
