@@ -1040,4 +1040,12 @@ built image reached the cluster because the push failed and the Deployment uses
 the mutable `:staging` tag. The two evidence commands also did not run because
 the local WSL checkout did not contain the tracked
 `part4-ha/verify-runtime-evidence.sh` file. These screenshots are
-troubleshooting evidence only, not the final Part 4 runtime captures.
+ troubleshooting evidence only, not the final Part 4 runtime captures.
+
+The next local fallback attempt confirmed that the WSL checkout still had the
+older API source: `grep -n instance part2-docker/api-src/main.py` produced no
+match and the deployed `/instance` request returned `{"detail":"Not Found"}`.
+The verifier script was still absent locally, so neither runtime evidence test
+ran. The current Repl copies of `part2-docker/api-src/main.py` and
+`part4-ha/verify-runtime-evidence.sh` must be copied into the matching WSL
+paths before rebuilding or capturing evidence.

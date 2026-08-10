@@ -801,6 +801,28 @@ The distribution capture must show two different `api-app-...` names with all
 40 requests successful. The node-failure capture must show the worker
 unavailable and at least 15 HTTP 200 responses.
 
+### Result of the second local fallback attempt
+
+The second uploaded terminal capture confirms that the local fallback image
+also used an outdated API source: the `grep -n instance
+part2-docker/api-src/main.py` command produced no matching line, and
+`curl http://api.myapp.local/instance` returned `{"detail":"Not Found"}`.
+Therefore the local image did not contain the diagnostic endpoint. The
+verifier was still absent from the WSL checkout, so neither runtime evidence
+test ran. This output is not final evidence for either PDF bullet.
+
+Before rebuilding, copy the current `part2-docker/api-src/main.py` and
+`part4-ha/verify-runtime-evidence.sh` from this Repl workspace into the matching
+paths in the local WSL repository. Then confirm:
+
+```bash
+grep -n instance part2-docker/api-src/main.py
+test -x part4-ha/verify-runtime-evidence.sh && echo verifier-ready
+```
+
+The first command must show the `/instance` route and the second must print
+`verifier-ready`.
+
 ---
 
 ## Task 2 — Load Distribution and Zero-Downtime Updates
