@@ -1,17 +1,57 @@
 # Part 4: High Availability Deployment — Documentation
 
 **Candidate:** draiimon  
+**Machine:** Aloof — WSL2 (Ubuntu 24.04 on Windows)
+**Date Completed:** August 10, 2026
 **Exam:** Junior DevOps Engineer Exam 2026  
 **Chosen orchestration platform:** Kubernetes  
 **Configuration directory:** `part4-ha/`  
 **Source of truth:** `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`
 
-> **Evidence boundary:** This document records the Kubernetes and Helm
-> configuration together with the live-cluster evidence captured so far.
-> The two-node cluster and successful API/UI/database pod readiness are now
-> proven. Pod placement across both nodes and domain requests are now proven.
-> Failover recovery and multiple ready Service endpoints are now proven.
-> Request-level traffic distribution remains a separate optional check.
+---
+
+## Connection to Part 3
+
+Part 3 produced the Docker images used by this Kubernetes deployment:
+`draiimon112/devops-api:staging` and `draiimon112/devops-ui:staging`. Part 4
+then deployed those published images into a two-node Minikube cluster using raw
+Kubernetes manifests. The CI/CD pipeline and the HA runtime are therefore
+connected through the published container image tags.
+
+| Previous part | Part 4 connection |
+|---|---|
+| Part 2 — Docker Containerization | Supplies the FastAPI, Next.js, and MySQL container architecture. |
+| Part 3 — CI/CD Pipeline | Publishes the API and UI images used by the Kubernetes Deployments. |
+| Part 4 — High Availability | Runs the images with replicas, Services, Ingress, probes, HPA, PDB, and node placement. |
+
+## Environment Overview
+
+All live Part 4 commands were performed on the candidate's local WSL2 machine,
+not inside this Repl. The Repl stores the submitted configuration,
+documentation, and uploaded screenshot evidence.
+
+| Item | Value |
+|---|---|
+| Operating system | Ubuntu 24.04 on WSL2 |
+| Username | `draiimon` |
+| Hostname | `Aloof` |
+| Working directory | `~/devops-exam` |
+| Docker | Docker 29.1.3 |
+| Kubernetes client | kubectl v1.36.3 |
+| Minikube | v1.38.1 |
+| Kubernetes cluster | v1.35.1 |
+| Kubernetes nodes | `minikube` and `minikube-m02` |
+| Kubernetes namespace | `devops-exam` |
+| Ingress controller | Nginx Ingress add-on |
+| Metrics provider | Minikube Metrics Server add-on |
+| API image | `draiimon112/devops-api:staging` |
+| UI image | `draiimon112/devops-ui:staging` |
+
+> **Evidence boundary:** This document claims live behavior only where the
+> uploaded terminal or k9s screenshot shows the result. The load-distribution
+> screenshot shows multiple ready API endpoints and twenty successful
+> domain-based requests; it does not identify which individual pod answered
+> each response because the API response body is identical for both replicas.
 
 ---
 
@@ -385,12 +425,12 @@ protection in one platform.
 | PDF requirement | Repository implementation | Evidence status |
 |---|---|---|
 | Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Live placement across both Minikube nodes captured |
-| Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Live pod deletion, replacement, endpoint recovery, and HTTP 200 captured |
-| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Multiple ready API endpoints captured; request-level distribution not separately measured |
+| Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Pod deletion/replacement, endpoint recovery, and HTTP 200 captured; node-failure availability still needs a dedicated test |
+| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Multiple ready API endpoints and 20 successful API requests captured; even per-instance distribution is not proven because the response has no pod identity |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Live hostname resolution and HTTP 200 responses captured |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Live HPA metrics captured; API 2–6 and UI 2–4 replicas |
-| Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | Configured; rollout result not yet captured |
+| Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | API and UI rollout completion captured |
 | Orchestration manifests | Raw Kubernetes manifests and a Helm chart | Repository files present |
 
 ---
@@ -404,16 +444,23 @@ deployment:
 - `minikube-m02` — `Ready`, worker
 - Kubernetes version `v1.35.1`
 
-![Two-node Minikube cluster — both nodes Ready](screenshots/part4/step04-two-nodes-ready.png)
-
 This proves the cluster has two Ready nodes. It does not by itself prove that
 the application replicas are spread across both nodes; the pod `NODE` column
-must be captured separately for that claim.
+must be captured separately for that claim under Task 1.
 
 ## Environment and Architecture
 
 The deployment is designed for the FastAPI API and Next.js UI containers built
 in Part 2 and published by the Part 3 pipeline.
+
+![Part 4 Kubernetes high-availability architecture](diagrams/part4-high-availability-architecture.svg)
+
+**Diagram Explanation:** Domain requests enter the Nginx Ingress and are
+matched to the API or UI host rule. The Ingress forwards traffic to the
+corresponding ClusterIP Service, which selects only Ready replicas. The API
+and UI replicas are spread across the two Ready Minikube nodes. Readiness and
+liveness probes support recovery, the PodDisruptionBudgets protect voluntary
+disruptions, and Metrics Server supplies the HPA metrics.
 
 ```text
                          Domain-based requests
@@ -528,6 +575,20 @@ listing shows the API and UI replicas placed across both `minikube` and
 `minikube-m02`, rather than inferring placement from `replicas: 2`.
 
 ### 📸 Screenshots
+
+![Two-node Minikube cluster — both nodes Ready](screenshots/part4/step04-two-nodes-ready.png)
+
+**Screenshot Explanation:** The k9s Nodes view shows `minikube` and
+`minikube-m02` as `Ready`. This proves that the live cluster has the two nodes
+required for the redundancy design. The separate pod-placement screenshot below
+proves where the API and UI replicas were actually scheduled.
+
+![Application pods ready in the devops-exam namespace](screenshots/part4/step04-application-pods-ready.png)
+
+**Screenshot Explanation:** The k9s Pods view shows the API, UI, and MySQL pods
+in the `devops-exam` namespace with the application pods ready. This is the
+baseline readiness view; the later `-o wide` placement screenshot is the
+authoritative evidence for distribution across both nodes.
 
 ![Kubernetes ClusterIP Services in the devops-exam namespace](screenshots/part4/step05-services-clusterip.png)
 
@@ -701,6 +762,17 @@ This proves that Metrics Server is supplying live resource metrics and that
 both HPAs are attached to the intended Deployments within their configured
 replica ranges.
 
+![Repeated API requests through the domain and multiple Service endpoints](screenshots/part4/step11-load-distribution-requests.png)
+
+**Screenshot Explanation:** The terminal shows the `api-service` EndpointSlice
+with two ready API endpoints, `10.244.0.8` and `10.244.1.12`, followed by 20
+successful requests through `http://api.myapp.local/`. Every request returned
+the expected FastAPI JSON response. This proves that the domain route remained
+available while the Service had multiple ready replicas. Because both replicas
+return the same JSON body and the application does not expose pod identity,
+this screenshot does not claim per-request pod attribution or mathematically
+even distribution; that limitation is documented rather than hidden.
+
 The required evidence should be placed here:
 
 ```text
@@ -717,10 +789,12 @@ The Service and EndpointSlice output should show that the stable Service names
 resolve to multiple ready pod endpoints. The HPA output should show the
 configured minimum and maximum replica counts and its metrics status.
 
-The rollout screenshot should show a completed update with no unavailable
-replicas. To prove traffic distribution rather than only configuration,
-capture repeated requests or application logs while more than one ready
-replica is serving traffic.
+The rollout evidence shows that the API and UI updates completed. The new
+runtime screenshot complements the Service and EndpointSlice configuration
+with 20 successful requests through the configured domain. A future
+application version could expose a pod identifier in its response or logs to
+measure exact per-pod distribution; that is not required for the current
+stateless sample application and is not claimed here.
 
 ---
 
@@ -899,23 +973,16 @@ credentials must not be committed to Git or included in screenshots.
 
 ### 📸 Screenshots
 
-The live Kubernetes evidence captured for this orchestration path includes:
+The live Kubernetes evidence for this orchestration path is embedded in the
+requirement sections above: Task 1 covers the nodes, ready application pods,
+Services, placement, and failover; Task 2 covers Ingress, HPA, and repeated
+requests; Task 3 covers domain requests. No ArgoCD synchronization screenshot
+is claimed because the committed ArgoCD configuration still contains a
+repository URL placeholder. No Helm install screenshot is claimed because Helm
+was not required for the successful local Minikube run.
 
-![Two Ready Minikube nodes](screenshots/part4/step04-two-nodes-ready.png)
-
-![ClusterIP Services](screenshots/part4/step05-services-clusterip.png)
-
-![Ingress host routing](screenshots/part4/step06-ingress-host-routing.png)
-
-![Live HPA metrics](screenshots/part4/step07-hpa-metrics-ready.png)
-
-![API failover recovery](screenshots/part4/step10-api-failover-recovery.png)
-
-These screenshots document the tested raw-manifest path. No ArgoCD
-synchronization screenshot is claimed because the committed ArgoCD
-configuration still contains a repository URL placeholder. No Helm install
-screenshot is claimed because Helm was not required for the successful local
-Minikube run.
+This keeps each screenshot in one authoritative task section instead of
+duplicating the same image in multiple sections.
 
 The required evidence should be placed here:
 
@@ -1039,15 +1106,91 @@ reachable by ArgoCD.
 - Domain-based API and UI access both returned HTTP 200.
 - Screenshots are linked directly under the requirement they prove.
 
-The following are optional advanced-path cleanup items rather than missing proof
-for the selected raw-manifest Kubernetes path:
+### Advanced deployment path notes
 
 - Replace the ArgoCD repository URL placeholder before using ArgoCD sync.
 - Replace Helm's generic image defaults with the exact published immutable tag
   before using the Helm deployment path.
-- Optionally capture repeated application requests or logs to measure
-  request-level distribution between ready replicas.
 
-The PDF explicitly accepts partial work, so this document preserves the
-configuration that exists without claiming live HA behavior that has not yet
-been observed.
+These are not missing items for the selected raw-manifest path. They remain
+unverified advanced paths rather than claims of a completed Helm or ArgoCD run.
+
+### Evidence gaps before calling every PDF bullet complete
+
+The repository implementation and the selected raw-manifest deployment are
+complete, but two PDF evidence bullets are not fully demonstrated by the
+captured screenshots:
+
+1. **Maintain service availability during node failures:** the evidence shows
+   API pod deletion and automatic replacement, not a deliberate worker-node
+   failure or drain while the service is being checked.
+2. **Ensure even distribution of traffic:** the EndpointSlice and 20 successful
+   requests prove multiple ready endpoints and continued routing, but the
+   identical API response does not identify which replica answered each request.
+
+To close the first gap, capture a controlled worker-node failure or drain while
+repeating the domain request and showing the application remains available. To
+close the second gap, expose a temporary pod identity in the response or logs,
+then record a bounded request loop with per-replica counts. Do not claim either
+result until it is captured from the real cluster.
+
+---
+
+## ✅ Part 4 — Completion Summary
+
+| Requirement area | Coverage | Status |
+|---|---|---|
+| Redundancy | Two-node Minikube cluster, two API replicas, two UI replicas, topology spreading, probes, PDBs, pod replacement | ⚠️ Core evidence complete; node-failure availability test remains |
+| Load distribution | ClusterIP Services, Ingress routing, two ready API endpoints, HPA metrics, repeated domain requests | ⚠️ Core routing evidence complete; even per-instance distribution remains unproven |
+| Domain-based access | `api.myapp.local` and `ui.myapp.local`, hosts-file mapping, live HTTP 200 responses | ✅ Evidence complete |
+| Container orchestration | Kubernetes raw manifests applied successfully; Helm and ArgoCD files documented as optional advanced paths | ✅ Selected raw-manifest path complete |
+| Architecture documentation | SVG diagram plus explanation of Ingress, Services, replicas, nodes, probes, PDB, and HPA | ✅ Complete |
+| Screenshot documentation | All 17 Part 4 screenshots present, linked once in the relevant task, and explained | ✅ Complete |
+
+**Current conclusion:** Part 4 documentation is complete and follows the Part 2
+format. The selected Kubernetes raw-manifest implementation is complete. The
+two evidence gaps above are the only remaining items if the submission must
+demonstrate every individual PDF bullet with live runtime proof.
+
+---
+
+## Screenshot Evidence Checklist
+
+The following checklist follows the Part 2 documentation convention. Each
+image is linked to its evidence location and includes what is visible, what it
+proves, and what the reviewer should notice.
+
+| Screenshot | What is visible | What it proves / reviewer should notice |
+|---|---|---|
+| `step01-installation-check.png` | Docker responds, while Kubernetes tools are initially missing. | Establishes the honest starting state before installing `kubectl`, Minikube, and k9s. |
+| `step01-installation-success.png` | Docker, kubectl, Minikube, and k9s versions after installation. | Proves all required local tools are available before cluster creation. |
+| `step02-minikube-preflight.png` | Initial Docker, host-resource, and Minikube profile checks. | Shows the initial preflight conditions and why resource preparation was necessary. |
+| `step02-minikube-preflight-clean.png` | Docker containers stopped and a clean Minikube preflight. | Proves the Part 3 containers were stopped before allocating resources to Kubernetes. |
+| `step02-minikube-preflight-ready.png` | Final WSL memory, swap, CPU, Docker, and Minikube checks. | Proves the host was prepared for a two-node local cluster. |
+| `step03-minikube-start-success.png` | Successful two-node Minikube startup output. | Proves the selected Kubernetes environment was created with a control-plane and worker node. |
+| `step03-addons-verification-partial.png` | Node/system-pod output and the initial add-on state. | Preserves the intermediate state and shows why Ingress verification had to continue. |
+| `step04-two-nodes-ready.png` | k9s Nodes view with `minikube` and `minikube-m02` both Ready. | Proves the PDF’s two-node runtime prerequisite. |
+| `step04-application-pods-ready.png` | API, UI, and database pods in the k9s Pods view. | Shows baseline application readiness; the later placement screenshot is authoritative for distribution across nodes. |
+| `step05-services-clusterip.png` | API, UI, and database ClusterIP Services and ports. | Proves stable internal Service routing instead of direct pod-IP access. |
+| `step06-ingress-host-routing.png` | Nginx Ingress with both local host rules and the Minikube address. | Proves host-based routing is configured for API and UI domains. |
+| `step07-hpa-metrics-ready.png` | API/UI HPA targets, current replicas, and live CPU/memory metrics. | Proves Metrics Server is supplying data and the autoscalers are attached to the intended Deployments. |
+| `step08-domain-access-http-200.png` | Host resolution plus API and UI requests returning HTTP 200. | Proves actual domain-based runtime access through the Ingress, not merely YAML configuration. |
+| `step09-node-taint-rollout.png` | Both nodes have no taints and the workloads are restarted. | Explains how both nodes became schedulable for topology spreading; the later placement image proves the final state. |
+| `step09-pod-placement-two-nodes.png` | API/UI pods show `minikube` and `minikube-m02` in the NODE column. | Proves replicas are actually placed across two nodes, satisfying the redundancy requirement. |
+| `step10-api-failover-recovery.png` | A real API pod deletion, replacement pod, endpoints, PDBs, and HTTP 200 response. | Proves automatic recovery and continued Service availability after a pod failure. |
+| `step11-load-distribution-requests.png` | Two ready API endpoints followed by 20 successful domain requests. | Proves multiple endpoints remained available and the Service successfully handled repeated traffic. It does not claim per-pod attribution because both replicas return identical JSON. |
+
+### Diagram Explanation
+
+`documentation/diagrams/part4-high-availability-architecture.svg` is the
+architecture diagram for the submission. It shows the relationship between
+domain requests, Nginx Ingress, ClusterIP Services, replicated API/UI pods,
+the two Minikube nodes, and Kubernetes recovery/autoscaling controls.
+
+### Final Part 4 Status Statement
+
+Part 4 documentation and the selected Kubernetes raw-manifest implementation
+are complete. The evidence covers the four PDF areas, with two explicitly
+bounded runtime gaps: a node-failure availability test and per-replica proof of
+even traffic distribution. The document does not claim those results without
+matching live evidence.

@@ -11,7 +11,7 @@
 
 ## 📋 Exam Reference
 
-**PDF:** `documentation/reference/Junior_DevOps_Engineer_2026.pdf`
+**PDF:** `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`
 **Source Apps (Bitbucket):**
 - API: https://bitbucket.org/metawhale/fast-api-clean
 - UI: https://bitbucket.org/metawhale/nextjs_app
@@ -29,11 +29,14 @@ repository-root/
 │   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete — now formatted consistently with Part 2
 │   ├── Part2-Docker-Containerization-Documentation.md  ✅ Complete
 │   ├── Part3-CICD-Documentation.md                   🔄 In progress — setup and workflow evidence recorded
-│   ├── Part4-HA-Documentation.md                     ⏳ Pending — create after Part 3 verification
+│   ├── Part4-High-Availability-Documentation.md      ✅ Complete — Part 2-style evidence documentation
+│   ├── diagrams/
+│   │   └── part4-high-availability-architecture.svg ✅ Architecture diagram
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
 │       ├── part2/   ← 14 screenshots present (all done)
-│       └── part3/   ← 27 screenshots present (setup, workflow, build, test, and registry evidence)
+│       ├── part3/   ← 27 screenshots present (setup, workflow, build, test, and registry evidence)
+│       └── part4/   ← 17 screenshots present (all linked and explained)
 ├── part1-linux/
 │   ├── system_health.sh       ✅ chmod +x already applied
 │   ├── backup.sh              ✅ chmod +x already applied
@@ -920,7 +923,7 @@ The final local result was:
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure simulation is not required | ✅ 49 screenshots plus 4 raw logs | ✅ **CORE COMPLETE** |
-| Part 4 | High Availability (K8s Option A) | ✅ Raw manifests + Helm/ArgoCD files | ✅ Full evidence-backed documentation | ✅ 15 linked screenshots | ✅ **CORE COMPLETE** |
+| Part 4 | High Availability (K8s Option A) | ✅ Raw manifests + Helm/ArgoCD files | ✅ Full Part 2-style evidence documentation + architecture diagram | ✅ 17 linked screenshots | ⚠️ **CORE COMPLETE; 2 RUNTIME EVIDENCE GAPS** |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
@@ -999,6 +1002,7 @@ documentation/screenshots/part4/step08-domain-access-http-200.png
 documentation/screenshots/part4/step09-node-taint-rollout.png
 documentation/screenshots/part4/step09-pod-placement-two-nodes.png
 documentation/screenshots/part4/step10-api-failover-recovery.png
+documentation/screenshots/part4/step11-load-distribution-requests.png
 ```
 
 The current Part 4 guide is:
@@ -1009,16 +1013,15 @@ documentation/Part4-High-Availability-Documentation.md
 
 It records the installation, preflight, Minikube start, add-on verification,
 k9s workflow, resource-safe memory settings, two-node pod placement, domain
-access, and API failover recovery evidence.
+access, API failover recovery, load-distribution requests, and the architecture
+diagram.
 
 ### Part 4 evidence status
 
 The Ingress controller and applications are running. Services, Ingress, HPA
 metrics, two Ready nodes, pod placement across both nodes, successful domain
-requests, and real API failover recovery have been captured.
-
-```bash
-# Optional final traffic-distribution observation:
-kubectl get endpointslice -n devops-exam \
-  -l kubernetes.io/service-name=api-service
-```
+requests, real API pod-failover recovery, and repeated load-distribution
+requests have been captured. The selected raw-manifest implementation and its
+Part 2-style documentation are complete. Two PDF evidence bullets remain open:
+service availability during a deliberate node failure, and even per-instance
+traffic distribution with pod-level attribution.
