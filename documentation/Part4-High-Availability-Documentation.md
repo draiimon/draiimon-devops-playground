@@ -389,7 +389,7 @@ protection in one platform.
 | Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Services captured; endpoints and traffic distribution pending |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Ingress host routing captured; domain request pending |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
-| Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Configured; metrics-server/HPA behavior not yet captured |
+| Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Live HPA metrics captured; API 2–6 and UI 2–4 replicas |
 | Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | Configured; rollout result not yet captured |
 | Orchestration manifests | Raw Kubernetes manifests and a Helm chart | Repository files present |
 
@@ -650,6 +650,18 @@ The live k9s Ingress view shows `app-ingress` with class `nginx`, address
 This proves that the Kubernetes Ingress resource is configured for
 domain-based routing. An actual request through each hostname remains a
 separate runtime check.
+
+![HorizontalPodAutoscaler metrics and replica limits](screenshots/part4/step07-hpa-metrics-ready.png)
+
+The live k9s HPA view shows:
+
+- `api-hpa`: CPU `2%/70%`, memory `52%/80%`, current replicas `2`,
+  minimum `2`, maximum `6`.
+- `ui-hpa`: CPU `1%/70%`, current replicas `2`, minimum `2`, maximum `4`.
+
+This proves that Metrics Server is supplying live resource metrics and that
+both HPAs are attached to the intended Deployments within their configured
+replica ranges.
 
 The required evidence should be placed here:
 
