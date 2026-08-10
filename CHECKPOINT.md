@@ -1014,7 +1014,9 @@ documentation/Part4-High-Availability-Documentation.md
 It records the installation, preflight, Minikube start, add-on verification,
 k9s workflow, resource-safe memory settings, two-node pod placement, domain
 access, API failover recovery, load-distribution requests, and the architecture
-diagram.
+diagram. The tracked helper `part4-ha/verify-runtime-evidence.sh` is ready to
+capture the two remaining live proofs after the updated API image is deployed
+to the local WSL cluster.
 
 ### Part 4 evidence status
 
@@ -1024,4 +1026,7 @@ requests, real API pod-failover recovery, and repeated load-distribution
 requests have been captured. The selected raw-manifest implementation and its
 Part 2-style documentation are complete. Two PDF evidence bullets remain open:
 service availability during a deliberate node failure, and even per-instance
-traffic distribution with pod-level attribution.
+traffic distribution with pod-level attribution. The API now exposes the
+diagnostic `/instance` endpoint, and the Deployment injects `POD_NAME` through
+the Kubernetes Downward API. The final screenshots must still come from the
+real local WSL Minikube cluster.

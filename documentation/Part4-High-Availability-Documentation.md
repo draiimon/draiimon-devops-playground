@@ -665,6 +665,34 @@ available through the domain-based route. The earlier failed command using the
 literal `<one-api-pod-name>` placeholder is shown historically in the same
 terminal capture and was not treated as a test.
 
+### Required node-failure availability test
+
+The pod-failure test above is complete, but the PDF also asks for service
+availability during node failures. Run the following on the local WSL machine
+where the two-node Minikube cluster is running. First confirm that the
+application replicas are healthy and that the selected worker node is
+`minikube-m02`:
+
+```bash
+kubectl get nodes -o wide
+kubectl get pods -n devops-exam -o wide
+kubectl get endpointslice -n devops-exam \
+  -l kubernetes.io/service-name=api-service -o wide
+```
+
+The repository includes a repeatable evidence helper:
+
+```bash
+./part4-ha/verify-runtime-evidence.sh --node-failure
+```
+
+The helper stops `minikube-m02`, checks the node state, sends 20 requests
+through `http://api.myapp.local/`, prints the application pods and API
+EndpointSlice, then starts the node again. It requires at least 15 successful
+HTTP 200 responses during the controlled test. The screenshot and output from
+the real WSL cluster must be added before this PDF bullet can be marked
+evidence-complete.
+
 ---
 
 ## Task 2 — Load Distribution and Zero-Downtime Updates
@@ -773,6 +801,43 @@ return the same JSON body and the application does not expose pod identity,
 this screenshot does not claim per-request pod attribution or mathematically
 even distribution; that limitation is documented rather than hidden.
 
+### Required per-replica distribution test
+
+The API now has a diagnostic endpoint that returns the Kubernetes pod name:
+
+```text
+GET http://api.myapp.local/instance
+```
+
+The endpoint is separate from `/`, so the existing Part 2 root response and CI
+smoke test remain unchanged. The Kubernetes Deployment supplies the pod name
+through the Downward API:
+
+```yaml
+- name: POD_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+```
+
+After the updated API image has been built, published, and deployed to the
+local cluster, run:
+
+```bash
+REQUESTS=40 ./part4-ha/verify-runtime-evidence.sh
+```
+
+The helper records every response instance and prints counts per API pod. It
+passes only when all requests succeed, both replicas answer at least once, and
+the largest count is no more than twice the smallest count. This is a
+bounded, practical even-distribution check rather than an unsupported claim of
+perfect mathematical equality.
+
+The new per-replica output and screenshot must be captured from the real WSL
+cluster. Until that output exists, the older `step11` screenshot remains valid
+for multiple ready endpoints and repeated successful routing, but not for the
+stronger even-distribution claim.
+
 The required evidence should be placed here:
 
 ```text
@@ -789,12 +854,11 @@ The Service and EndpointSlice output should show that the stable Service names
 resolve to multiple ready pod endpoints. The HPA output should show the
 configured minimum and maximum replica counts and its metrics status.
 
-The rollout evidence shows that the API and UI updates completed. The new
+The rollout evidence shows that the API and UI updates completed. The existing
 runtime screenshot complements the Service and EndpointSlice configuration
-with 20 successful requests through the configured domain. A future
-application version could expose a pod identifier in its response or logs to
-measure exact per-pod distribution; that is not required for the current
-stateless sample application and is not claimed here.
+with 20 successful requests through the configured domain. The new `/instance`
+test is the required stronger evidence for identifying the serving replica and
+checking practical even distribution.
 
 ---
 

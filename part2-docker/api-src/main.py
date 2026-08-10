@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Depends, status, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import os
+import socket
 import models
 import schemas
 from database import engine, SessionLocal
@@ -7,6 +9,10 @@ from sqlalchemy.orm import Session
 from typing import List
 
 app = FastAPI()
+
+# Kubernetes supplies POD_NAME through the Downward API. The hostname fallback
+# keeps the endpoint useful when the application is run outside Kubernetes.
+INSTANCE_ID = os.getenv("POD_NAME") or socket.gethostname()
 
 origins = [
     "http://localhost.tiangolo.com",
@@ -37,6 +43,16 @@ def get_db():
 @app.get("/")
 async def root():
     return {"message": "Fast Api Exam api v1"}
+
+
+@app.get("/healthz")
+async def healthz():
+    return {"status": "healthy", "service": "api-app", "instance": INSTANCE_ID}
+
+
+@app.get("/instance")
+async def instance():
+    return {"instance": INSTANCE_ID}
 
 
 @app.get("/trip", status_code=status.HTTP_200_OK, response_model=List[schemas.ShowTrip])

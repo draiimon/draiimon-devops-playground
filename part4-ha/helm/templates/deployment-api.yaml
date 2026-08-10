@@ -42,6 +42,10 @@ spec:
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             {{- if .Values.api.secrets.databaseUrl }}
             - name: DATABASE_URL
               valueFrom:
