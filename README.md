@@ -116,6 +116,13 @@ created from the candidate's local walkthrough and screenshots.
 
 Platform: **Kubernetes** (recommended option)
 
+The complete Part 4 submission guide is
+[`documentation/Part4-High-Availability-Documentation.md`](documentation/Part4-High-Availability-Documentation.md).
+It follows the PDF's four requirement areas: redundancy, load distribution,
+domain-based access, and orchestration. The selected easy path is a raw
+two-node Minikube deployment; Helm and ArgoCD remain documented as optional
+advanced paths.
+
 ### Architecture
 
 ```
@@ -140,15 +147,16 @@ Internet
 ### Deploy to Kubernetes
 
 ```bash
-# Apply all manifests
+# Apply the namespace first, then the application manifests
+kubectl apply -f part4-ha/k8s/namespace.yaml
 kubectl apply -f part4-ha/k8s/
 
 # Watch rollout
-kubectl rollout status deployment/api-app
-kubectl rollout status deployment/ui-app
+kubectl rollout status deployment/api-app -n devops-exam
+kubectl rollout status deployment/ui-app -n devops-exam
 
 # Check pods
-kubectl get pods -n devops-exam
+kubectl get pods -n devops-exam -o wide
 ```
 
 ### Configure Local DNS
@@ -176,6 +184,19 @@ kubectl delete pod <api-pod-name> -n devops-exam
 # Watch recovery in real time
 kubectl get pods -n devops-exam -w
 ```
+
+Before the final Part 4 evidence runs, copy the latest repository files into the
+local WSL checkout and run the verifier preflight. For a local image:
+
+```bash
+EXPECTED_API_IMAGE=devops-api:part4-local \
+  ./part4-ha/verify-runtime-evidence.sh --preflight
+```
+
+For the published image, use
+`EXPECTED_API_IMAGE=draiimon112/devops-api:staging` instead. The preflight
+checks that both API replicas are Ready, use one expected image, appear in the
+API EndpointSlice, and are not behind an active Ingress rewrite.
 
 ---
 

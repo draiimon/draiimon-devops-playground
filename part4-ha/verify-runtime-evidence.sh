@@ -9,12 +9,15 @@ API_URL="${API_URL:-http://api.myapp.local/}"
 IDENTITY_URL="${IDENTITY_URL:-http://api.myapp.local/instance}"
 REQUESTS="${REQUESTS:-40}"
 FAIL_NODE="${FAIL_NODE:-minikube-m02}"
+EXPECTED_API_IMAGE="${EXPECTED_API_IMAGE:-}"
 NODE_FAILURE=false
+PREFLIGHT_ONLY=false
 
 usage() {
   cat <<'EOF'
 Usage:
   ./part4-ha/verify-runtime-evidence.sh
+  ./part4-ha/verify-runtime-evidence.sh --preflight
   ./part4-ha/verify-runtime-evidence.sh --node-failure
 
 Environment overrides:
@@ -23,6 +26,7 @@ Environment overrides:
   IDENTITY_URL=http://api.myapp.local/instance
   REQUESTS=40
   FAIL_NODE=minikube-m02
+  EXPECTED_API_IMAGE=devops-api:part4-local
 
 The default mode counts responses by the API instance name.
 The --node-failure mode stops one Minikube node, checks domain availability,
@@ -33,6 +37,7 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --node-failure) NODE_FAILURE=true ;;
+    --preflight) PREFLIGHT_ONLY=true ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -59,6 +64,89 @@ echo "Namespace: ${NAMESPACE}"
 echo "API URL: ${API_URL}"
 echo "Identity URL: ${IDENTITY_URL}"
 echo
+
+preflight() {
+  echo "--- Deployment readiness preflight ---"
+  if ! kubectl rollout status deployment/api-app -n "${NAMESPACE}" --timeout=120s; then
+    echo "Preflight failed: api-app rollout did not complete successfully." >&2
+    exit 1
+  fi
+
+  pod_json="$(kubectl get pods -n "${NAMESPACE}" -l app=api-app -o json)"
+  pod_rows="$(printf '%s' "${pod_json}" | python3 -c '
+import json, sys
+for item in json.load(sys.stdin)["items"]:
+    status = item.get("status", {})
+    containers = status.get("containerStatuses", [])
+    ready = containers[0].get("ready", False) if containers else False
+    image = item.get("spec", {}).get("containers", [{}])[0].get("image", "<none>")
+    print(item["metadata"]["name"], status.get("podIP", "<none>"), image, str(ready).lower())
+')"
+  printf '%s\n' "${pod_rows}"
+
+  ready_count="$(printf '%s\n' "${pod_rows}" | awk '$4 == "true" {count++} END {print count+0}')"
+  if [[ "${ready_count}" -lt 2 ]]; then
+    echo "Preflight failed: at least two Ready API pods are required." >&2
+    exit 1
+  fi
+  if printf '%s\n' "${pod_rows}" | awk '$2 == "<none>" || $4 != "true" {failed=1} END {exit failed}'; then
+    :
+  else
+    echo "Preflight failed: every API pod must have a pod IP and READY=true." >&2
+    exit 1
+  fi
+  image_count="$(printf '%s\n' "${pod_rows}" | awk '!seen[$3]++ {count++} END {print count+0}')"
+  if [[ "${image_count}" -ne 1 ]]; then
+    echo "Preflight failed: API pods are using mixed images." >&2
+    exit 1
+  fi
+  actual_image="$(printf '%s\n' "${pod_rows}" | awk 'NR == 1 {print $3}')"
+  if [[ -n "${EXPECTED_API_IMAGE}" && "${actual_image}" != "${EXPECTED_API_IMAGE}" ]]; then
+    echo "Preflight failed: API pods use ${actual_image}, expected ${EXPECTED_API_IMAGE}." >&2
+    exit 1
+  fi
+
+  endpoint_json="$(kubectl get endpointslice -n "${NAMESPACE}" \
+    -l kubernetes.io/service-name=api-service -o json)"
+  endpoint_rows="$(printf '%s' "${endpoint_json}" | python3 -c '
+import json, sys
+for item in json.load(sys.stdin)["items"]:
+    for endpoint in item.get("endpoints", []):
+        if endpoint.get("conditions", {}).get("ready", True) is False:
+            continue
+        for address in endpoint.get("addresses", []):
+            print(address)
+')"
+  echo "API EndpointSlice addresses:"
+  printf '%s\n' "${endpoint_rows}"
+  if [[ -z "${endpoint_rows}" ]]; then
+    echo "Preflight failed: api-service has no EndpointSlice addresses." >&2
+    exit 1
+  fi
+  while read -r pod_name pod_ip image ready; do
+    if ! printf '%s\n' "${endpoint_rows}" | grep -Fxq "${pod_ip}"; then
+      echo "Preflight failed: Ready pod ${pod_name} IP ${pod_ip} is not in the API EndpointSlice." >&2
+      exit 1
+    fi
+  done < <(printf '%s\n' "${pod_rows}" | awk '$4 == "true"')
+  if [[ "${ready_count}" -ne "$(printf '%s\n' "${endpoint_rows}" | sort -u | wc -l)" ]]; then
+    echo "Preflight failed: EndpointSlice does not contain exactly one address per Ready API pod." >&2
+    exit 1
+  fi
+
+  rewrite_target="$(kubectl get ingress app-ingress -n "${NAMESPACE}" \
+    -o jsonpath='{.metadata.annotations.nginx\.ingress\.kubernetes\.io/rewrite-target}' 2>/dev/null || true)"
+  if [[ -n "${rewrite_target}" ]]; then
+    echo "Preflight failed: app-ingress still has rewrite-target=${rewrite_target}; /instance would be rewritten." >&2
+    exit 1
+  fi
+  echo "Preflight passed: API rollout, replicas, image, endpoints, and Ingress path handling are ready."
+}
+
+preflight
+if [[ "${PREFLIGHT_ONLY}" == true ]]; then
+  exit 0
+fi
 
 echo "--- Nodes before test ---"
 kubectl get nodes -o wide

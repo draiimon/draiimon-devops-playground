@@ -15,7 +15,6 @@ metadata:
   name: app-ingress
   namespace: devops-exam
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
 spec:

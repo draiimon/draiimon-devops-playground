@@ -859,6 +859,69 @@ the local source or image is still stale. If all three show the route but the
 domain request remains 404, inspect the active pods and EndpointSlice because
 the Ingress may still be routing to an older API pod.
 
+The latest uploaded capture shows the route in the local source, the
+`devops-api:part4-local` image, and the inspected running API pod. This
+confirms that the updated code reached at least one pod, but it does not yet
+inspect the second replica or prove that the Service EndpointSlice contains
+only updated pods. Before running the evidence tests, inspect every API pod:
+
+```bash
+kubectl -n devops-exam get pods -l app=api-app -o wide
+kubectl -n devops-exam get pods -l app=api-app \
+  -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[0].image,READY:.status.containerStatuses[0].ready
+kubectl -n devops-exam get endpointslice \
+  -l kubernetes.io/service-name=api-service -o wide
+kubectl -n devops-exam rollout status deployment/api-app
+```
+
+The tracked verifier now has a preflight mode that performs the same safety
+checks before either evidence test. For the local image fallback, run:
+
+```bash
+EXPECTED_API_IMAGE=devops-api:part4-local \
+  ./part4-ha/verify-runtime-evidence.sh --preflight
+```
+
+For the published image path, use
+`EXPECTED_API_IMAGE=draiimon112/devops-api:staging` instead. The preflight
+requires at least two Ready API pods, one consistent image across those pods,
+at least one API EndpointSlice address, and no active Ingress rewrite annotation.
+It does not create evidence or stop a node.
+
+Both API pods must show the expected image, `READY=true`, and both pod IPs must
+appear in the EndpointSlice. Then run:
+
+```bash
+for i in $(seq 1 10); do
+  curl -i --max-time 10 http://api.myapp.local/instance
+done
+```
+
+Every response must be HTTP 200 with an `api-app-...` instance name. If any
+response is still 404, do not start the final evidence tests yet; the
+EndpointSlice or Ingress is still routing to a stale backend.
+
+### Ingress routing correction
+
+The raw Ingress previously contained
+`nginx.ingress.kubernetes.io/rewrite-target: /`. Because the API rule already
+uses the `/` prefix, that annotation rewrote `/instance` to `/` before the
+request reached FastAPI. The annotation was removed from
+`part4-ha/k8s/ingress.yaml`; the API and UI host rules now preserve the
+requested path.
+
+Apply the corrected Ingress on the local cluster:
+
+```bash
+kubectl -n devops-exam annotate ingress app-ingress \
+  nginx.ingress.kubernetes.io/rewrite-target- --overwrite
+kubectl -n devops-exam apply -f part4-ha/k8s/ingress.yaml
+curl -i http://api.myapp.local/instance
+```
+
+The response must be HTTP 200 with an `api-app-...` instance name. This
+Ingress-only correction does not restart the API pods.
+
 ---
 
 ## Task 2 — Load Distribution and Zero-Downtime Updates
@@ -1376,12 +1439,13 @@ captured from the real cluster.
 | Domain-based access | `api.myapp.local` and `ui.myapp.local`, hosts-file mapping, live HTTP 200 responses | ✅ Evidence complete |
 | Container orchestration | Kubernetes raw manifests applied successfully; Helm and ArgoCD files documented as optional advanced paths | ✅ Selected raw-manifest path complete |
 | Architecture documentation | SVG diagram plus explanation of Ingress, Services, replicas, nodes, probes, PDB, and HPA | ✅ Complete |
-| Screenshot documentation | All 17 Part 4 screenshots present, linked once in the relevant task, and explained | ✅ Complete |
+| Screenshot documentation | 17 captured Part 4 screenshots present, linked once in the relevant task, and explained; two final runtime captures are listed separately below | ✅ Documentation complete |
 
 **Current conclusion:** Part 4 documentation and the selected Kubernetes
-raw-manifest implementation are complete. The only remaining work is to run the
-two provided live-cluster verification commands and attach their truthful
-terminal captures; no additional Kubernetes feature or ArgoCD setup is needed.
+raw-manifest implementation are complete. The only remaining submission action
+is to run the preflight and two provided live-cluster verification commands on
+the local WSL Minikube cluster, then attach their truthful terminal captures;
+no additional Kubernetes feature or ArgoCD setup is needed.
 
 ---
 
@@ -1410,8 +1474,8 @@ proves, and what the reviewer should notice.
 | `step09-pod-placement-two-nodes.png` | API/UI pods show `minikube` and `minikube-m02` in the NODE column. | Proves replicas are actually placed across two nodes, satisfying the redundancy requirement. |
 | `step10-api-failover-recovery.png` | A real API pod deletion, replacement pod, endpoints, PDBs, and HTTP 200 response. | Proves automatic recovery and continued Service availability after a pod failure. |
 | `step11-load-distribution-requests.png` | Two ready API endpoints followed by 20 successful domain requests. | Proves multiple endpoints remained available and the Service successfully handled repeated traffic. It is baseline routing evidence, not the stronger per-pod distribution proof. |
-| `step12-per-replica-distribution.png` | The verifier calls `/instance` repeatedly and prints counts by API pod name. | Proves both replicas answered traffic and the bounded 2:1 distribution check passed. |
-| `step13-node-failure-availability.png` | The verifier shows one Minikube node unavailable while domain requests continue returning HTTP 200, then restores the node. | Proves service availability during the controlled node-failure test. |
+| `step12-per-replica-distribution.png` | **To be captured:** the verifier calls `/instance` repeatedly and prints counts by API pod name. | Will prove both replicas answered traffic and the bounded 2:1 distribution check passed. |
+| `step13-node-failure-availability.png` | **To be captured:** the verifier shows one Minikube node unavailable while domain requests continue returning HTTP 200, then restores the node. | Will prove service availability during the controlled node-failure test. |
 
 ### Diagram Explanation
 

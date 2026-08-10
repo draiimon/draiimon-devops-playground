@@ -1062,3 +1062,31 @@ image build and Deployment rollout. This still does not prove that `/instance`
 is present in the built image or running pod. Before rebuilding again, inspect
 the local source, the image filesystem, and one running API pod; all three must
 show the diagnostic route before the two runtime evidence tests can run.
+
+The latest image-inspection capture now shows `/instance` in the local source,
+the `devops-api:part4-local` image, and the inspected running API pod. This
+confirms the updated code reached at least one pod, but the second replica and
+the Service EndpointSlice were not inspected. The earlier 404 therefore
+remains unresolved until every API pod uses the local image and every ready
+EndpointSlice address points to an updated pod.
+
+The raw Ingress manifest was also found to rewrite every request to `/` through
+`nginx.ingress.kubernetes.io/rewrite-target: /`. That can rewrite
+`/instance` before FastAPI receives it. The annotation has been removed from
+`part4-ha/k8s/ingress.yaml`; the local Ingress must be reapplied before testing
+the diagnostic endpoint again.
+
+The tracked verifier now includes a `--preflight` mode. After copying the latest
+API source, raw Ingress manifest, and verifier into the WSL checkout, run:
+
+```bash
+EXPECTED_API_IMAGE=devops-api:part4-local \
+  ./part4-ha/verify-runtime-evidence.sh --preflight
+```
+
+The preflight requires at least two Ready API pods, one consistent API image,
+visible API EndpointSlice addresses, and no active Ingress rewrite annotation.
+If the published image is used, set
+`EXPECTED_API_IMAGE=draiimon112/devops-api:staging` instead. Only after this
+passes should the two final evidence runs begin. No final `step12` or `step13`
+capture exists in this Repl yet.
