@@ -792,12 +792,12 @@ GitHub-hosted runner environment are documented separately.
 
 ---
 
-## ❌ PART 4 — High Availability — FILES DONE, DOCUMENTATION NEEDED
+## ✅ PART 4 — High Availability — Live Evidence Captured
 
-**Kubernetes manifests:** `part4-ha/k8s/` ✅ (8 files — full set)  
+**Kubernetes manifests:** `part4-ha/k8s/` ✅ (11 files — full set)
 **Helm chart:** `part4-ha/helm/` ✅ (Chart.yaml + templates/ + values.yaml + values.staging.yaml)  
 **ArgoCD:** `part4-ha/argocd/application.yaml` ✅  
-**Documentation:** ❌ `documentation/Part4-HA-Documentation.md` does NOT exist yet — must be created
+**Documentation:** ✅ `documentation/Part4-High-Availability-Documentation.md`
 
 ### What the HA setup covers (aligned to PDF requirements — Option A: Kubernetes)
 
@@ -809,7 +809,7 @@ GitHub-hosted runner environment are documented separately.
 | Load distribution | Kubernetes `ClusterIP` Service distributes traffic across replicas (round-robin) | ✅ |
 | No single point of failure | `topologySpreadConstraints` spreads pods across different nodes | ✅ |
 | Domain-based access | `api.myapp.local` + `ui.myapp.local` via Nginx Ingress | ✅ |
-| HPA (auto-scaling) | `hpa.yaml` — API: 2–10 pods at 70% CPU; UI: 2–5 pods at 70% CPU | ✅ |
+| HPA (auto-scaling) | `hpa.yaml` — API: 2–6 pods at 70% CPU; UI: 2–4 pods at 70% CPU | ✅ |
 | PodDisruptionBudget | `pdb.yaml` — `minAvailable: 1` during maintenance | ✅ |
 | Helm chart | Full parameterized chart in `part4-ha/helm/` with staging override values | ✅ |
 | GitOps / ArgoCD | `argocd/application.yaml` for GitOps continuous deployment | ✅ |
@@ -837,24 +837,20 @@ GitHub-hosted runner environment are documented separately.
 127.0.0.1 ui.myapp.local
 ```
 
-### Action Needed — Part 4 Documentation
+### Part 4 documentation and live evidence
 
-Create `documentation/Part4-HA-Documentation.md` following EXACTLY the same format as Part 1 and Part 2 docs:
-1. Header: Candidate, Machine, Date, Exam
-2. "Connection to previous part" section — link HA to Part 3 CI/CD (pipeline deploys via Helm to the K8s cluster)
-3. Environment Overview — Kubernetes choice, Minikube or kind for local testing
-4. Each requirement from the PDF: Option A selected (Kubernetes)
-5. For each requirement: show the YAML content → Explanation table → Screenshot (if available)
-6. Domain configuration section — `/etc/hosts` setup
-7. Completion summary table
-8. Screenshot checklist
+The Part 4 guide is complete at
+`documentation/Part4-High-Availability-Documentation.md`. It maps the PDF
+requirements to the raw Kubernetes manifests and records live evidence for:
 
-For screenshots, user can run (if they have Minikube):
-```bash
-kubectl get all -n devops-exam
-kubectl get ingress -n devops-exam
-```
-Save screenshot as: `documentation/screenshots/part4/task04-ha-kubectl.png`
+- Two Ready Minikube nodes with API and UI replicas placed across both nodes.
+- ClusterIP Services, Ingress host routing, and live HPA metrics.
+- Domain-based API and UI access returning HTTP 200.
+- Real API pod deletion, replacement, retained Service endpoints, PDB output,
+  and HTTP 200 recovery.
+
+The Helm and ArgoCD files remain available as optional advanced deployment
+paths; the selected evidence path is the successfully tested raw manifests.
 
 ---
 
@@ -924,7 +920,7 @@ The final local result was:
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure simulation is not required | ✅ 49 screenshots plus 4 raw logs | ✅ **CORE COMPLETE** |
-| Part 4 | High Availability (K8s Option A) | ✅ 10 K8s/Helm files | ❌ Not created | ❌ None yet | 🔴 Docs needed |
+| Part 4 | High Availability (K8s Option A) | ✅ Raw manifests + Helm/ArgoCD files | ✅ Full evidence-backed documentation | ✅ 15 linked screenshots | ✅ **CORE COMPLETE** |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
@@ -935,11 +931,11 @@ The final local result was:
 
 ## Latest Part 4 handoff — August 11, 2026
 
-This section supersedes the older Part 4 planning notes above. Part 4 is using
-Kubernetes Option A with Minikube and k9s. The actual local WSL walkthrough is
-in progress and must remain evidence-based; do not claim application
-deployment, domain access, or failover until those commands are run and
-screenshots are captured.
+This section supersedes the older Part 4 planning notes above. Part 4 used
+Kubernetes Option A with Minikube and k9s. The local WSL walkthrough is now
+complete and remains evidence-based: application deployment, domain access,
+two-node placement, and API failover are claimed only where the captured
+commands and screenshots prove them.
 
 ### Completed and evidenced
 
@@ -1002,6 +998,7 @@ documentation/screenshots/part4/step07-hpa-metrics-ready.png
 documentation/screenshots/part4/step08-domain-access-http-200.png
 documentation/screenshots/part4/step09-node-taint-rollout.png
 documentation/screenshots/part4/step09-pod-placement-two-nodes.png
+documentation/screenshots/part4/step10-api-failover-recovery.png
 ```
 
 The current Part 4 guide is:
@@ -1011,15 +1008,17 @@ documentation/Part4-High-Availability-Documentation.md
 ```
 
 It records the installation, preflight, Minikube start, add-on verification,
-k9s workflow, resource-safe memory settings, and evidence boundaries.
+k9s workflow, resource-safe memory settings, two-node pod placement, domain
+access, and API failover recovery evidence.
 
-### Exact next action
+### Part 4 evidence status
 
-The Ingress controller and applications are now running. Services, Ingress,
-HPA metrics, two Ready nodes, and successful domain requests have been
-captured. Pod placement across both nodes has also been captured. Continue
-with the real API failover test:
+The Ingress controller and applications are running. Services, Ingress, HPA
+metrics, two Ready nodes, pod placement across both nodes, successful domain
+requests, and real API failover recovery have been captured.
 
 ```bash
-k9s -n devops-exam
+# Optional final traffic-distribution observation:
+kubectl get endpointslice -n devops-exam \
+  -l kubernetes.io/service-name=api-service
 ```

@@ -10,7 +10,8 @@
 > configuration together with the live-cluster evidence captured so far.
 > The two-node cluster and successful API/UI/database pod readiness are now
 > proven. Pod placement across both nodes and domain requests are now proven.
-> Load-distribution and failover evidence still require their live outputs.
+> Failover recovery and multiple ready Service endpoints are now proven.
+> Request-level traffic distribution remains a separate optional check.
 
 ---
 
@@ -384,8 +385,8 @@ protection in one platform.
 | PDF requirement | Repository implementation | Evidence status |
 |---|---|---|
 | Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Live placement across both Minikube nodes captured |
-| Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Configured; failover test not yet captured |
-| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Services captured; endpoints and traffic distribution pending |
+| Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Live pod deletion, replacement, endpoint recovery, and HTTP 200 captured |
+| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Multiple ready API endpoints captured; request-level distribution not separately measured |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Live hostname resolution and HTTP 200 responses captured |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Live HPA metrics captured; API 2–6 and UI 2–4 replicas |
@@ -537,8 +538,8 @@ The live k9s Services view shows the internal ClusterIP routing layer:
 - `db` exposes MySQL port `3306` internally.
 
 This proves that the application and database Services exist as internal
-ClusterIP resources. Endpoint and request-distribution evidence is still
-captured separately.
+ClusterIP resources. The failover evidence below also shows that the API
+Service retained multiple ready endpoints after a pod replacement.
 
 ![API and UI replicas placed across both Minikube nodes](screenshots/part4/step09-pod-placement-two-nodes.png)
 
@@ -583,6 +584,25 @@ A valid failover demonstration should delete one replica, then show that the
 Service remains available and Kubernetes creates or schedules a replacement.
 That result must be captured from a real cluster; a manifest alone is not
 failover evidence.
+
+![API pod deletion, replacement, and HTTP 200 recovery](screenshots/part4/step10-api-failover-recovery.png)
+
+The live failover test selected the actual first API pod with a JSONPath
+command, deleted it, and showed Kubernetes creating a replacement:
+
+- Deleted pod: `api-app-69b57bdf59-4v6gh`.
+- Replacement pod: `api-app-69b57bdf59-g8md`.
+- The replacement became `1/1 Running`.
+- `api-service` retained two ready endpoints:
+  `10.244.0.8` and `10.244.1.12`.
+- Both PDBs reported `MIN AVAILABLE 1` and `ALLOWED DISRUPTIONS 1`.
+- `curl -i http://api.myapp.local/` returned HTTP `200 OK` with the
+  FastAPI JSON response.
+
+This is live evidence of automatic pod recovery while the API Service remains
+available through the domain-based route. The earlier failed command using the
+literal `<one-api-pod-name>` placeholder is shown historically in the same
+terminal capture and was not treated as a test.
 
 ---
 
@@ -879,7 +899,23 @@ credentials must not be committed to Git or included in screenshots.
 
 ### 📸 Screenshots
 
-No Part 4 screenshot has been captured for this task yet.
+The live Kubernetes evidence captured for this orchestration path includes:
+
+![Two Ready Minikube nodes](screenshots/part4/step04-two-nodes-ready.png)
+
+![ClusterIP Services](screenshots/part4/step05-services-clusterip.png)
+
+![Ingress host routing](screenshots/part4/step06-ingress-host-routing.png)
+
+![Live HPA metrics](screenshots/part4/step07-hpa-metrics-ready.png)
+
+![API failover recovery](screenshots/part4/step10-api-failover-recovery.png)
+
+These screenshots document the tested raw-manifest path. No ArgoCD
+synchronization screenshot is claimed because the committed ArgoCD
+configuration still contains a repository URL placeholder. No Helm install
+screenshot is claimed because Helm was not required for the successful local
+Minikube run.
 
 The required evidence should be placed here:
 
@@ -994,17 +1030,23 @@ reachable by ArgoCD.
 - Domain names and local hosts-file instructions are documented.
 - ArgoCD GitOps configuration is present.
 
-### Still required for a complete evidence-backed submission
+### Evidence-backed submission status
 
-- Replace the ArgoCD repository URL placeholder.
-- Replace Docker Hub image repository placeholders with the actual published
-  images and an immutable tag.
-- Run the chart or manifests on a real Kubernetes cluster.
-- Capture node and pod placement evidence.
-- Capture readiness, Service endpoints, Ingress, HPA, and PDB output.
-- Perform and document a real pod-failure recovery test.
-- Verify domain-based API and UI access.
-- Capture screenshots directly under the task they prove.
+- The raw Kubernetes manifests were run on a real two-node Minikube cluster.
+- Node and pod placement across both nodes are captured.
+- Readiness, Services, Ingress, HPA, EndpointSlice, and PDB output are captured.
+- A real API pod-failure recovery test is captured.
+- Domain-based API and UI access both returned HTTP 200.
+- Screenshots are linked directly under the requirement they prove.
+
+The following are optional advanced-path cleanup items rather than missing proof
+for the selected raw-manifest Kubernetes path:
+
+- Replace the ArgoCD repository URL placeholder before using ArgoCD sync.
+- Replace Helm's generic image defaults with the exact published immutable tag
+  before using the Helm deployment path.
+- Optionally capture repeated application requests or logs to measure
+  request-level distribution between ready replicas.
 
 The PDF explicitly accepts partial work, so this document preserves the
 configuration that exists without claiming live HA behavior that has not yet
