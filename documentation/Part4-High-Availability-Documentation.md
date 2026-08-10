@@ -823,6 +823,21 @@ test -x part4-ha/verify-runtime-evidence.sh && echo verifier-ready
 The first command must show the `/instance` route and the second must print
 `verifier-ready`.
 
+### Result of the third local fallback attempt
+
+The third uploaded capture shows the same synchronization issue. The
+verification commands at the top produced no `instance` match and no
+`verifier-ready` output, so the WSL checkout still contains neither required
+repository update. The local image rebuilt successfully, but it was rebuilt
+from that older source; the deployment patch reported `configured deployment
+api-app unchanged`, and the final `/instance` request still returned
+`{"detail":"Not Found"}`. No distribution or node-failure evidence was
+captured.
+
+Do not rebuild again until both preflight checks produce output. If normal file
+synchronization is unavailable, create the two files directly in the WSL
+checkout from the current Repl copies before repeating the image build.
+
 ---
 
 ## Task 2 — Load Distribution and Zero-Downtime Updates

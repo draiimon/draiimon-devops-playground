@@ -1049,3 +1049,10 @@ The verifier script was still absent locally, so neither runtime evidence test
 ran. The current Repl copies of `part2-docker/api-src/main.py` and
 `part4-ha/verify-runtime-evidence.sh` must be copied into the matching WSL
 paths before rebuilding or capturing evidence.
+
+The third uploaded fallback capture showed the same result: no `instance` grep
+match, no `verifier-ready` output, an unchanged Deployment patch, and another
+`{"detail":"Not Found"}` response from `/instance`. The image was therefore
+rebuilt from the old source, and no distribution or node-failure evidence was
+captured. Do not rebuild again until both synchronization preflight checks
+produce output.
