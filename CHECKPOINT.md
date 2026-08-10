@@ -930,3 +930,84 @@ The final local result was:
 **Remaining optional or unverified work:**
 1. Decide whether to add the optional Docker image security scan.
 2. Test the documented immutable-tag rollback procedure on staging.
+
+---
+
+## Latest Part 4 handoff — August 11, 2026
+
+This section supersedes the older Part 4 planning notes above. Part 4 is using
+Kubernetes Option A with Minikube and k9s. The actual local WSL walkthrough is
+in progress and must remain evidence-based; do not claim application
+deployment, domain access, or failover until those commands are run and
+screenshots are captured.
+
+### Completed and evidenced
+
+- Docker, kubectl, Minikube, and k9s were installed and verified on local WSL.
+- Part 3 Docker containers were stopped before the Kubernetes run.
+- WSL memory was increased to approximately 5.8 GiB with 4 GiB swap.
+- A two-node Minikube cluster was created successfully with:
+
+  ```bash
+  minikube start --nodes 2 --driver=docker --cpus=2 --memory=1800mb
+  ```
+
+- Control-plane node `minikube` is `Ready`.
+- Worker node `minikube-m02` is `Ready`.
+- Kubernetes version is `v1.35.1`.
+- Minikube version is `v1.38.1`.
+- kubectl is configured for the `minikube` context.
+- Metrics Server is enabled and its pod was shown as `Running`.
+
+### Add-on evidence boundary
+
+The latest add-on verification showed:
+
+- Both nodes `Ready`.
+- Kubernetes system pods `Running`.
+- `metrics-server` enabled.
+- `ingress` enabled in the Minikube add-on list.
+- The screenshot did not show an `ingress-nginx-controller` pod, so Ingress
+  controller readiness is still pending verification.
+- `ingress-dns` is disabled; this is not required for the selected path.
+- The `command not found` messages for `ingress` and `metrics-server` happened
+  because those status labels were typed into Bash after the command output;
+  they did not change the cluster.
+
+### Part 4 evidence files
+
+```text
+documentation/screenshots/part4/step01-installation-check.png
+documentation/screenshots/part4/step01-installation-success.png
+documentation/screenshots/part4/step02-minikube-preflight.png
+documentation/screenshots/part4/step02-minikube-preflight-clean.png
+documentation/screenshots/part4/step02-minikube-preflight-ready.png
+documentation/screenshots/part4/step03-minikube-start-success.png
+documentation/screenshots/part4/step03-addons-verification-partial.png
+```
+
+The current Part 4 guide is:
+
+```text
+documentation/Part4-High-Availability-Documentation.md
+```
+
+It records the installation, preflight, Minikube start, add-on verification,
+k9s workflow, resource-safe memory settings, and evidence boundaries.
+
+### Exact next action
+
+Before applying `part4-ha/k8s/`, verify the Ingress controller:
+
+```bash
+kubectl get pods -n ingress-nginx
+kubectl get pods -n kube-system | grep -E 'ingress|metrics'
+minikube addons list | grep -E 'ingress|metrics-server'
+```
+
+Only continue to manifest application after the Ingress controller is
+confirmed `Running`. Then use k9s for the application evidence:
+
+```bash
+k9s -n devops-exam
+```
