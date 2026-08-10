@@ -1030,3 +1030,14 @@ traffic distribution with pod-level attribution. The API now exposes the
 diagnostic `/instance` endpoint, and the Deployment injects `POD_NAME` through
 the Kubernetes Downward API. The final screenshots must still come from the
 real local WSL Minikube cluster.
+
+### Latest closeout attempt
+
+The first closeout attempt built the API image successfully, but Docker Hub
+rejected the push with `insufficient_scope: authorization failed`. The
+subsequent Deployment rollout completed, but that does not prove the newly
+built image reached the cluster because the push failed and the Deployment uses
+the mutable `:staging` tag. The two evidence commands also did not run because
+the local WSL checkout did not contain the tracked
+`part4-ha/verify-runtime-evidence.sh` file. These screenshots are
+troubleshooting evidence only, not the final Part 4 runtime captures.

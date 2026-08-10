@@ -734,6 +734,73 @@ documentation/screenshots/part4/step12-per-replica-distribution.png
 documentation/screenshots/part4/step13-node-failure-availability.png
 ```
 
+### Troubleshooting the first closeout attempt
+
+The first uploaded closeout attempt built and tagged the API image
+successfully, but Docker Hub rejected the push with
+`insufficient_scope: authorization failed`. The Kubernetes rollout then
+reported success, but that does not prove that the newly built image reached
+the cluster: the deployment uses the same `:staging` tag and may have reused an
+existing image.
+
+The two verifier commands also did not run because the local WSL checkout did
+not yet contain the tracked file
+`part4-ha/verify-runtime-evidence.sh`. Sync that file from the current
+repository copy before running the evidence tests. Do not treat this failed
+attempt as either of the two final Part 4 screenshots.
+
+### Registry-free local fallback
+
+If Docker Hub authentication is not available, the updated image can be loaded
+directly into Minikube. This avoids the failed registry push and is suitable for
+the local evidence run:
+
+```bash
+cd ~/devops-exam
+grep -n 'instance' part2-docker/api-src/main.py
+
+docker build -t devops-api:part4-local ./part2-docker/api-src
+minikube image load devops-api:part4-local
+
+kubectl -n devops-exam patch deployment api-app --type=strategic \
+  -p '{"spec":{"template":{"spec":{"containers":[{"name":"api","image":"devops-api:part4-local","imagePullPolicy":"Never"}]}}}}'
+kubectl -n devops-exam rollout status deployment/api-app
+curl http://api.myapp.local/instance
+```
+
+The `curl` response must contain an `api-app-...` pod name before capturing
+distribution evidence. This temporary patch changes only the local cluster;
+the repository manifest remains configured for the published staging image.
+
+If the verifier file is still absent locally, use these equivalent direct
+checks. They produce the same evidence needed for the two open PDF bullets:
+
+```bash
+# Per-replica distribution: capture the complete output.
+for i in $(seq 1 40); do
+  curl -fsS --max-time 10 http://api.myapp.local/instance \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin)["instance"])' \
+    || echo REQUEST_FAILED
+done | tee /tmp/part4-distribution.txt
+sort /tmp/part4-distribution.txt | uniq -c
+
+# Node-failure availability: the trap restores the worker after the test.
+restore_node() { minikube node start minikube-m02 || true; }
+trap restore_node EXIT
+minikube node stop minikube-m02
+sleep 45
+kubectl get nodes -o wide
+for i in $(seq 1 20); do
+  curl -sS -o /dev/null -w "request=${i} HTTP=%{http_code}\n" \
+    --max-time 10 http://api.myapp.local/ || true
+  sleep 1
+done | tee /tmp/part4-node-failure.txt
+```
+
+The distribution capture must show two different `api-app-...` names with all
+40 requests successful. The node-failure capture must show the worker
+unavailable and at least 15 HTTP 200 responses.
+
 ---
 
 ## Task 2 — Load Distribution and Zero-Downtime Updates
