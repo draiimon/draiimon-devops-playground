@@ -115,7 +115,7 @@ clearly identified instead of being overstated.
 
 ---
 
-## Task 1 — Repository and GitHub Setup
+## Supporting Evidence History — Repository and GitHub Setup
 
 ### Confirmed actions
 
@@ -135,7 +135,7 @@ walkthrough below.
 
 ---
 
-## Task 2 — Starter Workflow and Staging Trigger
+## Supporting Evidence History — Starter Workflow and Staging Trigger
 
 The starter workflow was stored in the repository at:
 
@@ -187,7 +187,7 @@ as a non-blocking warning, not as a pipeline error.
 
 ---
 
-## Task 3 — Workflow Inspection and Docker Build Stage
+## Supporting Evidence History — Workflow Inspection and Docker Build Stage
 
 The workflow was inspected locally before extending it. The corresponding
 screenshots are embedded in the PDF-aligned Task 2 walkthrough below.
@@ -289,7 +289,7 @@ ignored.
 
 ---
 
-## Task 4 — Test Stage: Automated Checks and Smoke Tests
+## Supporting Evidence History — Test Stage: Automated Checks and Smoke Tests
 
 ### Objective
 
@@ -546,7 +546,7 @@ requirements remain to be implemented or documented as partial work.
 
 ---
 
-## Task 5 — Container Registry: Docker Hub Repository
+## Supporting Evidence History — Container Registry: Docker Hub Repository
 
 The Part 3 Deploy Stage requires Docker images to be pushed to a container
 registry. Docker Hub was selected as the registry for this walkthrough.
@@ -585,7 +585,7 @@ requirement. No password or access token is recorded in this documentation.
 
 ---
 
-## Task 6 — Docker Hub Personal Access Token
+## Supporting Evidence History — Docker Hub Personal Access Token
 
 GitHub Actions needs permission to authenticate to Docker Hub before it can
 push the API and UI images. A Docker Hub Personal Access Token (PAT) was
@@ -637,7 +637,7 @@ tagged images.
 
 ---
 
-## Task 7 — GitHub Actions Docker Hub Username Secret
+## Supporting Evidence History — GitHub Actions Docker Hub Secrets
 
 GitHub Actions must receive Docker Hub credentials through encrypted repository
 secrets rather than hardcoded values in the workflow file.
@@ -686,7 +686,7 @@ above.
 
 ---
 
-## Task 8 — Current Workflow Baseline Before Deploy Changes
+## Supporting Evidence History — Current Workflow Baseline Before Deploy Changes
 
 The current workflow was printed from the candidate's WSL repository before
 adding the Docker Hub Deploy Stage. The raw output is preserved at:
@@ -729,7 +729,7 @@ credential.
 
 ---
 
-## Task 9 — Draft Workflow Review: Keep Deploy After Test
+## Supporting Evidence History — Draft Workflow Review
 
 The candidate printed a draft workflow after adding Docker Hub tags, login, and
 push commands. The raw draft is preserved at:
@@ -756,7 +756,7 @@ No image push has been claimed from this draft.
 
 ---
 
-## Task 10 — Workflow After Removing the Early Push
+## Supporting Evidence History — Workflow Correction and Deploy Evidence
 
 The workflow was printed again after removing the Docker Hub login and push
 steps from the `build-images` job. The raw output is preserved at:
@@ -1637,15 +1637,27 @@ Search → edit a small block → save → exit → print the section → diff c
 
 ---
 
-## PDF-Aligned Part 3 Task Walkthrough
+## Official Part 3 Task Documentation
 
-This section maps the implementation to the five Part 3 requirements in the
-Junior DevOps Engineer Exam 2026. The detailed historical walkthrough below is
-kept as supporting evidence; this section is the direct submission checklist.
+Part 3 has exactly **five official tasks**. The five sections below are the
+direct submission document and follow the same order and format as Part 2:
 
-### Task 1 — Automatic Trigger and Pipeline as Code
+```text
+Task
+→ Commands Executed
+→ Output
+→ Explanation
+→ 📸 Screenshots
+→ Screenshot Explanation
+```
 
-#### Commands Executed
+The earlier sections named **Supporting Evidence History** are reference notes
+only. They are not additional exam tasks and are not part of the five-task
+count.
+
+## Task 1 — Automatic Trigger and Pipeline as Code
+
+### Commands Executed
 
 ```bash
 cd ~/devops-exam
@@ -1655,7 +1667,7 @@ git status --short
 git push origin staging
 ```
 
-#### Output
+### Output
 
 ```text
 Workflow: CI/CD Pipeline - 2026
@@ -1664,15 +1676,13 @@ Manual trigger: workflow_dispatch
 Workflow run: successful
 ```
 
-#### Explanation
+### Explanation
 
 The workflow is stored at the required root path
 `.github/workflows/deploy.yml`. A push to the `staging` branch starts the
 pipeline automatically. The optional `workflow_dispatch` trigger allows a
 manual run from the GitHub Actions page. The `verify-workflow` job prints the
 branch and commit so each run can be traced to source control.
-
-#### How to read this task
 
 Task 1 is about the **starting point of CI/CD**: the workflow must exist in the
 correct repository location, Git must record the change, and a push to
@@ -1690,7 +1700,7 @@ prepare the repository
 The screenshots are ordered to show that chain. They are not separate
 unrelated activities.
 
-#### 📸 Screenshots
+### 📸 Screenshots
 
 ![GitHub CLI installation](screenshots/part3/setup-01-github-cli-installation.png)
 
@@ -1776,9 +1786,9 @@ unrelated activities.
 
 **Screenshot Explanation:** **What you can see:** The terminal confirms that only the empty accidental nested workflow folder was removed. **What you learn:** Targeted cleanup protects the real `.github/workflows/deploy.yml`. After removal, run Git status again to confirm that the repository is clean and the real workflow still exists.
 
-### Task 2 — Build Stage
+## Task 2 — Build Stage
 
-#### Commands Executed
+### Commands Executed
 
 ```bash
 docker-compose -f part2-docker/docker-compose.yml config --quiet
@@ -1791,7 +1801,7 @@ The GitHub Actions Build job performs the equivalent hosted-runner checks with
 `docker compose`, then tags the images with the commit SHA, the branch name,
 and `latest` for Docker Hub publishing.
 
-#### Output
+### Output
 
 ```text
 Successfully built api-app
@@ -1801,14 +1811,12 @@ Successfully tagged ui-app:latest
 GitHub Actions: Build Docker images — Success
 ```
 
-#### Explanation
+### Explanation
 
 Compose validation checks that the service definitions and Dockerfiles can be
 parsed. The API and UI are built from the real cloned application source. The
 commit-SHA tag provides an immutable release reference, while the `staging` and
 `latest` tags support environment deployment and the current release.
-
-#### How to read this task
 
 Task 2 is about proving that the pipeline can create the application images,
 not just that the YAML file exists. Read the screenshots in this order:
@@ -1825,7 +1833,7 @@ The local screenshots explain the preflight check. The GitHub Actions
 screenshots explain why a local build alone is not enough: CI must reproduce the
 build on a hosted runner.
 
-#### 📸 Screenshots
+### 📸 Screenshots
 
 ![Local workflow inspection](screenshots/part3/task05-local-workflow-inspection.png)
 
@@ -1859,9 +1867,9 @@ build on a hosted runner.
 
 **Screenshot Explanation:** **What you can see:** Actions history records a successful validation run associated with `staging`. **What you learn:** The run history is an audit trail. It lets you connect the screenshot to a branch and completed workflow, rather than treating an isolated log image as the whole story.
 
-### Task 3 — Test Stage
+## Task 3 — Test Stage
 
-#### Commands Executed
+### Commands Executed
 
 ```bash
 npm ci
@@ -1874,7 +1882,7 @@ docker compose -f part2-docker/docker-compose.yml ps
 docker compose -f part2-docker/docker-compose.yml down -v
 ```
 
-#### Output
+### Output
 
 ```text
 API root endpoint passed.
@@ -1883,7 +1891,7 @@ UI root endpoint passed.
 Test applications — Success
 ```
 
-#### Explanation
+### Explanation
 
 The Test job installs the locked UI dependencies and runs linting. It then
 starts the real API, UI, and MySQL services, waits for the applications to
@@ -1895,8 +1903,6 @@ fails the job.
 The Docker image security scan is optional in the exam brief. It was not added,
 so it is clearly recorded as optional rather than represented as a completed
 test.
-
-#### How to read this task
 
 Task 3 proves that the pipeline does more than build images: it checks whether
 the applications can actually run. Read the evidence as this sequence:
@@ -1913,7 +1919,7 @@ install dependencies and lint
 The key lesson is that a green build is not the same as a working application.
 The Test Stage connects the built artifacts to real runtime behavior.
 
-#### 📸 Screenshots
+### 📸 Screenshots
 
 - [Raw Test-stage output](evidence/part3/task13-test-stage-output.txt)
 
@@ -1933,9 +1939,9 @@ The Test Stage connects the built artifacts to real runtime behavior.
 
 **Screenshot Explanation:** **What you can see:** The wider Actions log shows the Test job finishing its cleanup and post-job checkout steps successfully. **What you learn:** Use the job log to verify the complete lifecycle: test execution, cleanup, and job completion. Passing assertions without successful teardown is incomplete CI evidence.
 
-### Task 4 — Deploy Stage
+## Task 4 — Deploy Stage
 
-#### Commands Executed
+### Commands Executed
 
 ```bash
 docker login
@@ -1954,7 +1960,7 @@ GitHub Actions performs the registry login through the encrypted
 images on its fresh runner, pushes the commit-SHA, `staging`, and `latest`
 tags, and runs after the successful Test job.
 
-#### Output
+### Output
 
 ```text
 Login Succeeded!
@@ -1965,7 +1971,7 @@ devops_staging_db    Up (healthy)
 devops_staging_ui    Up (healthy)
 ```
 
-#### Explanation
+### Explanation
 
 Docker Hub is the container registry and the separate staging Compose project
 runs the published `:staging` images rather than local source-built images.
@@ -1974,8 +1980,6 @@ last known-good commit-SHA tags can be selected, the staging services restarted,
 and the API/UI smoke tests rerun. A live rollback exercise was not performed,
 so the rollback item is documented as a strategy rather than claimed as a
 tested event.
-
-#### How to read this task
 
 Task 4 follows the tested images into a registry and then into a separate
 staging runtime. Read the evidence in this order:
@@ -1994,7 +1998,7 @@ environment reference, while `latest` is the moving current-release
 reference. The screenshots prove deployment evidence; they do not claim that a
 live rollback was executed.
 
-#### 📸 Screenshots
+### 📸 Screenshots
 
 - [Detailed Docker Hub push log](../attached_assets/Pasted-Current-runner-version-2-336-0-Runner-Image-Provisioner_1786164927904.txt)
 
@@ -2046,9 +2050,9 @@ live rollback was executed.
 
 **Screenshot Explanation:** **What you can see:** GitHub Actions shows Verify, Build, Test, and Push images to Docker Hub all succeeded. **What you learn:** The job order is the deployment guardrail: images are pushed only after verification, build, and tests pass. This is the high-level proof of the complete pipeline; the other screenshots provide detailed registry and runtime evidence.
 
-### Task 5 — Success Notifications
+## Task 5 — Success Notifications
 
-#### Commands Executed
+### Commands Executed
 
 ```text
 GitHub Settings
@@ -2063,7 +2067,7 @@ GitHub Settings
 The repository workflow was then run from the `staging` branch through
 **Actions → CI/CD Pipeline - 2026 → Run workflow**.
 
-#### Output
+### Output
 
 ```text
 [draiimon/draiimon-devops-playground] CI/CD Pipeline - 2026,
@@ -2076,7 +2080,7 @@ Test applications — Succeeded in 1 minute and 45 seconds
 Push images to Docker Hub — Succeeded in 1 minute and 38 seconds
 ```
 
-#### Explanation
+### Explanation
 
 GitHub Actions email notifications are the selected free notification method.
 The captured email proves that a successful pipeline notification was delivered
@@ -2087,8 +2091,6 @@ repository.
 No failure simulation is required for this submission. The workflow will not be
 intentionally broken just to generate a failure email; the documented evidence
 focuses on the successful notification that was actually received.
-
-#### How to read this task
 
 Task 5 proves that the successful pipeline result reached the configured
 notification channel. Read it as:
@@ -2104,7 +2106,7 @@ Failure simulation is intentionally not part of this submission. The lesson is
 to document the notification behavior that was actually evidenced, rather than
 breaking a working pipeline merely to create another screenshot.
 
-#### 📸 Screenshots
+### 📸 Screenshots
 
 ![GitHub Actions notification settings](screenshots/part3/task28-notification-settings.png)
 
@@ -2122,7 +2124,7 @@ breaking a working pipeline merely to create another screenshot.
 
 **Screenshot Explanation:** **What you can see:** The full email says “Run succeeded: CI/CD Pipeline - 2026, Attempt #2” for `staging` and lists Verify, Build, Test, and Push as successful. **What you learn:** This is the strongest notification evidence because it combines the workflow identity, branch, attempt, overall result, and every job result in one message.
 
-#### Notification status
+### Notification Status
 
 | Notification requirement | Evidence | Status |
 |---|---|---|
@@ -2141,7 +2143,7 @@ breaking a working pipeline merely to create another screenshot.
 | `docker image tag` | Adds commit-SHA and branch tags to built images |
 | `q` in `(END)` | Exits the `less` terminal viewer |
 
-### Docker image listing note
+### Docker Image Listing Note
 
 The local command `docker image ls api-app ui-app` returned a usage error
 because this Docker version accepts at most one repository argument for
