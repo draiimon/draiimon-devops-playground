@@ -387,7 +387,7 @@ protection in one platform.
 | Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Configured; multi-node runtime not yet captured |
 | Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Configured; failover test not yet captured |
 | Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Services captured; endpoints and traffic distribution pending |
-| Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Ingress host routing captured; domain request pending |
+| Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Live hostname resolution and HTTP 200 responses captured |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Live HPA metrics captured; API 2–6 and UI 2–4 replicas |
 | Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | Configured; rollout result not yet captured |
@@ -746,7 +746,16 @@ ClusterIP address.
 
 ### 📸 Screenshots
 
-No Part 4 screenshot has been captured for this task yet.
+![Domain-based API and UI requests returning HTTP 200](screenshots/part4/step08-domain-access-http-200.png)
+
+The live WSL test resolved both hostnames to the Minikube Ingress address
+`192.168.49.2` and successfully reached both applications:
+
+- `http://api.myapp.local/` returned HTTP `200` with the FastAPI JSON response.
+- `http://ui.myapp.local/` returned HTTP `200` with Next.js response headers.
+
+This is runtime evidence for domain-based access through the Nginx Ingress,
+not a direct application-port test.
 
 The required evidence should be placed here:
 
@@ -754,7 +763,7 @@ The required evidence should be placed here:
 kubectl get ingress -n devops-exam
 getent hosts api.myapp.local
 getent hosts ui.myapp.local
-curl -i http://api.myapp.local/healthz
+curl -i http://api.myapp.local/
 curl -I http://ui.myapp.local/
 ```
 
@@ -762,7 +771,7 @@ curl -I http://ui.myapp.local/
 
 The Ingress output should show both host rules and their backend Services.
 The hosts lookup should show that the local names resolve to the cluster
-entrypoint. The API request should return its health response, and the UI
+entrypoint. The API request should return its root JSON response, and the UI
 request should return an HTTP response through the domain name.
 
 If the Ingress controller is exposed through a non-loopback address, replace
