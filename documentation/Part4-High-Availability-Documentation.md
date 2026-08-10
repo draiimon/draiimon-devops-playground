@@ -387,7 +387,7 @@ protection in one platform.
 | Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Configured; multi-node runtime not yet captured |
 | Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Configured; failover test not yet captured |
 | Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Services captured; endpoints and traffic distribution pending |
-| Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Configured; domain request not yet captured |
+| Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Ingress host routing captured; domain request pending |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Configured; metrics-server/HPA behavior not yet captured |
 | Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | Configured; rollout result not yet captured |
@@ -639,7 +639,17 @@ an explicit session strategy such as shared storage or cookie-based affinity.
 
 ### 📸 Screenshots
 
-No Part 4 screenshot has been captured for this task yet.
+![Nginx Ingress host routing](screenshots/part4/step06-ingress-host-routing.png)
+
+The live k9s Ingress view shows `app-ingress` with class `nginx`, address
+`192.168.49.2`, and both required host rules:
+
+- `api.myapp.local`
+- `ui.myapp.local`
+
+This proves that the Kubernetes Ingress resource is configured for
+domain-based routing. An actual request through each hostname remains a
+separate runtime check.
 
 The required evidence should be placed here:
 
