@@ -11,8 +11,8 @@ api:
   replicaCount: 2
 
   image:
-    repository: your-dockerhub-username/api-app
-    tag: latest
+    repository: draiimon112/devops-api
+    tag: staging
     pullPolicy: Always
 
   service:
@@ -60,8 +60,8 @@ ui:
   replicaCount: 2
 
   image:
-    repository: your-dockerhub-username/ui-app
-    tag: latest
+    repository: draiimon112/devops-ui
+    tag: staging
     pullPolicy: Always
 
   service:

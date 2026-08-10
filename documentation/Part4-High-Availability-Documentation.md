@@ -15,6 +15,117 @@
 
 ---
 
+## Easy Kubernetes Path
+
+For this exam, use the simple path first. Do not start with Helm or ArgoCD.
+The raw manifests already contain the required Kubernetes resources.
+
+### 1. Start a two-node Minikube cluster
+
+```bash
+minikube start --nodes 2 --driver=docker --cpus=2 --memory=4g
+minikube addons enable ingress
+minikube addons enable metrics-server
+```
+
+### 2. Apply the manifests
+
+Apply the namespace first. This avoids errors when the other files refer to
+the `devops-exam` namespace.
+
+```bash
+kubectl apply -f part4-ha/k8s/namespace.yaml
+kubectl apply -f part4-ha/k8s/
+```
+
+The manifests use the existing Part 3 Docker Hub images:
+
+```text
+draiimon112/devops-api:staging
+draiimon112/devops-ui:staging
+```
+
+### 3. Check that the application is running
+
+```bash
+kubectl get nodes -o wide
+kubectl get pods -n devops-exam -o wide
+kubectl get svc,ingress,hpa,pdb -n devops-exam
+```
+
+Wait until the API and UI pods show `Running` and `READY 1/1`.
+
+### 4. Use k9s for the live cluster view
+
+`k9s` is only a terminal dashboard for Kubernetes. It does not replace
+`kubectl`, Minikube, or the cluster itself.
+
+Start it in the exam namespace:
+
+```bash
+k9s -n devops-exam
+```
+
+Useful k9s shortcuts for the evidence screenshots:
+
+| Key | View |
+|---|---|
+| `:pods` | API and UI pod status |
+| `:nodes` | The two cluster nodes |
+| `:deployments` | Replica and rollout status |
+| `:svc` | Internal Services |
+| `:ingresses` | Domain routing |
+| `:hpa` | Horizontal Pod Autoscalers |
+| `Enter` | Inspect the selected resource |
+| `l` | View logs for the selected pod |
+| `d` | Describe the selected resource |
+| `Ctrl+C` | Exit k9s |
+
+For the failover screenshot, open `:pods`, select one API pod, press `d`
+only if you need details, and use `kubectl delete pod <pod-name> -n
+devops-exam` in another terminal. Keep k9s open to show the replacement pod
+appearing.
+
+### 5. Configure the local domains
+
+```bash
+echo "$(minikube ip) api.myapp.local ui.myapp.local" | sudo tee -a /etc/hosts
+minikube tunnel
+```
+
+Keep `minikube tunnel` running in a separate terminal. Then test:
+
+```bash
+curl http://api.myapp.local/healthz
+curl -I http://ui.myapp.local/
+```
+
+### 6. Perform the simple failover test
+
+```bash
+kubectl get pods -n devops-exam
+kubectl delete pod <one-api-pod-name> -n devops-exam
+kubectl get pods -n devops-exam -w
+```
+
+The deleted API pod should be replaced automatically. Capture screenshots of
+the two nodes, the four application pods, the domain requests, and the
+replacement pod. Those screenshots are the main Part 4 evidence.
+
+> **Important:** The easy path is still a real Kubernetes deployment. Do not
+> claim success until the commands actually run and the screenshots show the
+> results.
+
+Helm and ArgoCD remain available as optional advanced deployment methods after
+the raw-manifest path works.
+
+> **Repl environment note:** The Kubernetes CLI tools can be installed in this
+> Repl, but its Docker daemon blocks nested cluster containers that mount
+> `/lib/modules`. Therefore, run the actual Minikube cluster on the local
+> WSL/Linux machine with Docker, then use k9s there for the screenshots.
+
+---
+
 ## PDF Requirements Status
 
 The PDF defines Part 4 as **High Availability Deployment**. It requires:

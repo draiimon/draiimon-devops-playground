@@ -33,7 +33,7 @@ spec:
 
       containers:
         - name: api
-          image: DOCKER_USERNAME/api-app:latest    # Replace DOCKER_USERNAME
+          image: draiimon112/devops-api:staging
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

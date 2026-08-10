@@ -21,8 +21,7 @@ spec:
   project: default
 
   source:
-    # Replace with your actual Git repo URL
-    repoURL: https://github.com/YOUR_USERNAME/YOUR_REPO.git
+    repoURL: https://github.com/draiimon/draiimon-devops-playground.git
     targetRevision: staging
     path: part4-ha/helm
 
