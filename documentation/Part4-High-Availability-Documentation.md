@@ -258,6 +258,19 @@ minikube addons list | grep -E 'ingress|metrics-server'
 Both nodes should show `Ready`. The Ingress controller and Metrics Server may
 need a short time to reach `Running`.
 
+The first add-on verification confirmed:
+
+- Both Minikube nodes are `Ready`.
+- Kubernetes system pods are `Running`.
+- `metrics-server` is enabled.
+- `ingress` is still disabled, so domain-based routing is not ready yet.
+
+![Add-on verification — Metrics Server enabled; Ingress pending](screenshots/part4/step03-addons-verification-partial.png)
+
+**Evidence status:** Nodes and Metrics Server verified; Ingress pending.
+Enable Ingress and repeat the verification command before applying the
+application manifests.
+
 ### 4. Apply the manifests
 
 Apply the namespace first. This avoids errors when the other files refer to
