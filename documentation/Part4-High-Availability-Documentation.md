@@ -9,9 +9,8 @@
 > **Evidence boundary:** This document records the Kubernetes and Helm
 > configuration together with the live-cluster evidence captured so far.
 > The two-node cluster and successful API/UI/database pod readiness are now
-> proven. Pod placement across both nodes, domain requests, load
-> distribution, and failover remain pending until their live outputs are
-> captured.
+> proven. Pod placement across both nodes and domain requests are now proven.
+> Load-distribution and failover evidence still require their live outputs.
 
 ---
 
@@ -339,7 +338,7 @@ minikube tunnel
 Keep `minikube tunnel` running in a separate terminal. Then test:
 
 ```bash
-curl http://api.myapp.local/healthz
+curl -i http://api.myapp.local/
 curl -I http://ui.myapp.local/
 ```
 
@@ -384,7 +383,7 @@ protection in one platform.
 
 | PDF requirement | Repository implementation | Evidence status |
 |---|---|---|
-| Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Configured; multi-node runtime not yet captured |
+| Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Live placement across both Minikube nodes captured |
 | Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Configured; failover test not yet captured |
 | Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Services captured; endpoints and traffic distribution pending |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Live hostname resolution and HTTP 200 responses captured |
@@ -523,10 +522,9 @@ Redundancy is implemented at the pod level:
   voluntary disruptions.
 - The topology spread rule requests distribution across node hostnames.
 
-The PDF asks for applications across at least two nodes. The manifest expresses
-the placement requirement, but the repository does not contain a captured
-`kubectl get nodes` result. The two-node requirement must be demonstrated on
-the target cluster rather than inferred from `replicas: 2`.
+The PDF asks for applications across at least two nodes. The captured pod
+listing shows the API and UI replicas placed across both `minikube` and
+`minikube-m02`, rather than inferring placement from `replicas: 2`.
 
 ### 📸 Screenshots
 
@@ -542,13 +540,33 @@ This proves that the application and database Services exist as internal
 ClusterIP resources. Endpoint and request-distribution evidence is still
 captured separately.
 
+![API and UI replicas placed across both Minikube nodes](screenshots/part4/step09-pod-placement-two-nodes.png)
+
+The captured `kubectl get pods -n devops-exam -o wide` output shows:
+
+- One running API replica on `minikube-m02` and one on `minikube`.
+- One running UI replica on `minikube` and one on `minikube-m02`.
+- All four application replicas are `1/1 Running` with zero restarts.
+
+This is runtime evidence for the PDF requirement that the applications be
+deployed across at least two nodes. The earlier rollout screenshot also shows
+that both nodes had no taints before the workloads were restarted, allowing
+the topology-spread constraints to take effect.
+
+![Minikube node taints cleared and application rollouts restarted](screenshots/part4/step09-node-taint-rollout.png)
+
+This supporting terminal evidence shows `Taints: <none>` for both nodes and
+records the successful API rollout before the final pod-placement listing.
+The UI rollout was still finishing at the bottom of this image, so the later
+placement screenshot is the authoritative readiness result.
+
 The required evidence should be placed directly under this task:
 
 ```text
 kubectl get nodes -o wide
 kubectl get pods -n devops-exam -o wide
-kubectl describe deployment myapp-api -n devops-exam
-kubectl describe deployment myapp-ui -n devops-exam
+kubectl describe deployment api-app -n devops-exam
+kubectl describe deployment ui-app -n devops-exam
 kubectl get pdb -n devops-exam
 kubectl get pods -n devops-exam -w
 ```

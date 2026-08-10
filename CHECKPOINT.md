@@ -1000,6 +1000,8 @@ documentation/screenshots/part4/step05-services-clusterip.png
 documentation/screenshots/part4/step06-ingress-host-routing.png
 documentation/screenshots/part4/step07-hpa-metrics-ready.png
 documentation/screenshots/part4/step08-domain-access-http-200.png
+documentation/screenshots/part4/step09-node-taint-rollout.png
+documentation/screenshots/part4/step09-pod-placement-two-nodes.png
 ```
 
 The current Part 4 guide is:
@@ -1015,7 +1017,8 @@ k9s workflow, resource-safe memory settings, and evidence boundaries.
 
 The Ingress controller and applications are now running. Services, Ingress,
 HPA metrics, two Ready nodes, and successful domain requests have been
-captured. Continue with k9s evidence for pod placement and failover:
+captured. Pod placement across both nodes has also been captured. Continue
+with the real API failover test:
 
 ```bash
 k9s -n devops-exam
