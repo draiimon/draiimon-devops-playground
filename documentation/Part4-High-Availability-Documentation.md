@@ -7,11 +7,80 @@
 **Source of truth:** `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`
 
 > **Evidence boundary:** This document records the Kubernetes and Helm
-> configuration currently present in the repository. At the time of writing,
-> no Part 4 screenshot set or live-cluster command output has been captured in
-> this repository. Therefore, configuration is described as **configured** and
+> configuration currently present in the repository. The Part 4 installation
+> check has now been captured, but no live-cluster command output has been
+> captured yet. Therefore, configuration is described as **configured** and
 > live deployment behavior is not marked as proven until a real cluster run is
 > documented.
+
+---
+
+## Step 1 — Installation and Environment Check
+
+The first local WSL/Linux check confirmed that Docker is installed and the
+Docker server is responding:
+
+```text
+Docker version 29.1.3
+Docker server: 29.1.3
+```
+
+The same check showed that `kubectl`, `minikube`, and `k9s` were not yet
+installed on the local machine. This is an installation prerequisite result,
+not a Kubernetes deployment result.
+
+![Part 4 installation check — Docker available; Kubernetes tools missing](screenshots/part4/step01-installation-check.png)
+
+**Evidence status:** Docker verified; `kubectl`, Minikube, and k9s pending
+installation.
+
+### Step 1A — Install the three missing tools
+
+Run these commands in the same local WSL/Linux terminal. Docker is already
+working, so do not reinstall Docker.
+
+```bash
+sudo apt-get update
+sudo apt-get install -y curl ca-certificates conntrack
+
+# Install kubectl from the current stable Kubernetes release.
+KUBECTL_VERSION="$(curl -L -s https://dl.k8s.io/release/stable.txt)"
+curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm -f kubectl kubectl.sha256
+
+# Install Minikube.
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install -o root -g root -m 0755 minikube-linux-amd64 /usr/local/bin/minikube
+rm -f minikube-linux-amd64
+
+# Install k9s.
+curl -L https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz -o /tmp/k9s.tar.gz
+tar -xzf /tmp/k9s.tar.gz -C /tmp k9s
+sudo install -o root -g root -m 0755 /tmp/k9s /usr/local/bin/k9s
+rm -f /tmp/k9s.tar.gz /tmp/k9s
+```
+
+Do not install Helm or ArgoCD for the easy raw-manifest path.
+
+### Step 1B — Verify the installation
+
+```bash
+echo "=== Part 4 Installation Check — After Installation ==="
+date
+echo
+docker --version
+docker info --format 'Docker server: {{.ServerVersion}}'
+kubectl version --client
+minikube version
+k9s version
+```
+
+Capture the complete successful output as the next screenshot. This verifies
+the installation only; do not start Minikube until this screenshot has been
+reviewed.
 
 ---
 
