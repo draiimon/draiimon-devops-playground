@@ -923,7 +923,7 @@ The final local result was:
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure simulation is not required | ✅ 49 screenshots plus 4 raw logs | ✅ **CORE COMPLETE** |
-| Part 4 | High Availability (K8s Option A) | ✅ Raw manifests + Helm/ArgoCD files | ✅ Full Part 2-style evidence documentation + architecture diagram | ✅ 17 linked screenshots | ⚠️ **CORE COMPLETE; 2 RUNTIME EVIDENCE GAPS** |
+| Part 4 | High Availability (K8s Option A) | ✅ Raw manifests + Helm/ArgoCD files | ✅ Full Part 2-style evidence documentation + architecture diagram | ✅ 17 linked screenshots; 2 live captures still required | ⚠️ **IMPLEMENTATION COMPLETE; 2 RUNTIME CAPTURES PENDING** |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
