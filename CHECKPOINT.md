@@ -1056,3 +1056,9 @@ match, no `verifier-ready` output, an unchanged Deployment patch, and another
 rebuilt from the old source, and no distribution or node-failure evidence was
 captured. Do not rebuild again until both synchronization preflight checks
 produce output.
+
+The latest uploaded capture again ended with `{"detail":"Not Found"}` after an
+image build and Deployment rollout. This still does not prove that `/instance`
+is present in the built image or running pod. Before rebuilding again, inspect
+the local source, the image filesystem, and one running API pod; all three must
+show the diagnostic route before the two runtime evidence tests can run.

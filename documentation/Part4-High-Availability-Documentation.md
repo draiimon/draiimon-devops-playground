@@ -838,6 +838,27 @@ Do not rebuild again until both preflight checks produce output. If normal file
 synchronization is unavailable, create the two files directly in the WSL
 checkout from the current Repl copies before repeating the image build.
 
+The next uploaded capture still ended with `curl http://api.myapp.local/instance`
+returning `{"detail":"Not Found"}` after the local image build and rollout.
+That proves the running API still does not serve `/instance`; a successful
+image build and rollout are not sufficient evidence. Before another rebuild,
+inspect the source file, the built image, and a running pod:
+
+```bash
+grep -n -A3 -B2 '/instance\|INSTANCE_ID' part2-docker/api-src/main.py
+docker run --rm --entrypoint sh devops-api:part4-local \
+  -c "grep -n -A3 -B2 '/instance\|INSTANCE_ID' /app/main.py"
+POD="$(kubectl -n devops-exam get pod -l app=api-app \
+  -o jsonpath='{.items[0].metadata.name}')"
+kubectl -n devops-exam exec "$POD" -- \
+  sh -c "grep -n -A3 -B2 '/instance\|INSTANCE_ID' /app/main.py"
+```
+
+All three inspections must show the diagnostic route. If any one is empty,
+the local source or image is still stale. If all three show the route but the
+domain request remains 404, inspect the active pods and EndpointSlice because
+the Ingress may still be routing to an older API pod.
+
 ---
 
 ## Task 2 — Load Distribution and Zero-Downtime Updates
