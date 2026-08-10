@@ -135,13 +135,32 @@ For a clean first run, `minikube profile list` should show no existing
 `minikube` profile, and `minikube status` may report that the profile does not
 exist. That is expected before Step 3.
 
-Capture the complete terminal output as:
+The captured preflight output confirms:
+
+- Docker server `29.1.3` is responding.
+- The host reports 4 CPUs.
+- No Minikube profile exists yet.
+- No Kubernetes context is configured yet, which is expected at this stage.
+- Only about 1.9 GiB of memory is available in WSL, with approximately 83 MiB
+  free at the time of the check.
+- Four Part 3 Docker containers are still running.
+
+![Part 4 Minikube preflight check](screenshots/part4/step02-minikube-preflight.png)
+
+**Evidence status:** Preflight captured. Minikube is not ready to start until
+memory is freed or the WSL memory limit is increased.
+
+The original preflight command and output are recorded as:
 
 ```text
 documentation/screenshots/part4/step02-minikube-preflight.png
 ```
 
-Do not run `minikube start` yet. Review the preflight screenshot first.
+Do not run `minikube start` yet. Stop the Part 3 containers from the local
+machine first, or close other memory-heavy applications. If WSL still reports
+less than approximately 4 GiB total memory afterward, increase the WSL/Docker
+memory allocation before continuing. Re-run the same preflight check and
+capture the clean result before Step 3.
 
 ---
 
