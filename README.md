@@ -196,7 +196,8 @@ EXPECTED_API_IMAGE=devops-api:part4-local \
 For the published image, use
 `EXPECTED_API_IMAGE=draiimon112/devops-api:staging` instead. The preflight
 checks that both API replicas are Ready, use one expected image, appear in the
-API EndpointSlice, and are not behind an active Ingress rewrite.
+API EndpointSlice, are not behind an active Ingress rewrite, and that
+`/instance` returns HTTP 200 before any evidence loop begins.
 
 ---
 

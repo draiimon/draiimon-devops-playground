@@ -885,8 +885,9 @@ EXPECTED_API_IMAGE=devops-api:part4-local \
 For the published image path, use
 `EXPECTED_API_IMAGE=draiimon112/devops-api:staging` instead. The preflight
 requires at least two Ready API pods, one consistent image across those pods,
-at least one API EndpointSlice address, and no active Ingress rewrite annotation.
-It does not create evidence or stop a node.
+every Ready pod IP in the API EndpointSlice, no active Ingress rewrite
+annotation, and a live HTTP 200 response from `/instance`. It does not create
+evidence or stop a node.
 
 Both API pods must show the expected image, `READY=true`, and both pod IPs must
 appear in the EndpointSlice. Then run:

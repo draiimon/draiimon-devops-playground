@@ -140,7 +140,18 @@ for item in json.load(sys.stdin)["items"]:
     echo "Preflight failed: app-ingress still has rewrite-target=${rewrite_target}; /instance would be rewritten." >&2
     exit 1
   fi
-  echo "Preflight passed: API rollout, replicas, image, endpoints, and Ingress path handling are ready."
+
+  if ! identity_response="$(curl -fsS --max-time 10 "${IDENTITY_URL}")"; then
+    echo "Preflight failed: ${IDENTITY_URL} did not return HTTP 200." >&2
+    exit 1
+  fi
+  if ! instance="$(printf '%s' "${identity_response}" | python3 -c \
+    'import json, sys; value=json.load(sys.stdin).get("instance", ""); print(value) if value else sys.exit(1)')"; then
+    echo "Preflight failed: ${IDENTITY_URL} returned no instance name." >&2
+    exit 1
+  fi
+  echo "Identity endpoint passed: ${instance}"
+  echo "Preflight passed: API rollout, replicas, image, endpoints, Ingress path handling, and /instance are ready."
 }
 
 preflight
