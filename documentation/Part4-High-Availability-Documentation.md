@@ -25,14 +25,26 @@ Docker version 29.1.3
 Docker server: 29.1.3
 ```
 
-The same check showed that `kubectl`, `minikube`, and `k9s` were not yet
-installed on the local machine. This is an installation prerequisite result,
-not a Kubernetes deployment result.
+The initial check showed that `kubectl`, `minikube`, and `k9s` were not yet
+installed on the local machine. That initial prerequisite result is preserved
+below:
 
 ![Part 4 installation check — Docker available; Kubernetes tools missing](screenshots/part4/step01-installation-check.png)
 
-**Evidence status:** Docker verified; `kubectl`, Minikube, and k9s pending
-installation.
+After installing the missing tools, the verification check confirmed:
+
+```text
+Docker version 29.1.3
+Docker server: 29.1.3
+Client Version: v1.36.3
+minikube version: v1.38.1
+k9s Version: v0.51.0
+```
+
+![Part 4 installation check — all required tools installed](screenshots/part4/step01-installation-success.png)
+
+**Evidence status:** Step 1 completed. Docker, `kubectl`, Minikube, and k9s
+are installed and verified on the local WSL/Linux machine.
 
 ### Step 1A — Install the three missing tools
 
@@ -78,9 +90,58 @@ minikube version
 k9s version
 ```
 
-Capture the complete successful output as the next screenshot. This verifies
-the installation only; do not start Minikube until this screenshot has been
-reviewed.
+The successful output is recorded in
+`screenshots/part4/step01-installation-success.png`. This verifies the
+installation only; it does not yet prove that a Minikube cluster is running.
+
+---
+
+## Step 2 — Minikube Preflight Check
+
+Before creating the cluster, verify that the Docker driver is available, the
+machine has enough CPU and memory, and there is no old Minikube profile that
+could interfere with the clean run.
+
+Run this from the project root:
+
+```bash
+cd ~/devops-exam
+
+echo "=== Part 4 Minikube Preflight Check ==="
+date
+echo
+
+echo "--- Docker server ---"
+docker info --format 'Docker server: {{.ServerVersion}}'
+docker ps
+echo
+
+echo "--- Host resources ---"
+nproc
+free -h
+df -h /
+echo
+
+echo "--- Minikube state ---"
+minikube profile list
+minikube status || true
+echo
+
+echo "--- Kubernetes context ---"
+kubectl config current-context || true
+```
+
+For a clean first run, `minikube profile list` should show no existing
+`minikube` profile, and `minikube status` may report that the profile does not
+exist. That is expected before Step 3.
+
+Capture the complete terminal output as:
+
+```text
+documentation/screenshots/part4/step02-minikube-preflight.png
+```
+
+Do not run `minikube start` yet. Review the preflight screenshot first.
 
 ---
 
