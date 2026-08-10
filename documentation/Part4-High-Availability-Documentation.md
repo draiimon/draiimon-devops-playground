@@ -7,11 +7,11 @@
 **Source of truth:** `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`
 
 > **Evidence boundary:** This document records the Kubernetes and Helm
-> configuration currently present in the repository. The Part 4 installation
-> check has now been captured, but no live-cluster command output has been
-> captured yet. Therefore, configuration is described as **configured** and
-> live deployment behavior is not marked as proven until a real cluster run is
-> documented.
+> configuration together with the live-cluster evidence captured so far.
+> The two-node cluster and successful API/UI/database pod readiness are now
+> proven. Pod placement across both nodes, domain requests, load
+> distribution, and failover remain pending until their live outputs are
+> captured.
 
 ---
 
@@ -388,12 +388,27 @@ protection in one platform.
 | Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Configured; failover test not yet captured |
 | Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Configured; traffic distribution not yet captured |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Configured; domain request not yet captured |
-| Health checks | API `/healthz`; UI `/`; liveness and readiness probes | Configured; probe status not yet captured |
+| Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Configured; metrics-server/HPA behavior not yet captured |
 | Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | Configured; rollout result not yet captured |
 | Orchestration manifests | Raw Kubernetes manifests and a Helm chart | Repository files present |
 
 ---
+
+## Live Evidence — Two Ready Nodes
+
+The k9s Nodes view shows the two-node Minikube cluster used for this
+deployment:
+
+- `minikube` — `Ready`, control-plane
+- `minikube-m02` — `Ready`, worker
+- Kubernetes version `v1.35.1`
+
+![Two-node Minikube cluster — both nodes Ready](screenshots/part4/step04-two-nodes-ready.png)
+
+This proves the cluster has two Ready nodes. It does not by itself prove that
+the application replicas are spread across both nodes; the pod `NODE` column
+must be captured separately for that claim.
 
 ## Environment and Architecture
 

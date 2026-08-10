@@ -958,6 +958,16 @@ screenshots are captured.
 - Minikube version is `v1.38.1`.
 - kubectl is configured for the `minikube` context.
 - Metrics Server is enabled and its pod was shown as `Running`.
+- Ingress add-on is enabled and the `ingress-nginx-controller` pod is `1/1
+  Running` in the `ingress-nginx` namespace.
+- The corrected raw Kubernetes manifests were applied successfully after
+  replacing stale placeholder images with:
+  `draiimon112/devops-api:staging` and `draiimon112/devops-ui:staging`.
+- The API and UI Deployments both completed successfully.
+- The live k9s Pods view showed two API pods, two UI pods, and one MySQL pod,
+  all `1/1 Running` with zero restarts.
+- The live k9s Nodes view showed both `minikube` and `minikube-m02` as `Ready`
+  on Kubernetes `v1.35.1`.
 
 ### Add-on evidence boundary
 
@@ -967,8 +977,8 @@ The latest add-on verification showed:
 - Kubernetes system pods `Running`.
 - `metrics-server` enabled.
 - `ingress` enabled in the Minikube add-on list.
-- The screenshot did not show an `ingress-nginx-controller` pod, so Ingress
-  controller readiness is still pending verification.
+- The `ingress-nginx-controller` pod was later verified as `1/1 Running` in
+  the `ingress-nginx` namespace.
 - `ingress-dns` is disabled; this is not required for the selected path.
 - The `command not found` messages for `ingress` and `metrics-server` happened
   because those status labels were typed into Bash after the command output;
@@ -984,6 +994,8 @@ documentation/screenshots/part4/step02-minikube-preflight-clean.png
 documentation/screenshots/part4/step02-minikube-preflight-ready.png
 documentation/screenshots/part4/step03-minikube-start-success.png
 documentation/screenshots/part4/step03-addons-verification-partial.png
+documentation/screenshots/part4/step04-two-nodes-ready.png
+documentation/screenshots/part4/step04-application-pods-ready.png
 ```
 
 The current Part 4 guide is:
@@ -997,16 +1009,8 @@ k9s workflow, resource-safe memory settings, and evidence boundaries.
 
 ### Exact next action
 
-Before applying `part4-ha/k8s/`, verify the Ingress controller:
-
-```bash
-kubectl get pods -n ingress-nginx
-kubectl get pods -n kube-system | grep -E 'ingress|metrics'
-minikube addons list | grep -E 'ingress|metrics-server'
-```
-
-Only continue to manifest application after the Ingress controller is
-confirmed `Running`. Then use k9s for the application evidence:
+The Ingress controller and applications are now running. Continue with k9s
+evidence for Services, Ingress, HPA, pod placement, domain access, and failover:
 
 ```bash
 k9s -n devops-exam
