@@ -386,7 +386,7 @@ protection in one platform.
 |---|---|---|
 | Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Configured; multi-node runtime not yet captured |
 | Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Configured; failover test not yet captured |
-| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Configured; traffic distribution not yet captured |
+| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service | Services captured; endpoints and traffic distribution pending |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Configured; domain request not yet captured |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Configured; metrics-server/HPA behavior not yet captured |
@@ -530,7 +530,17 @@ the target cluster rather than inferred from `replicas: 2`.
 
 ### 📸 Screenshots
 
-No Part 4 screenshot has been captured for this task yet.
+![Kubernetes ClusterIP Services in the devops-exam namespace](screenshots/part4/step05-services-clusterip.png)
+
+The live k9s Services view shows the internal ClusterIP routing layer:
+
+- `api-service` exposes port `80` and targets the API port `8000`.
+- `ui-service` exposes port `80` and targets the UI port `3000`.
+- `db` exposes MySQL port `3306` internally.
+
+This proves that the application and database Services exist as internal
+ClusterIP resources. Endpoint and request-distribution evidence is still
+captured separately.
 
 The required evidence should be placed directly under this task:
 

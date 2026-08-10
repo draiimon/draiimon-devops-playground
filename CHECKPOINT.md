@@ -996,6 +996,7 @@ documentation/screenshots/part4/step03-minikube-start-success.png
 documentation/screenshots/part4/step03-addons-verification-partial.png
 documentation/screenshots/part4/step04-two-nodes-ready.png
 documentation/screenshots/part4/step04-application-pods-ready.png
+documentation/screenshots/part4/step05-services-clusterip.png
 ```
 
 The current Part 4 guide is:
