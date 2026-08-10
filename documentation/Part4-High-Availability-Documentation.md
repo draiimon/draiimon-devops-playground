@@ -149,14 +149,25 @@ The captured preflight output confirms:
 After the Part 3 containers were stopped, the clean preflight showed:
 
 - Docker has no running containers.
-- WSL still reports only 1.9 GiB total memory.
-- Approximately 1.3 GiB is available, but swap remains disabled at 0 B.
+- WSL initially reported only 1.9 GiB total memory, so the WSL allocation was
+  increased to approximately 6 GiB with 4 GiB swap.
 - No Minikube profile or Kubernetes context exists yet.
 
 ![Clean Part 4 Minikube preflight check](screenshots/part4/step02-minikube-preflight-clean.png)
 
-**Evidence status:** Clean preflight captured. Minikube is not ready to start
-until the WSL memory limit is increased.
+The final ready preflight confirmed:
+
+- Docker server `29.1.3` is responding.
+- `docker ps` is empty.
+- The host reports 4 CPUs.
+- WSL reports 5.8 GiB total memory, approximately 5.2 GiB available, and 4 GiB
+  swap.
+- No Minikube profile or Kubernetes context exists yet.
+
+![Part 4 Minikube preflight ready](screenshots/part4/step02-minikube-preflight-ready.png)
+
+**Evidence status:** Step 2 completed. The Docker driver is ready for the
+two-node Minikube cluster.
 
 The original preflight command and output are recorded as:
 
@@ -164,15 +175,13 @@ The original preflight command and output are recorded as:
 documentation/screenshots/part4/step02-minikube-preflight.png
 ```
 
-Do not run `minikube start` yet. The Part 3 containers are already stopped. If
-WSL reports less than approximately 4 GiB total memory, increase the WSL/Docker
-memory allocation before continuing. Re-run the same preflight check and
-capture the updated result before Step 3.
+The final ready output is recorded in
+`screenshots/part4/step02-minikube-preflight-ready.png`.
 
 ### Step 2A — Increase the WSL memory allocation
 
-The clean preflight still reports only 1.9 GiB total memory and no swap. Run
-the following in **Windows PowerShell**, not inside WSL:
+If the WSL memory limit must be increased, run the following in **Windows
+PowerShell**, not inside WSL:
 
 ```powershell
 @"
@@ -206,8 +215,12 @@ The raw manifests already contain the required Kubernetes resources.
 
 ### 1. Start a two-node Minikube cluster
 
+The WSL preflight reports 5.8 GiB total memory. Allocate 2 CPUs and 1800 MiB
+per node so the two-node cluster fits within that limit. Do not use `4g` per
+node on this machine.
+
 ```bash
-minikube start --nodes 2 --driver=docker --cpus=2 --memory=4g
+minikube start --nodes 2 --driver=docker --cpus=2 --memory=1800mb
 minikube addons enable ingress
 minikube addons enable metrics-server
 ```
