@@ -116,7 +116,8 @@ sudo install -o root -g root -m 0755 /tmp/k9s /usr/local/bin/k9s
 rm -f /tmp/k9s.tar.gz /tmp/k9s
 ```
 
-Do not install Helm or ArgoCD for the easy raw-manifest path.
+The documented deployment uses the raw Kubernetes manifests directly with
+`kubectl`. No additional deployment layer is required for this submission.
 
 ### Step 1B — Verify the installation
 
@@ -251,8 +252,8 @@ starting Minikube.
 
 ## Easy Kubernetes Path
 
-For this exam, use the simple path first. Do not start with Helm or ArgoCD.
-The raw manifests already contain the required Kubernetes resources.
+For this exam, use the raw Kubernetes path. The manifests already contain the
+required Kubernetes resources.
 
 ### 1. Start a two-node Minikube cluster
 
@@ -400,8 +401,7 @@ replacement pod. Those screenshots are the main Part 4 evidence.
 > claim success until the commands actually run and the screenshots show the
 > results.
 
-Helm and ArgoCD remain available as optional advanced deployment methods after
-the raw-manifest path works.
+The raw-manifest path is the only deployment path used for this submission.
 
 > **Repl environment note:** The Kubernetes CLI tools can be installed in this
 > Repl, but its Docker daemon blocks nested cluster containers that mount
@@ -432,7 +432,7 @@ protection in one platform.
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Live HPA metrics captured; API 2–6 and UI 2–4 replicas |
 | Zero-downtime updates | RollingUpdate with `maxUnavailable: 0` and `maxSurge: 1` | API and UI rollout completion captured |
-| Orchestration manifests | Raw Kubernetes manifests and a Helm chart | Repository files present |
+| Orchestration manifests | Raw Kubernetes manifests applied with `kubectl` | Repository files present and live run captured |
 
 ---
 
@@ -454,7 +454,7 @@ must be captured separately for that claim under Task 1.
 The deployment is designed for the FastAPI API and Next.js UI containers built
 in Part 2 and published by the Part 3 pipeline.
 
-![Part 4 Kubernetes high-availability architecture](diagrams/part4-high-availability-architecture.svg)
+![Part 4 Kubernetes high-availability architecture](diagrams/part4-high-availability-architecture.png)
 
 **Diagram Explanation:** Domain requests enter the Nginx Ingress and are
 matched to the API or UI host rule. The Ingress forwards traffic to the
@@ -462,6 +462,14 @@ corresponding ClusterIP Service, which selects only Ready replicas. The API
 and UI replicas are spread across the two Ready Minikube nodes. Readiness and
 liveness probes support recovery, the PodDisruptionBudgets protect voluntary
 disruptions, and Metrics Server supplies the HPA metrics.
+
+This uploaded PNG is the visual replacement for the former SVG diagram. The
+live evidence remains authoritative for exact node identity: `minikube` is the
+control-plane node and `minikube-m02` is the worker node. The worker
+`minikube-m02` is the node intentionally stopped during the controlled
+availability test. The diagram is a conceptual architecture summary; the
+exact pod-to-node placement is proven by
+`step09-pod-placement-two-nodes.png`.
 
 ```text
                          Domain-based requests
@@ -487,8 +495,8 @@ disruptions, and Metrics Server supplies the HPA metrics.
                     └─────────┘      └─────────┘
 ```
 
-The Helm defaults request two API replicas and two UI replicas. The
-`topologySpreadConstraints` attempt to place replicas on different
+The raw Kubernetes Deployments request two API replicas and two UI replicas.
+Their `topologySpreadConstraints` attempt to place replicas on different
 `kubernetes.io/hostname` values. This improves fault tolerance when the
 cluster has at least two schedulable nodes; two replicas alone do not prove
 that two physical or virtual nodes exist.
@@ -502,46 +510,32 @@ that two physical or virtual nodes exist.
 ```bash
 cd ~/devops-exam
 
-find part4-ha -type f -print | sort
+find part4-ha/k8s -type f -print | sort
 
-sed -n '1,180p' part4-ha/helm/values.yaml
-sed -n '1,180p' part4-ha/helm/templates/deployment-api.yaml
-sed -n '1,180p' part4-ha/helm/templates/deployment-ui.yaml
-sed -n '1,160p' part4-ha/helm/templates/pdb.yaml
+sed -n '1,220p' part4-ha/k8s/api-deployment.yaml
+sed -n '1,220p' part4-ha/k8s/ui-deployment.yaml
+sed -n '1,160p' part4-ha/k8s/poddisruptionbudget.yaml
 ```
 
 ### Output
 
-The repository contains:
+The raw Kubernetes deployment files include:
 
 ```text
-part4-ha/helm/Chart.yaml
-part4-ha/helm/values.yaml
-part4-ha/helm/values.staging.yaml
-part4-ha/helm/templates/deployment-api.yaml
-part4-ha/helm/templates/deployment-ui.yaml
-part4-ha/helm/templates/pdb.yaml
-part4-ha/helm/templates/hpa.yaml
+part4-ha/k8s/namespace.yaml
+part4-ha/k8s/configmap.yaml
+part4-ha/k8s/secret.yaml
 part4-ha/k8s/api-deployment.yaml
+part4-ha/k8s/api-service.yaml
 part4-ha/k8s/ui-deployment.yaml
+part4-ha/k8s/ui-service.yaml
+part4-ha/k8s/ingress.yaml
+part4-ha/k8s/hpa.yaml
 part4-ha/k8s/poddisruptionbudget.yaml
+part4-ha/k8s/db-deployment.yaml
 ```
 
-The Helm values define:
-
-```yaml
-api:
-  replicaCount: 2
-
-ui:
-  replicaCount: 2
-
-pdb:
-  enabled: true
-  minAvailable: 1
-```
-
-The Deployment templates define:
+The Deployments define:
 
 ```yaml
 strategy:
@@ -689,6 +683,14 @@ The helper stopped `minikube-m02`, observed it as `NotReady`, sent 20 requests
 through `http://api.myapp.local/`, printed the node and application state, and
 started the node again. All 20 requests returned HTTP 200, so the controlled
 node-failure availability check passed.
+
+![Node-failure availability verifier — 20 of 20 HTTP 200 responses](screenshots/part4/step13-node-failure-availability.png)
+
+**Screenshot Explanation:** The verifier shows the worker node
+`minikube-m02` entering the controlled `NotReady` state while the API remains
+available through the domain route. All 20 requests return HTTP 200, after
+which the helper restores the node. This is the final live proof for service
+availability during a node failure.
 
 ### Fast closeout sequence
 
@@ -925,15 +927,16 @@ Ingress-only correction does not restart the API pods.
 ### Commands Executed
 
 ```bash
-sed -n '1,180p' part4-ha/helm/templates/services.yaml
-sed -n '1,180p' part4-ha/helm/templates/ingress.yaml
-sed -n '1,180p' part4-ha/helm/templates/hpa.yaml
-sed -n '1,180p' part4-ha/helm/templates/pdb.yaml
+sed -n '1,180p' part4-ha/k8s/api-service.yaml
+sed -n '1,180p' part4-ha/k8s/ui-service.yaml
+sed -n '1,180p' part4-ha/k8s/ingress.yaml
+sed -n '1,180p' part4-ha/k8s/hpa.yaml
+sed -n '1,180p' part4-ha/k8s/poddisruptionbudget.yaml
 ```
 
 ### Output
 
-The chart creates two internal ClusterIP Services:
+The raw manifests create two internal ClusterIP Services:
 
 ```yaml
 api:
@@ -947,7 +950,7 @@ ui:
   targetPort: 3000
 ```
 
-The chart also defines HorizontalPodAutoscalers:
+The raw manifests also define HorizontalPodAutoscalers:
 
 ```yaml
 api:
@@ -967,7 +970,7 @@ metrics-server installation.
 
 The ClusterIP Services provide the stable internal endpoints for the
 replicated workloads. Kubernetes selects pods using the component labels
-defined by the chart. Only ready pods should receive application traffic
+defined by the manifests. Only ready pods should receive application traffic
 because readiness probes control endpoint eligibility.
 
 The Ingress is the external routing layer. It sends API host traffic to the
@@ -1062,6 +1065,13 @@ The final per-replica output and screenshot were captured from the real WSL
 cluster. The older `step11` screenshot remains useful as baseline routing
 evidence, while `step12` is the authoritative per-replica distribution proof.
 
+![Per-replica distribution verifier — 40 of 40 requests with both API pods](screenshots/part4/step12-per-replica-distribution.png)
+
+**Screenshot Explanation:** The verifier records the pod name returned by each
+request and shows 40 successful responses distributed across both API
+replicas. The 20/20 result passes the documented bounded distribution check,
+which proves that both replicas handled traffic through the Service.
+
 The required evidence should be placed here:
 
 ```text
@@ -1091,8 +1101,6 @@ checking practical even distribution.
 ### Commands Executed
 
 ```bash
-sed -n '1,180p' part4-ha/helm/values.yaml
-sed -n '1,180p' part4-ha/helm/templates/ingress.yaml
 sed -n '1,180p' part4-ha/k8s/ingress.yaml
 ```
 
@@ -1185,36 +1193,26 @@ direct `localhost:8000` or `localhost:3000` test as domain-based evidence.
 ### Commands Executed
 
 ```bash
+minikube start --nodes 2 --driver=docker --cpus=2 --memory=1800mb
+minikube addons enable ingress
+minikube addons enable metrics-server
+
+kubectl apply -f part4-ha/k8s/namespace.yaml
 kubectl apply -f part4-ha/k8s/
-
-helm lint ./part4-ha/helm
-
-helm install myapp ./part4-ha/helm \
-  --namespace devops-exam \
-  --create-namespace \
-  --set api.image.repository=YOUR_DOCKERHUB_USERNAME/api-app \
-  --set api.image.tag=YOUR_TAG \
-  --set ui.image.repository=YOUR_DOCKERHUB_USERNAME/ui-app \
-  --set ui.image.tag=YOUR_TAG
-
-helm upgrade myapp ./part4-ha/helm \
-  --namespace devops-exam \
-  --set api.image.repository=YOUR_DOCKERHUB_USERNAME/api-app \
-  --set api.image.tag=YOUR_TAG \
-  --set ui.image.repository=YOUR_DOCKERHUB_USERNAME/ui-app \
-  --set ui.image.tag=YOUR_TAG \
-  --atomic \
-  --timeout 3m
+kubectl rollout status deployment/api-app -n devops-exam
+kubectl rollout status deployment/ui-app -n devops-exam
+kubectl get all -n devops-exam
+kubectl get ingress,hpa,pdb -n devops-exam
 ```
 
 ### Output
 
-The repository provides both deployment styles required for Kubernetes work:
+The repository provides the raw Kubernetes configuration used by the local
+Minikube run:
 
 ```text
 part4-ha/k8s/       raw Kubernetes manifests
-part4-ha/helm/      reusable Helm chart
-part4-ha/argocd/    ArgoCD GitOps Application
+part4-ha/verify-runtime-evidence.sh
 ```
 
 The raw manifests include:
@@ -1228,31 +1226,21 @@ The raw manifests include:
 - HorizontalPodAutoscalers
 - PodDisruptionBudget
 
-The Helm chart additionally provides environment values, reusable templates,
-rolling updates, autoscaling, disruption budgets, and ArgoCD-compatible
-deployment packaging.
-
 ### Explanation
 
-Kubernetes is the selected orchestration option from the PDF. The repository
-supports two operational paths:
+Kubernetes is the selected orchestration option from the PDF. The actual local
+deployment used one direct operational path:
 
-1. **Direct manifests:** apply the files under `part4-ha/k8s/`.
-2. **Helm:** install or upgrade the chart under `part4-ha/helm/`.
+1. Start a two-node Minikube cluster with the Docker driver.
+2. Enable the Ingress and Metrics Server Minikube add-ons.
+3. Apply the namespace and raw manifests with `kubectl`.
+4. Verify rollout, Services, Ingress, HPA, PDB, pod placement, domain access,
+   and failover using `kubectl`, curl, and k9s.
 
-The Makefile provides shortcuts for namespace creation, Helm installation,
-upgrades, rollout status, ArgoCD application setup, and Minikube preparation.
-
-The ArgoCD Application watches the `staging` branch and the
-`part4-ha/helm` path. Automated sync, pruning, and self-healing are enabled.
-However, the manifest currently contains the placeholder repository URL
-`https://github.com/YOUR_USERNAME/YOUR_REPO.git`. It must be replaced with the
-actual public repository URL before ArgoCD can synchronize the chart.
-
-The image repositories in the default values also contain the placeholder
-`your-dockerhub-username`. The deployment command or an environment-specific
-values file must supply the actual published image repositories and immutable
-tag before installation.
+The Makefile contains matching shortcuts for applying the manifests, checking
+rollouts, starting Minikube, and adding the local domain mappings. The tracked
+runtime helper is used only for the final distribution and node-failure
+evidence captures.
 
 The repository contains a sample Kubernetes Secret with demonstration values.
 Base64 encoding is not encryption. Production credentials must be supplied
@@ -1264,10 +1252,7 @@ credentials must not be committed to Git or included in screenshots.
 The live Kubernetes evidence for this orchestration path is embedded in the
 requirement sections above: Task 1 covers the nodes, ready application pods,
 Services, placement, and failover; Task 2 covers Ingress, HPA, and repeated
-requests; Task 3 covers domain requests. No ArgoCD synchronization screenshot
-is claimed because the committed ArgoCD configuration still contains a
-repository URL placeholder. No Helm install screenshot is claimed because Helm
-was not required for the successful local Minikube run.
+requests; Task 3 covers domain requests.
 
 This keeps each screenshot in one authoritative task section instead of
 duplicating the same image in multiple sections.
@@ -1275,21 +1260,21 @@ duplicating the same image in multiple sections.
 The required evidence should be placed here:
 
 ```text
-helm lint ./part4-ha/helm
-helm template myapp ./part4-ha/helm --namespace devops-exam
+minikube start --nodes 2 --driver=docker --cpus=2 --memory=1800mb
+minikube addons enable ingress
+minikube addons enable metrics-server
+kubectl apply -f part4-ha/k8s/namespace.yaml
 kubectl apply -f part4-ha/k8s/
 kubectl get all -n devops-exam
 kubectl get ingress,hpa,pdb -n devops-exam
-kubectl get application myapp -n argocd
 ```
 
 ### Screenshot Explanation
 
-The Helm output should prove that the chart renders without template errors.
-The Kubernetes resource listing should show the Deployments, Services, pods,
-Ingress, HPAs, and PDBs in the expected namespace. The ArgoCD output should
-show the actual synchronization state only after the repository URL and image
-references have been configured.
+The Minikube and kubectl output should show the two-node cluster, enabled
+add-ons, Deployments, Services, pods, Ingress, HPAs, and PDBs in the expected
+namespace. The k9s screenshots then provide the live resource views and the
+terminal screenshots provide the domain, distribution, and recovery results.
 
 The final evidence should include the exact image tag used for the run. Avoid
 using only `latest` for a final proof because an immutable commit or release
@@ -1318,9 +1303,9 @@ kubectl logs <pod-name> -n devops-exam
 kubectl get events -n devops-exam --sort-by=.lastTimestamp
 ```
 
-Confirm that the configured image exposes the probe path and port. The Helm
-API probe expects `/healthz` on port 8000; the UI probe expects `/` on port
-3000.
+Confirm that the configured image exposes the probe path and port. The raw
+Kubernetes API probe expects `/healthz` on port 8000; the UI probe expects `/`
+on port 3000.
 
 ### Ingress returns 404 or does not receive traffic
 
@@ -1341,19 +1326,9 @@ kubectl get hpa -n devops-exam
 kubectl top pods -n devops-exam
 ```
 
-Install or enable metrics-server and ensure every workload has CPU resource
-requests. The chart already defines CPU requests for both workloads.
-
-### ArgoCD cannot sync
-
-```bash
-kubectl get application myapp -n argocd
-argocd app get myapp
-```
-
-Replace the placeholder Git repository URL, confirm that the `staging` branch
-contains `part4-ha/helm`, and check that the target cluster and namespace are
-reachable by ArgoCD.
+Install or enable the Minikube Metrics Server add-on and ensure every workload
+has CPU resource requests. The raw manifests define the requests required by
+the HPAs.
 
 ---
 
@@ -1362,13 +1337,11 @@ reachable by ArgoCD.
 | Decision | Reason | Trade-off |
 |---|---|---|
 | Kubernetes | Matches the PDF's recommended option and supplies built-in orchestration primitives | More setup and operational complexity than Docker Swarm |
-| Helm | Packages reusable templates and environment-specific values | Rendering adds another layer to debug |
 | ClusterIP Services | Keeps application pods internal and lets Ingress own external routing | Requires a working Ingress controller |
 | Two baseline replicas | Meets the PDF minimum and supports pod-level failover | Two replicas do not guarantee two nodes unless the cluster has two nodes |
 | HPA | Allows horizontal scaling based on resource usage | Requires metrics-server and meaningful resource requests |
 | RollingUpdate with zero unavailable pods | Supports safer releases and reduced interruption | Needs enough capacity for the surge pod |
 | Local hosts file | Simple and repeatable for an exam or local cluster | Not a production DNS solution |
-| ArgoCD self-healing | Reconciles cluster drift from Git | Requires a real repository URL and an installed ArgoCD controller |
 
 ---
 
@@ -1378,12 +1351,11 @@ reachable by ArgoCD.
 
 - Kubernetes was selected as the Part 4 orchestration option.
 - Raw Kubernetes manifests are present under `part4-ha/k8s/`.
-- A Helm chart is present under `part4-ha/helm/`.
 - API and UI Deployments request two replicas.
 - Services, Ingress, health probes, HPA, PDB, and rolling-update settings are
   configured.
 - Domain names and local hosts-file instructions are documented.
-- ArgoCD GitOps configuration is present.
+- The local runtime evidence helper is present under `part4-ha/`.
 
 ### Evidence-backed submission status
 
@@ -1393,15 +1365,6 @@ reachable by ArgoCD.
 - A real API pod-failure recovery test is captured.
 - Domain-based API and UI access both returned HTTP 200.
 - Screenshots are linked directly under the requirement they prove.
-
-### Advanced deployment path notes
-
-- Replace the ArgoCD repository URL placeholder before using ArgoCD sync.
-- Replace Helm's generic image defaults with the exact published immutable tag
-  before using the Helm deployment path.
-
-These are not missing items for the selected raw-manifest path. They remain
-unverified advanced paths rather than claims of a completed Helm or ArgoCD run.
 
 ### Evidence review
 
@@ -1428,15 +1391,15 @@ linked in the final screenshot checklist below.
 | Redundancy | Two-node Minikube cluster, two API replicas, two UI replicas, topology spreading, probes, PDBs, pod replacement, and a node-failure verifier | ✅ Evidence complete: `minikube-m02` NotReady with 20/20 HTTP 200 responses and node restoration |
 | Load distribution | ClusterIP Services, Ingress routing, two ready API endpoints, HPA metrics, `/instance` pod identity, and a per-replica verifier | ✅ Evidence complete: 40/40 requests, 20 responses per replica, distribution check passed |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local`, hosts-file mapping, live HTTP 200 responses | ✅ Evidence complete |
-| Container orchestration | Kubernetes raw manifests applied successfully; Helm and ArgoCD files documented as optional advanced paths | ✅ Selected raw-manifest path complete |
-| Architecture documentation | SVG diagram plus explanation of Ingress, Services, replicas, nodes, probes, PDB, and HPA | ✅ Complete |
+| Container orchestration | Kubernetes raw manifests applied successfully on the two-node Minikube cluster | ✅ Selected raw-manifest path complete |
+| Architecture documentation | PNG diagram plus explanation of Ingress, Services, replicas, nodes, probes, PDB, and HPA | ✅ Complete |
 | Screenshot documentation | 19 captured Part 4 screenshots present, linked once in the relevant task, and explained | ✅ Documentation complete |
 
 **Current conclusion:** Part 4 documentation, the selected Kubernetes
 raw-manifest implementation, and all four PDF requirement areas are complete.
 The final live WSL captures prove per-replica distribution and service
 availability during a controlled node failure. No additional Kubernetes
-feature or ArgoCD setup is needed.
+deployment path is needed.
 
 ---
 
@@ -1470,7 +1433,7 @@ proves, and what the reviewer should notice.
 
 ### Diagram Explanation
 
-`documentation/diagrams/part4-high-availability-architecture.svg` is the
+`documentation/diagrams/part4-high-availability-architecture.png` is the
 architecture diagram for the submission. It shows the relationship between
 domain requests, Nginx Ingress, ClusterIP Services, replicated API/UI pods,
 the two Minikube nodes, and Kubernetes recovery/autoscaling controls.

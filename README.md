@@ -64,7 +64,8 @@ Use `git pull` inside `api-src` or `ui-src` to update an existing checkout.
 
 ## Part 1: Linux Basics
 
-See [`part1-linux/linux_commands.md`](part1-linux/linux_commands.md) for full command documentation.
+See [`documentation/Part1-Linux-Basics-Documentation.md`](documentation/Part1-Linux-Basics-Documentation.md)
+for the full command documentation and evidence.
 
 Scripts:
 - `part1-linux/system_health.sh` – System health monitoring script
@@ -107,8 +108,14 @@ docker-compose up --build
 
 ## Part 3: CI/CD Pipeline
 
-**Status:** Not started. The CI/CD workflow and evidence documentation will be
-created from the candidate's local walkthrough and screenshots.
+**Status:** Core requirements complete. The verified GitHub Actions pipeline
+runs `Verify → Build → Test → Push images to Docker Hub` on the `staging`
+branch, updates the staging runtime with the published images, and has
+successful email-notification evidence. The optional image security scan and
+live rollback exercise remain optional follow-up work.
+
+See [`documentation/Part3-CICD-Documentation.md`](documentation/Part3-CICD-Documentation.md)
+for the five official PDF-aligned tasks.
 
 ---
 
@@ -119,11 +126,17 @@ Platform: **Kubernetes** (recommended option)
 The complete Part 4 submission guide is
 [`documentation/Part4-High-Availability-Documentation.md`](documentation/Part4-High-Availability-Documentation.md).
 It follows the PDF's four requirement areas: redundancy, load distribution,
-domain-based access, and orchestration. The selected easy path is a raw
-two-node Minikube deployment; Helm and ArgoCD remain documented as optional
-advanced paths.
+domain-based access, and orchestration. The selected and completed path is a
+raw Kubernetes deployment on a two-node Minikube cluster.
 
 ### Architecture
+
+![Part 4 Kubernetes high-availability architecture](documentation/diagrams/part4-high-availability-architecture.png)
+
+This is the current Part 4 architecture diagram. It summarizes the exam's
+four requirement areas: redundancy, load distribution, domain-based access,
+and Kubernetes orchestration. The linked Part 4 runtime screenshots are the
+authoritative evidence for exact pod placement and node names.
 
 ```
 Internet
@@ -185,8 +198,9 @@ kubectl delete pod <api-pod-name> -n devops-exam
 kubectl get pods -n devops-exam -w
 ```
 
-Before the final Part 4 evidence runs, copy the latest repository files into the
-local WSL checkout and run the verifier preflight. For a local image:
+For reproducibility, copy the latest repository files into the local WSL
+checkout and run the verifier preflight before repeating a Part 4 evidence
+run. The final evidence has already been captured. For a local image:
 
 ```bash
 EXPECTED_API_IMAGE=devops-api:part4-local \

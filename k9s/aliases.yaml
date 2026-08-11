@@ -15,9 +15,5 @@ aliases:
   ev:   v1/events
   sa:   v1/serviceaccounts
 
-  # ArgoCD shortcuts
-  app:  argoproj.io/v1alpha1/applications
-  argo: argoproj.io/v1alpha1/applications
-
   # Jump straight into the exam namespace pods
   exam: devops-exam/v1/pods

@@ -3,7 +3,7 @@
 **Candidate:** draiimon  
 **Machine:** Aloof — WSL2 (Ubuntu 24.04 on Windows)  
 **Exam:** Junior DevOps Engineer Exam 2026  
-**Last Updated:** August 8, 2026
+**Last Updated:** August 11, 2026
 
 > ⚠️ **For the next maintainer:** Read this file FIRST before doing anything. It tells you exactly where we are, what's done, what's pending, and the rules to follow. Cross-reference everything against the exam PDF at `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`.
 
@@ -28,15 +28,15 @@ repository-root/
 ├── documentation/
 │   ├── Part1-Linux-Basics-Documentation.md           ✅ Complete — now formatted consistently with Part 2
 │   ├── Part2-Docker-Containerization-Documentation.md  ✅ Complete
-│   ├── Part3-CICD-Documentation.md                   🔄 In progress — setup and workflow evidence recorded
+│   ├── Part3-CICD-Documentation.md                   ✅ Core requirements complete — five official tasks documented
 │   ├── Part4-High-Availability-Documentation.md      ✅ Complete — Part 2-style evidence documentation
 │   ├── diagrams/
-│   │   └── part4-high-availability-architecture.svg ✅ Architecture diagram
+│   │   └── part4-high-availability-architecture.png ✅ Current architecture diagram
 │   └── screenshots/
 │       ├── part1/   ← 11 screenshots present
-│       ├── part2/   ← 14 screenshots present (all done)
-│       ├── part3/   ← 27 screenshots present (setup, workflow, build, test, and registry evidence)
-│       └── part4/   ← 17 screenshots present (all linked and explained)
+│       ├── part2/   ← 18 screenshots present (all linked and explained)
+│       ├── part3/   ← 49 screenshots present (setup, workflow, build, test, registry, staging, and notification evidence)
+│       └── part4/   ← 19 screenshots present (all linked and explained)
 ├── part1-linux/
 │   ├── system_health.sh       ✅ chmod +x already applied
 │   ├── backup.sh              ✅ chmod +x already applied
@@ -54,12 +54,9 @@ repository-root/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml                               ⏳ Created locally in Step 8; not yet pushed
-├── part3-cicd/                                      ⏳ Retained as an empty legacy directory
 ├── part4-ha/
-│   ├── k8s/                   ✅ Full Kubernetes manifests (8 files)
-│   ├── helm/                  ✅ Helm chart + values.yaml + values.staging.yaml
-│   └── argocd/
-│       └── application.yaml   ✅ ArgoCD GitOps manifest
+│   ├── k8s/                   ✅ Raw Kubernetes manifests
+│   └── verify-runtime-evidence.sh                 ✅ Local evidence helper
 └── k9s/                       ✅ k9s config (aliases, hotkeys)
 ```
 
@@ -184,13 +181,13 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 
 ---
 
-## 🔄 PART 3 — CI/CD Pipeline — IN PROGRESS
+## ✅ PART 3 — CI/CD Pipeline — CORE COMPLETE
 
 Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not in
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Core Deploy Stage complete; final gaps remain
+### Current position — Required pipeline and evidence complete
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -589,7 +586,7 @@ workflow still contains the Verify, Build, and Test jobs only; it has no
 and encrypted secrets are ready for the separate Deploy Stage, which must
 depend on successful `test-stage`.
 
-### Deploy job draft — pending validation
+### Historical Deploy job draft — superseded by the completed run below
 
 The candidate added a separate local `deploy` job after `test-stage` with:
 
@@ -797,9 +794,8 @@ GitHub-hosted runner environment are documented separately.
 
 ## ✅ PART 4 — High Availability — Live Evidence Captured
 
-**Kubernetes manifests:** `part4-ha/k8s/` ✅ (11 files — full set)
-**Helm chart:** `part4-ha/helm/` ✅ (Chart.yaml + templates/ + values.yaml + values.staging.yaml)  
-**ArgoCD:** `part4-ha/argocd/application.yaml` ✅  
+**Kubernetes manifests:** `part4-ha/k8s/` ✅ (raw manifests used for the live run)
+**Runtime evidence helper:** `part4-ha/verify-runtime-evidence.sh` ✅
 **Documentation:** ✅ `documentation/Part4-High-Availability-Documentation.md`
 
 ### What the HA setup covers (aligned to PDF requirements — Option A: Kubernetes)
@@ -814,8 +810,7 @@ GitHub-hosted runner environment are documented separately.
 | Domain-based access | `api.myapp.local` + `ui.myapp.local` via Nginx Ingress | ✅ |
 | HPA (auto-scaling) | `hpa.yaml` — API: 2–6 pods at 70% CPU; UI: 2–4 pods at 70% CPU | ✅ |
 | PodDisruptionBudget | `pdb.yaml` — `minAvailable: 1` during maintenance | ✅ |
-| Helm chart | Full parameterized chart in `part4-ha/helm/` with staging override values | ✅ |
-| GitOps / ArgoCD | `argocd/application.yaml` for GitOps continuous deployment | ✅ |
+| Kubernetes orchestration | Raw manifests applied with `kubectl` to the Minikube cluster | ✅ |
 
 ### Kubernetes manifest files (all in `part4-ha/k8s/`)
 
@@ -852,8 +847,10 @@ requirements to the raw Kubernetes manifests and records live evidence for:
 - Real API pod deletion, replacement, retained Service endpoints, PDB output,
   and HTTP 200 recovery.
 
-The Helm and ArgoCD files remain available as optional advanced deployment
-paths; the selected evidence path is the successfully tested raw manifests.
+The selected and tested evidence path is the raw Kubernetes manifest path.
+Only the Kubernetes manifests, Minikube cluster, kubectl, k9s, Ingress,
+Metrics Server, Services, HPA, PDB, and runtime evidence helper are included
+for Part 4.
 
 ---
 
@@ -923,7 +920,7 @@ The final local result was:
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
 | Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure simulation is not required | ✅ 49 screenshots plus 4 raw logs | ✅ **CORE COMPLETE** |
-| Part 4 | High Availability (K8s Option A) | ✅ Raw manifests + Helm/ArgoCD files | ✅ Full Part 2-style evidence documentation + architecture diagram | ✅ 17 linked screenshots; 2 live captures still required | ⚠️ **IMPLEMENTATION COMPLETE; 2 RUNTIME CAPTURES PENDING** |
+| Part 4 | High Availability (K8s Option A) | ✅ Raw Kubernetes manifests + Minikube helper | ✅ Full Part 2-style evidence documentation + architecture diagram | ✅ 19 linked screenshots, including per-replica distribution and node-failure availability | ✅ **COMPLETE** |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
@@ -939,6 +936,12 @@ Kubernetes Option A with Minikube and k9s. The local WSL walkthrough is now
 complete and remains evidence-based: application deployment, domain access,
 two-node placement, and API failover are claimed only where the captured
 commands and screenshots prove them.
+
+The Part 4 repository cleanup is also complete. Unused deployment paths were
+removed from `part4-ha/`, and the Makefile and k9s configuration now expose
+only the raw Kubernetes/Minikube workflow that was actually used on the local
+WSL computer. This Repl cleanup changes the documentation and repository copy
+only; it does not modify the local WSL checkout automatically.
 
 ### Completed and evidenced
 

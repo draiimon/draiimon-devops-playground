@@ -8,8 +8,6 @@ API_IMAGE       := $(DOCKER_USERNAME)/api-app
 UI_IMAGE        := $(DOCKER_USERNAME)/ui-app
 TAG             := $(shell git rev-parse --short HEAD 2>/dev/null || echo latest)
 NAMESPACE       := devops-exam
-HELM_RELEASE    := myapp
-HELM_CHART      := ./part4-ha/helm
 
 .DEFAULT_GOAL := help
 
@@ -73,60 +71,24 @@ backup:  ## Run backup script
 analyze-logs:  ## Run log analysis
 	bash part1-linux/log_analysis.sh
 
-# ---- Kubernetes / Helm ------------------------------------------
-.PHONY: k8s-ns helm-install helm-upgrade helm-diff helm-status helm-uninstall k8s-rollout port-forward
+# ---- Kubernetes / Minikube --------------------------------------
+.PHONY: k8s-ns k8s-apply k8s-rollout port-forward
 
 k8s-ns:  ## Create the Kubernetes namespace
 	kubectl apply -f part4-ha/k8s/namespace.yaml
 
-helm-install: k8s-ns  ## Install Helm chart (first time)
-	helm install $(HELM_RELEASE) $(HELM_CHART) \
-	  --namespace $(NAMESPACE) \
-	  --set api.image.repository=$(API_IMAGE) \
-	  --set api.image.tag=$(TAG) \
-	  --set ui.image.repository=$(UI_IMAGE) \
-	  --set ui.image.tag=$(TAG)
-
-helm-upgrade:  ## Upgrade existing Helm release
-	helm upgrade $(HELM_RELEASE) $(HELM_CHART) \
-	  --namespace $(NAMESPACE) \
-	  --set api.image.repository=$(API_IMAGE) \
-	  --set api.image.tag=$(TAG) \
-	  --set ui.image.repository=$(UI_IMAGE) \
-	  --set ui.image.tag=$(TAG) \
-	  --atomic \
-	  --timeout 3m
-
-helm-diff:  ## Show what would change (requires helm-diff plugin)
-	helm diff upgrade $(HELM_RELEASE) $(HELM_CHART) \
-	  --namespace $(NAMESPACE) \
-	  --set api.image.tag=$(TAG) \
-	  --set ui.image.tag=$(TAG)
-
-helm-status:  ## Show Helm release status
-	helm status $(HELM_RELEASE) --namespace $(NAMESPACE)
-
-helm-uninstall:  ## Uninstall Helm release
-	helm uninstall $(HELM_RELEASE) --namespace $(NAMESPACE)
+k8s-apply: k8s-ns  ## Apply the raw Kubernetes manifests
+	kubectl apply -f part4-ha/k8s/
 
 k8s-rollout:  ## Watch rollout status for both deployments
-	kubectl rollout status deployment/myapp-api --namespace $(NAMESPACE)
-	kubectl rollout status deployment/myapp-ui  --namespace $(NAMESPACE)
+	kubectl rollout status deployment/api-app --namespace $(NAMESPACE)
+	kubectl rollout status deployment/ui-app  --namespace $(NAMESPACE)
 
 port-forward:  ## Forward ports for local testing (api:8000, ui:3000)
-	kubectl port-forward svc/myapp-api-service 8000:80 --namespace $(NAMESPACE) &
-	kubectl port-forward svc/myapp-ui-service  3000:80 --namespace $(NAMESPACE) &
+	kubectl port-forward svc/api-service 8000:80 --namespace $(NAMESPACE) &
+	kubectl port-forward svc/ui-service  3000:80 --namespace $(NAMESPACE) &
 	@echo "API: http://localhost:8000"
 	@echo "UI:  http://localhost:3000"
-
-# ---- ArgoCD -----------------------------------------------------
-.PHONY: argocd-apply argocd-sync
-
-argocd-apply:  ## Apply ArgoCD Application manifest
-	kubectl apply -f part4-ha/argocd/application.yaml
-
-argocd-sync:  ## Force ArgoCD to sync now
-	argocd app sync myapp --timeout 120
 
 # ---- Security ---------------------------------------------------
 .PHONY: scan sbom sign
@@ -148,10 +110,9 @@ sign:  ## Sign images with Cosign (keyless via OIDC)
 .PHONY: minikube-up minikube-hosts
 
 minikube-up:  ## Start Minikube with ingress and metrics-server
-	minikube start --driver=docker --cpus=2 --memory=4g
+	minikube start --nodes 2 --driver=docker --cpus=2 --memory=1800mb
 	minikube addons enable ingress
 	minikube addons enable metrics-server
-	minikube addons enable dashboard
 
 minikube-hosts:  ## Add Minikube IP to /etc/hosts
 	@echo "$$(minikube ip)  api.myapp.local ui.myapp.local" | sudo tee -a /etc/hosts
@@ -159,9 +120,6 @@ minikube-hosts:  ## Add Minikube IP to /etc/hosts
 
 # ---- Lint & Validate --------------------------------------------
 .PHONY: lint validate
-
-lint:  ## Lint Helm chart
-	helm lint $(HELM_CHART)
 
 validate:  ## Validate k8s manifests with kubeval
 	kubeval part4-ha/k8s/*.yaml

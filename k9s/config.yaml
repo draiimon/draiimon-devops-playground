@@ -27,7 +27,6 @@ k9s:
         active: devops-exam
         favorites:
           - devops-exam
-          - argocd
           - kube-system
       view:
         active: pod           # Open k9s on the pods view

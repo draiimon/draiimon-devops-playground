@@ -20,15 +20,6 @@ hotKeys:
     args:
       - --all-namespaces
 
-  # Jump to ArgoCD apps
-  shift-a:
-    shortCut: Shift-A
-    description: ArgoCD applications
-    command: applications
-    args:
-      - --namespace
-      - argocd
-
   # Jump to HPAs
   shift-h:
     shortCut: Shift-H

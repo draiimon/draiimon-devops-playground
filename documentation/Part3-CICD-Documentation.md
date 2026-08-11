@@ -9,8 +9,9 @@
 > **Evidence boundary:** Part 3 work was performed on the candidate's local
 > WSL/Ubuntu computer. The screenshots in `documentation/screenshots/part3/`
 > and the uploaded terminal outputs are the evidence source. This document
-> records confirmed work only and does not mark unfinished pipeline stages as
-> complete.
+> records confirmed work only. Historical evidence sections preserve the
+> sequence of earlier drafts and are labelled as historical; the current
+> status tables and the official five-task walkthrough are authoritative.
 
 ---
 
@@ -540,9 +541,9 @@ were launched. It does not guarantee that MySQL is ready, that the API has
 connected to MySQL, or that Next.js is accepting HTTP requests. The smoke
 tests provide that additional evidence.
 
-The Test Stage is now **confirmed complete**. The optional Docker image
-security scan is still pending, and the PDF's Deploy Stage and Notifications
-requirements remain to be implemented or documented as partial work.
+The Test Stage is now **confirmed complete**. The later sections document the
+completed Deploy Stage and success notification. The optional Docker image
+security scan remains intentionally out of scope for the required submission.
 
 ---
 
@@ -676,8 +677,9 @@ PAT value are not stored in this repository or in chat.
 
 `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` are confirmed as encrypted
 repository secret names. The screenshot of the token secret does not expose
-its value. GitHub Actions login and image push are not yet verified; image push
-and staging deployment remain pending.
+its value. Later runner logs and Docker Hub screenshots confirm the GitHub
+Actions login, image push, and staging deployment. The earlier setup state is
+kept below as historical evidence.
 
 ### Evidence — Docker Hub token secret
 
@@ -720,10 +722,11 @@ clearly separates the completed Build/Test work from the next Deploy work.
 
 - [Current workflow raw output](evidence/part3/task19-current-workflow-output.txt)
 
-### Current status
+### Historical status
 
-The workflow is ready to be extended with a Docker Hub authentication and
-image-push step. The next change must use the encrypted
+At this earlier checkpoint, the workflow was ready to be extended with a
+Docker Hub authentication and image-push step. The later Deploy Stage evidence
+below supersedes this baseline. Any repeat of the change must use the encrypted
 `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets and must not print either
 credential.
 
@@ -748,7 +751,7 @@ images built in `build-images` are not automatically available to a later
 Deploy job. The final Deploy job must therefore build or otherwise receive the
 images explicitly after the Test job succeeds.
 
-### Review result
+### Historical review result
 
 The draft is **not yet the final workflow**. The Docker Hub login and push
 steps must be moved into a separate Deploy job that depends on `test-stage`.
@@ -791,8 +794,12 @@ Both are image-tagging operations; neither is a `docker push`.
 - Early Docker Hub push: removed correctly.
 - Build/Test order: preserved.
 - Build-job image tagging: removed from the actual WSL workflow.
-- Docker Hub image push: not implemented or claimed.
-- Staging deployment: still pending.
+- Docker Hub image push: not implemented or claimed at this historical point.
+- Staging deployment: still pending at this historical point.
+
+The later Deploy Stage evidence in this document supersedes this draft state:
+Docker Hub publishing, the staging runtime, and the success notification are
+confirmed in the current status sections.
 
 ### Step 9 local verification result
 
