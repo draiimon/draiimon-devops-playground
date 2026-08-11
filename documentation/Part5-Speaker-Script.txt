@@ -1,86 +1,77 @@
-PART 5 - SPEAKER SCRIPT: FIVE-SLIDE LOCAL WALKTHROUGH
+PART 5 - SPEAKER SCRIPT: SOLUTION PRESENTATION
 Junior DevOps Engineer Exam 2026
 Mark Andrei Castillo
 
-Format: 5 visual slides followed by 5 script pages in the same PDF.
-Presentation rule: local action -> captured result -> checkpoint meaning.
+Format: 12 presentation slides. The screenshots are visual evidence; this script is a speaking guide for the presentation.
 
-SLIDE 1: Opening and presentation scope
+SLIDE 1: Opening
 
-SAY:
-Good day po. I am Mark Andrei Castillo. I will briefly explain what I built for the Junior DevOps Engineer Exam 2026. I will show the work in order: Linux, Docker, CI/CD, and Kubernetes. For each part, I will say what I did, what result I captured, and what that result means.
-
-SHOW / DO:
-Start with the title slide. Read the title and say: I will keep this as a short walkthrough of my actual work and evidence.
-
-EVIDENCE NOTE:
-The screenshots came from the documented local work. The repository contains the code, documentation, and evidence used for this presentation.
-
-IF ASKED:
-If I forget a detail, I will refer to the repository file or screenshot instead of guessing.
+I will present the work as one delivery story: Linux foundation, Docker packaging, CI/CD automation, Kubernetes availability, then reflection.
 
 ------------------------------------------------------------------------
 
-SLIDE 2: Parts 1 and 2 foundation
+SLIDE 2: Overall approach
 
-SAY:
-For Part 1, I started with basic Linux checks. I used a script to check the machine time, memory, disk, and CPU. The purpose was simple: before running an application, I wanted to know the condition of the machine. For Part 2, I used Docker Compose to run the API, UI, and database together. The important result is that the services were running and healthy.
-
-SHOW / DO:
-Point to the large Linux screenshot and say: This is the system health report. Then say: The Docker result shows the services running together.
-
-EVIDENCE NOTE:
-The screenshot is evidence that the checks were actually run. The Docker stack was corrected before it was treated as ready.
-
-IF ASKED:
-If asked what Docker does, say: Docker packages the application. Compose starts the related services together, so I can test them as one local stack.
+I worked from the foundation upward. Each part produced something the next part could use, which kept the troubleshooting scope clear.
 
 ------------------------------------------------------------------------
 
-SLIDE 3: Part 3 CI/CD
+SLIDE 3: Architecture
 
-SAY:
-For Part 3, I connected the staging push to GitHub Actions. The pipeline follows a simple order: verify, build, test, and push. This means the application is checked before the images are published. The screenshot shows the workflow completed successfully.
-
-SHOW / DO:
-Point from left to right and read the job names. Say: The pipeline works like a checklist. Each step must pass before the next step continues.
-
-EVIDENCE NOTE:
-The successful workflow is captured evidence. I will only claim what the screenshot and repository actually show. Optional rollback and new failure-notification captures are not presented as completed.
-
-IF ASKED:
-If asked why this is useful, say: It reduces manual steps and catches problems before publishing an image.
+The API and UI are separate services. Compose is the local environment, GitHub Actions is the delivery boundary, and Kubernetes is the runtime boundary.
 
 ------------------------------------------------------------------------
 
-SLIDE 4: Part 4 high availability
+SLIDE 4: Linux
 
-SAY:
-For Part 4, I used Kubernetes through a two-node Minikube cluster. I ran more than one copy of the API so the application could continue serving requests if one node had a problem. The screenshots show the pods running and the node-failure test returning 20 out of 20 successful responses.
-
-SHOW / DO:
-Point to the rows marked Running and 1/1. Then point to Successful node-failure requests: 20/20. Say: This is the actual runtime test, not only the configuration file.
-
-EVIDENCE NOTE:
-The important proof is the captured request result while one node was unavailable. The Kubernetes work and screenshots came from the documented local environment.
-
-IF ASKED:
-If asked what Minikube is, say: It is a local Kubernetes cluster that let me demonstrate the required deployment and availability behavior for the exam.
+I completed the Linux command and scripting requirements and documented the results. The main lesson was to make system state observable and repeatable.
 
 ------------------------------------------------------------------------
 
-SLIDE 5: Part 5 decisions and closing
+SLIDE 5: Docker
 
-SAY:
-The main problems I encountered were missing application source, matching the database setup, clean CI runners, and proving that Kubernetes was really serving traffic. I solved these by checking the source, aligning the database, setting up each CI job clearly, and running a runtime test. My main lesson is: do not assume something works just because it looks configured - test the actual result.
+I created separate production-oriented containers for the API and UI and used Compose to run them with MySQL. The screenshot shows the healthy local result.
 
-SHOW / DO:
-Point to the two large Kubernetes screenshots. Then read the takeaway box. Finish with: Thank you po. I am ready to explain any file or screenshot in more detail.
+------------------------------------------------------------------------
 
-EVIDENCE NOTE:
-I will separate completed evidence from future improvements. Image scanning, a tested rollback, and production monitoring are improvements I would add next.
+SLIDE 6: CI/CD pipeline
 
-IF ASKED:
-If I do not know an answer, say: I did not want to guess. I can show the exact file or checkpoint where that behavior is documented.
+The pipeline is ordered as verify, build, test, publish, and notify. Publishing happens only after the quality checks pass.
+
+------------------------------------------------------------------------
+
+SLIDE 7: CI/CD evidence
+
+The screenshots show the successful delivery result and notification evidence. I am keeping optional security scanning and live rollback as future work.
+
+------------------------------------------------------------------------
+
+SLIDE 8: HA design
+
+I chose Kubernetes because replicas, Services, Ingress, probes, HPA, and PDB directly map to the high-availability requirements.
+
+------------------------------------------------------------------------
+
+SLIDE 9: HA evidence
+
+The runtime evidence is stronger than a manifest alone: it shows replica state, traffic behavior, and 20 out of 20 successful requests during a controlled node failure.
+
+------------------------------------------------------------------------
+
+SLIDE 10: Challenges
+
+The key challenges were source alignment, database alignment, clean CI runners, and distinguishing rollout health from real traffic health.
+
+------------------------------------------------------------------------
+
+SLIDE 11: Trade-offs
+
+Minikube was practical for this time-limited exam. With more time I would add security gates, immutable digests, rollback testing, managed staging, and observability.
+
+------------------------------------------------------------------------
+
+SLIDE 12: Closing
+
+My takeaway is that reliability is a chain of verified boundaries. Each tool has a clear job, and each important claim has evidence behind it.
 
 ------------------------------------------------------------------------
