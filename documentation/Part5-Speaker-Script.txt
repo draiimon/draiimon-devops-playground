@@ -8,79 +8,79 @@ Presentation rule: local action -> captured result -> checkpoint meaning.
 SLIDE 1: Opening and presentation scope
 
 SAY:
-Good day. I am Mark Andrei Castillo, and this is my Part 5 solution presentation for the Junior DevOps Engineer Exam 2026. I will present the work as a walkthrough: what I ran locally, what I captured, and what the checkpoint evidence allows me to claim. I will keep the story focused on five slides: foundation, delivery, high availability, and my engineering decisions.
+Good day po. I am Mark Andrei Castillo. I will briefly explain what I built for the Junior DevOps Engineer Exam 2026. I will show the work in order: Linux, Docker, CI/CD, and Kubernetes. For each part, I will say what I did, what result I captured, and what that result means.
 
 SHOW / DO:
-Start with the title slide. Mention that the detailed script is included immediately after the five visual slides in this PDF.
+Start with the title slide. Read the title and say: I will keep this as a short walkthrough of my actual work and evidence.
 
 EVIDENCE NOTE:
-The local execution boundary matters: the repository stores the implementation and evidence, while the Linux, CI, and Kubernetes work was performed and captured from the documented environments.
+The screenshots came from the documented local work. The repository contains the code, documentation, and evidence used for this presentation.
 
 IF ASKED:
-The presentation requirements are approach, architecture, thought process, tools/configuration, challenges, resolutions, trade-offs, improvements, and a repository walkthrough. The five slides cover each of those.
+If I forget a detail, I will refer to the repository file or screenshot instead of guessing.
 
 ------------------------------------------------------------------------
 
 SLIDE 2: Parts 1 and 2 foundation
 
 SAY:
-I worked from the foundation upward. In Part 1, I practiced the Linux commands and turned repeated checks into Bash scripts: system health, backup, log analysis, and scripting. In Part 2, I checked that the actual FastAPI and Next.js source was in the build context, then built separate API and UI images with a MySQL Compose dependency. The important result was not only that images built; the API, UI, and database became healthy and the API responded to curl checks.
+For Part 1, I started with basic Linux checks. I used a script to check the machine time, memory, disk, and CPU. The purpose was simple: before running an application, I wanted to know the condition of the machine. For Part 2, I used Docker Compose to run the API, UI, and database together. The important result is that the services were running and healthy.
 
 SHOW / DO:
-Show the two evidence screenshots. Point to system_health.sh, backup.sh, and log_analysis.sh, then show docker-compose ps and the API root check.
+Point to the large Linux screenshot and say: This is the system health report. Then say: The Docker result shows the services running together.
 
 EVIDENCE NOTE:
-The first local Docker attempt exposed missing source and database/driver alignment issues. I corrected those before treating the stack as ready. This is why the deck distinguishes a build result from an application readiness result.
+The screenshot is evidence that the checks were actually run. The Docker stack was corrected before it was treated as ready.
 
 IF ASKED:
-I kept API and UI separate because they have different runtimes, dependencies, ports, and scaling boundaries. Compose provides a repeatable local feedback loop with MySQL.
+If asked what Docker does, say: Docker packages the application. Compose starts the related services together, so I can test them as one local stack.
 
 ------------------------------------------------------------------------
 
 SLIDE 3: Part 3 CI/CD
 
 SAY:
-For Part 3, the local staging push handed work to GitHub Actions. The workflow order is Verify, Build, Test, Push, and Notify. Build validates the Compose configuration and images. Test installs dependencies, starts the real services, waits for readiness, and checks behavior. Only after those checks does the pipeline publish API and UI images to Docker Hub. SHA, staging, and latest tags make the output traceable.
+For Part 3, I connected the staging push to GitHub Actions. The pipeline follows a simple order: verify, build, test, and push. This means the application is checked before the images are published. The screenshot shows the workflow completed successfully.
 
 SHOW / DO:
-Trace the successful workflow graph from left to right and then show the published registry tag evidence. Open .github/workflows/deploy.yml if asked.
+Point from left to right and read the job names. Say: The pipeline works like a checklist. Each step must pass before the next step continues.
 
 EVIDENCE NOTE:
-The successful pipeline and registry publishing are captured evidence. Notification configuration is present, but I do not overclaim a new failure-notification capture or a live rollback test.
+The successful workflow is captured evidence. I will only claim what the screenshot and repository actually show. Optional rollback and new failure-notification captures are not presented as completed.
 
 IF ASKED:
-Fresh GitHub-hosted jobs do not share hidden local state, so each job checks out the code and declares its own setup. That makes the pipeline more reproducible.
+If asked why this is useful, say: It reduces manual steps and catches problems before publishing an image.
 
 ------------------------------------------------------------------------
 
 SLIDE 4: Part 4 high availability
 
 SAY:
-For Part 4, I used a two-node Minikube cluster and raw Kubernetes manifests. The application has two API replicas and two UI replicas, stable Services, Ingress routing, readiness and liveness probes, HPA, a PodDisruptionBudget, rolling updates, and topology spread. I then used a runtime verifier instead of trusting YAML alone. The captured results show traffic reaching both replicas and 20 out of 20 successful HTTP responses while one node was NotReady.
+For Part 4, I used Kubernetes through a two-node Minikube cluster. I ran more than one copy of the API so the application could continue serving requests if one node had a problem. The screenshots show the pods running and the node-failure test returning 20 out of 20 successful responses.
 
 SHOW / DO:
-Show the ready pods, the 40-request distribution, and the controlled node-failure screenshot. Point out that preflight checks image consistency, EndpointSlice membership, routing, and /instance.
+Point to the rows marked Running and 1/1. Then point to Successful node-failure requests: 20/20. Say: This is the actual runtime test, not only the configuration file.
 
 EVIDENCE NOTE:
-This is the strongest HA boundary: the test exercises traffic and availability. The screenshots are local WSL captures; the Repl snapshot contains the verifier, manifests, documentation, and copied evidence.
+The important proof is the captured request result while one node was unavailable. The Kubernetes work and screenshots came from the documented local environment.
 
 IF ASKED:
-Minikube is appropriate for a reproducible exam environment. In production I would repeat the same workload design in managed Kubernetes with stronger control-plane and observability guarantees.
+If asked what Minikube is, say: It is a local Kubernetes cluster that let me demonstrate the required deployment and availability behavior for the exam.
 
 ------------------------------------------------------------------------
 
 SLIDE 5: Part 5 decisions and closing
 
 SAY:
-The main challenges were boundary problems: missing source in the first container build, database alignment, fresh CI runners, and a green rollout without traffic proof. I resolved them with source checks, MySQL alignment, explicit job setup, and runtime preflight. With more time, I would add image scanning, immutable digests, a tested rollback, and production observability. My main lesson is that reliable delivery is a chain of verified boundaries.
+The main problems I encountered were missing application source, matching the database setup, clean CI runners, and proving that Kubernetes was really serving traffic. I solved these by checking the source, aligning the database, setting up each CI job clearly, and running a runtime test. My main lesson is: do not assume something works just because it looks configured - test the actual result.
 
 SHOW / DO:
-Walk through README.md, part1-linux/, part2-docker/, .github/workflows/deploy.yml, part4-ha/k8s/, verify-runtime-evidence.sh, and documentation/. End by inviting questions.
+Point to the two large Kubernetes screenshots. Then read the takeaway box. Finish with: Thank you po. I am ready to explain any file or screenshot in more detail.
 
 EVIDENCE NOTE:
-Keep completed evidence separate from configured behavior and future work. Do not present optional scanning or live rollback as already completed.
+I will separate completed evidence from future improvements. Image scanning, a tested rollback, and production monitoring are improvements I would add next.
 
 IF ASKED:
-The presentation is designed to be short, but every required Part 5 topic is available: approach, architecture, decisions, challenges, resolutions, trade-offs, improvements, repository walkthrough, Dockerfiles, CI/CD, and HA.
+If I do not know an answer, say: I did not want to guess. I can show the exact file or checkpoint where that behavior is documented.
 
 ------------------------------------------------------------------------
