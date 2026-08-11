@@ -184,7 +184,7 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 ## ✅ PART 3 — CI/CD Pipeline — CORE EVIDENCED
 
 Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not in
-this Replit workspace. Uploaded terminal screenshots and user-provided command
+this repository copy. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
 ### Current position — Core pipeline and registry evidence complete
@@ -258,7 +258,7 @@ The run verified:
 - both images were tagged with the commit SHA, `latest`, and `staging`;
 - the final image listing was successful.
 
-The Replit-side evidence files are:
+The repository evidence files are:
 
 - `documentation/screenshots/part3/task10-github-actions-build-success.png`
 - `documentation/screenshots/part3/task11-github-actions-built-images.png`
@@ -772,7 +772,7 @@ The GitHub Actions run and built-image evidence are now recorded above. The
 GitHub runner built fresh images; it did not reuse the local image IDs.
 
 The Test Stage workflow was pushed and verified successfully. Its raw output
-is preserved in the Replit-side evidence folder and explained in the Part 3
+is preserved in the repository evidence folder and explained in the Part 3
 documentation.
 
 The attempted command `docker image ls api-app ui-app` returned a Docker usage

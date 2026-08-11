@@ -1,7 +1,7 @@
 # Final Submission Audit
 
 **Reference:** `documentation/reference/Junior_DevOps_Engineer_Exam_2026.pdf`  
-**Checked artifacts:** `README.md`, `CHECKPOINT.md`, `documentation/Part1-Linux-Basics-Documentation.md`, `documentation/Part2-Docker-Containerization-Documentation.md`, `documentation/Part3-CICD-Documentation.md`, `documentation/Part4-High-Availability-Documentation.md`, and `documentation/Part5-Solution-Presentation.pdf`.
+**Checked artifacts:** `README.md`, `CHECKPOINT.md`, `documentation/Part1-Linux-Basics-Documentation.md`, `documentation/Part2-Docker-Containerization-Documentation.md`, `documentation/Part3-CICD-Documentation.md`, and `documentation/Part4-High-Availability-Documentation.md`.
 
 ## Bottom line
 
@@ -97,18 +97,6 @@ controlled worker-node failure followed by restoration.
 
 This is the strongest part of the submission and is aligned with all four
 official Part 4 requirement areas.
-
-### Part 5 — Solution Presentation
-
-The 12-slide walkthrough plus 12 notes pages covers the required approach,
-local execution boundary, evidence path, challenges and fixes, CI/CD order,
-Kubernetes runtime tests, trade-offs, and future improvements. The deck was
-visually spot-checked after rendering. It is intentionally evidence-first
-rather than design-heavy.
-
-The presentation must still be delivered with the matching repository and
-documentation open, because the PDF says the candidate may be asked to walk
-through the repository, Dockerfiles, pipeline, and HA deployment.
 
 ## Final verdict
 
