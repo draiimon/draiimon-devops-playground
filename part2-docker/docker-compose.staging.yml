@@ -1,0 +1,53 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: devops_staging_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: testdb
+    volumes:
+      - staging-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - staging-network
+
+  api:
+    image: draiimon112/devops-api:staging
+    container_name: devops_staging_api
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    environment:
+      PORT: 8000
+      DB_CONNECTION_STRING: mysql+pymysql://root:password@db:3306/testdb
+      DEBUG: "false"
+    depends_on:
+      - db
+    networks:
+      - staging-network
+
+  ui:
+    image: draiimon112/devops-ui:staging
+    container_name: devops_staging_ui
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: http://localhost:8001
+    depends_on:
+      - api
+    networks:
+      - staging-network
+
+networks:
+  staging-network:
+
+volumes:
+  staging-mysql-data:

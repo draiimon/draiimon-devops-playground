@@ -33,7 +33,7 @@ spec:
 
       containers:
         - name: api
-          image: DOCKER_USERNAME/api-app:latest    # Replace DOCKER_USERNAME
+          image: draiimon112/devops-api:staging    # Replace DOCKER_USERNAME
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -45,11 +45,11 @@ spec:
           env:
             - name: PORT
               value: "8000"
-            - name: DATABASE_URL
+            - name: DB_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: DATABASE_URL
+                  key: DB_CONNECTION_STRING
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
@@ -67,7 +67,7 @@ spec:
           # Liveness probe: restart pod if app is hung
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: 8000
             initialDelaySeconds: 15
             periodSeconds: 20
@@ -76,7 +76,7 @@ spec:
           # Readiness probe: only send traffic when truly ready
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
