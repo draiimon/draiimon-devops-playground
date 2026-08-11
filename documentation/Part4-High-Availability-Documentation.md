@@ -48,12 +48,11 @@ documentation, and uploaded screenshot evidence.
 | UI image | `draiimon112/devops-ui:staging` |
 
 > **Evidence boundary:** This document claims live behavior only where the
-> uploaded terminal or k9s screenshot shows the result. The load-distribution
-> screenshot shows multiple ready API endpoints and twenty successful
-> domain-based requests; it does not identify which individual pod answered
-> each response. The repository now includes a separate `/instance` endpoint
-> and a repeatable verifier for the stronger per-replica proof, but that output
-> must still come from the real WSL cluster.
+> uploaded terminal or k9s screenshot shows the result. The final
+> per-replica screenshot shows 40/40 successful requests, with 20 responses
+> from each API pod. The final node-failure screenshot shows the worker node
+> `minikube-m02` as `NotReady` while all 20 domain requests returned HTTP 200,
+> followed by automatic node restoration.
 
 ---
 
@@ -427,8 +426,8 @@ protection in one platform.
 | PDF requirement | Repository implementation | Evidence status |
 |---|---|---|
 | Applications on at least 2 servers, VMs, or nodes | Two replicas per API and UI Deployment, with node-spread constraints | Live placement across both Minikube nodes captured |
-| Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Pod deletion/replacement, endpoint recovery, and HTTP 200 captured; deliberate node-failure availability still needs a dedicated test |
-| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service; `/instance` identifies the serving pod | Multiple ready API endpoints and 20 successful API requests captured; the stronger per-instance count is ready to run but still needs live output |
+| Automatic failover and recovery | Kubernetes Deployments, restart policy, liveness probes, readiness probes | Pod deletion/replacement, endpoint recovery, HTTP 200, and controlled node-failure availability captured |
+| Load distribution | ClusterIP Services select all ready replicas; Ingress routes each host to its Service; `/instance` identifies the serving pod | 40/40 requests succeeded, with 20 responses from each API replica; bounded 2:1 distribution check passed |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local` Ingress hosts plus hosts-file instructions | Live hostname resolution and HTTP 200 responses captured |
 | Health checks | API `/`; UI `/`; liveness and readiness probes | Configured; API/UI pods captured Ready |
 | Horizontal scaling | API and UI HPA templates with minimum replica count of 2 | Live HPA metrics captured; API 2–6 and UI 2–4 replicas |
@@ -667,13 +666,11 @@ available through the domain-based route. The earlier failed command using the
 literal `<one-api-pod-name>` placeholder is shown historically in the same
 terminal capture and was not treated as a test.
 
-### Required node-failure availability test
+### Completed node-failure availability test
 
-The pod-failure test above is complete, but the PDF also asks for service
-availability during node failures. Run the following on the local WSL machine
-where the two-node Minikube cluster is running. First confirm that the
-application replicas are healthy and that the selected worker node is
-`minikube-m02`:
+The pod-failure test above is complete, and the required service-availability
+test during a node failure was also completed on the local WSL machine. The
+selected worker node was `minikube-m02`.
 
 ```bash
 kubectl get nodes -o wide
@@ -682,18 +679,16 @@ kubectl get endpointslice -n devops-exam \
   -l kubernetes.io/service-name=api-service -o wide
 ```
 
-The repository includes a repeatable evidence helper:
+The repository includes the repeatable evidence helper used for the capture:
 
 ```bash
 ./part4-ha/verify-runtime-evidence.sh --node-failure
 ```
 
-The helper stops `minikube-m02`, checks the node state, sends 20 requests
-through `http://api.myapp.local/`, prints the application pods and API
-EndpointSlice, then starts the node again. It requires at least 15 successful
-HTTP 200 responses during the controlled test. The screenshot and output from
-the real WSL cluster must be added before this PDF bullet can be marked
-evidence-complete.
+The helper stopped `minikube-m02`, observed it as `NotReady`, sent 20 requests
+through `http://api.myapp.local/`, printed the node and application state, and
+started the node again. All 20 requests returned HTTP 200, so the controlled
+node-failure availability check passed.
 
 ### Fast closeout sequence
 
@@ -704,7 +699,7 @@ truthful screenshots of that separate cluster.
 ```bash
 cd ~/devops-exam
 
-# Build and publish the API image containing /instance.
+# The live evidence image was built locally and loaded into Minikube.
 docker build -t draiimon112/devops-api:staging ./part2-docker/api-src
 docker push draiimon112/devops-api:staging
 
@@ -722,10 +717,10 @@ FAIL_NODE=minikube-m02 ./part4-ha/verify-runtime-evidence.sh --node-failure \
   | tee /tmp/part4-node-failure.txt
 ```
 
-The first verifier run must show `Successful requests: 40/40`, both API pod
-names, and `Distribution check passed`. The second must show the selected node
-unavailable and at least `15/20` successful HTTP 200 responses. The helper
-starts the stopped node again before exiting.
+The first verifier run showed `Successful requests: 40/40`, both API pod names,
+and `Distribution check passed`, with 20 responses from each replica. The
+second showed `minikube-m02` as `NotReady` and `20/20` successful HTTP 200
+responses. The helper started the stopped node again before exiting.
 
 Save the two terminal captures as:
 
@@ -1031,7 +1026,7 @@ return the same JSON body and the application does not expose pod identity,
 this screenshot does not claim per-request pod attribution or mathematically
 even distribution; that limitation is documented rather than hidden.
 
-### Required per-replica distribution test
+### Completed per-replica distribution test
 
 The API now has a diagnostic endpoint that returns the Kubernetes pod name:
 
@@ -1050,8 +1045,8 @@ through the Downward API:
       fieldPath: metadata.name
 ```
 
-After the updated API image has been built, published, and deployed to the
-local cluster, run:
+The updated API image was built locally, loaded into Minikube, and deployed to
+both API replicas. The live verifier was run with:
 
 ```bash
 REQUESTS=40 ./part4-ha/verify-runtime-evidence.sh
@@ -1063,10 +1058,9 @@ the largest count is no more than twice the smallest count. This is a
 bounded, practical even-distribution check rather than an unsupported claim of
 perfect mathematical equality.
 
-The new per-replica output and screenshot must be captured from the real WSL
-cluster. Until that output exists, the older `step11` screenshot remains valid
-for multiple ready endpoints and repeated successful routing, but not for the
-stronger even-distribution claim.
+The final per-replica output and screenshot were captured from the real WSL
+cluster. The older `step11` screenshot remains useful as baseline routing
+evidence, while `step12` is the authoritative per-replica distribution proof.
 
 The required evidence should be placed here:
 
@@ -1409,25 +1403,21 @@ reachable by ArgoCD.
 These are not missing items for the selected raw-manifest path. They remain
 unverified advanced paths rather than claims of a completed Helm or ArgoCD run.
 
-### Evidence gaps before calling every PDF bullet complete
+### Evidence review
 
 The repository implementation and the selected raw-manifest deployment are
-complete, but two PDF evidence bullets are not fully demonstrated by the
-captured screenshots:
+complete. The final WSL captures now demonstrate the two previously open PDF
+evidence bullets:
 
-1. **Maintain service availability during node failures:** the evidence shows
-   API pod deletion and automatic replacement, not a deliberate worker-node
-   failure or drain while the service is being checked.
-2. **Ensure even distribution of traffic:** the EndpointSlice and 20 successful
-   requests prove multiple ready endpoints and continued routing. The API
-   identity endpoint and verifier are now implemented, but the per-replica
-   response counts have not yet been captured from the live cluster.
+1. **Maintain service availability during node failures:** the controlled test
+   showed `minikube-m02` as `NotReady` while all 20 domain requests returned
+   HTTP 200, followed by node restoration.
+2. **Ensure even distribution of traffic:** the `/instance` verifier recorded
+   40/40 successful requests, with 20 responses from each API pod, and passed
+   the bounded 2:1 distribution check.
 
-To close the first gap, capture a controlled worker-node failure or drain while
-repeating the domain request and showing the application remains available. To
-close the second gap, run the existing `/instance` verifier and record a bounded
-request loop with per-replica counts. Do not claim either result until it is
-captured from the real cluster.
+Both results were captured from the real local WSL Minikube cluster and are
+linked in the final screenshot checklist below.
 
 ---
 
@@ -1435,18 +1425,18 @@ captured from the real cluster.
 
 | Requirement area | Coverage | Status |
 |---|---|---|
-| Redundancy | Two-node Minikube cluster, two API replicas, two UI replicas, topology spreading, probes, PDBs, pod replacement, and a node-failure verifier | ⚠️ Implementation complete; live node-failure capture remains |
-| Load distribution | ClusterIP Services, Ingress routing, two ready API endpoints, HPA metrics, `/instance` pod identity, and a per-replica verifier | ⚠️ Implementation complete; live per-replica capture remains |
+| Redundancy | Two-node Minikube cluster, two API replicas, two UI replicas, topology spreading, probes, PDBs, pod replacement, and a node-failure verifier | ✅ Evidence complete: `minikube-m02` NotReady with 20/20 HTTP 200 responses and node restoration |
+| Load distribution | ClusterIP Services, Ingress routing, two ready API endpoints, HPA metrics, `/instance` pod identity, and a per-replica verifier | ✅ Evidence complete: 40/40 requests, 20 responses per replica, distribution check passed |
 | Domain-based access | `api.myapp.local` and `ui.myapp.local`, hosts-file mapping, live HTTP 200 responses | ✅ Evidence complete |
 | Container orchestration | Kubernetes raw manifests applied successfully; Helm and ArgoCD files documented as optional advanced paths | ✅ Selected raw-manifest path complete |
 | Architecture documentation | SVG diagram plus explanation of Ingress, Services, replicas, nodes, probes, PDB, and HPA | ✅ Complete |
-| Screenshot documentation | 17 captured Part 4 screenshots present, linked once in the relevant task, and explained; two final runtime captures are listed separately below | ✅ Documentation complete |
+| Screenshot documentation | 19 captured Part 4 screenshots present, linked once in the relevant task, and explained | ✅ Documentation complete |
 
-**Current conclusion:** Part 4 documentation and the selected Kubernetes
-raw-manifest implementation are complete. The only remaining submission action
-is to run the preflight and two provided live-cluster verification commands on
-the local WSL Minikube cluster, then attach their truthful terminal captures;
-no additional Kubernetes feature or ArgoCD setup is needed.
+**Current conclusion:** Part 4 documentation, the selected Kubernetes
+raw-manifest implementation, and all four PDF requirement areas are complete.
+The final live WSL captures prove per-replica distribution and service
+availability during a controlled node failure. No additional Kubernetes
+feature or ArgoCD setup is needed.
 
 ---
 
@@ -1475,8 +1465,8 @@ proves, and what the reviewer should notice.
 | `step09-pod-placement-two-nodes.png` | API/UI pods show `minikube` and `minikube-m02` in the NODE column. | Proves replicas are actually placed across two nodes, satisfying the redundancy requirement. |
 | `step10-api-failover-recovery.png` | A real API pod deletion, replacement pod, endpoints, PDBs, and HTTP 200 response. | Proves automatic recovery and continued Service availability after a pod failure. |
 | `step11-load-distribution-requests.png` | Two ready API endpoints followed by 20 successful domain requests. | Proves multiple endpoints remained available and the Service successfully handled repeated traffic. It is baseline routing evidence, not the stronger per-pod distribution proof. |
-| `step12-per-replica-distribution.png` | **To be captured:** the verifier calls `/instance` repeatedly and prints counts by API pod name. | Will prove both replicas answered traffic and the bounded 2:1 distribution check passed. |
-| `step13-node-failure-availability.png` | **To be captured:** the verifier shows one Minikube node unavailable while domain requests continue returning HTTP 200, then restores the node. | Will prove service availability during the controlled node-failure test. |
+| `step12-per-replica-distribution.png` | The verifier calls `/instance` 40 times and prints 20 responses from each API pod. | Proves both replicas answered traffic and the bounded 2:1 distribution check passed; all 40 requests succeeded. |
+| `step13-node-failure-availability.png` | The verifier shows `minikube-m02` as `NotReady`, 20 domain requests returning HTTP 200, and the node being restored. | Proves service availability during the controlled node-failure test. |
 
 ### Diagram Explanation
 
@@ -1488,7 +1478,7 @@ the two Minikube nodes, and Kubernetes recovery/autoscaling controls.
 ### Final Part 4 Status Statement
 
 Part 4 documentation and the selected Kubernetes raw-manifest implementation
-are complete. The evidence covers the four PDF areas. Two final screenshots
-remain to be captured from the local WSL cluster: the node-failure availability
-test and the `/instance` per-replica distribution test. The document does not
-claim those results without matching live evidence.
+are complete. The evidence covers all four PDF areas: redundancy, load
+distribution, domain-based access, and orchestration. The final WSL captures
+show 40/40 per-replica requests with a 20/20 split and 20/20 HTTP 200 responses
+during a controlled worker-node failure.

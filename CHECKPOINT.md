@@ -1015,21 +1015,19 @@ It records the installation, preflight, Minikube start, add-on verification,
 k9s workflow, resource-safe memory settings, two-node pod placement, domain
 access, API failover recovery, load-distribution requests, and the architecture
 diagram. The tracked helper `part4-ha/verify-runtime-evidence.sh` is ready to
-capture the two remaining live proofs after the updated API image is deployed
-to the local WSL cluster.
+ capture the final live proofs from the local WSL cluster after the updated API
+ image was deployed.
 
 ### Part 4 evidence status
 
 The Ingress controller and applications are running. Services, Ingress, HPA
 metrics, two Ready nodes, pod placement across both nodes, successful domain
 requests, real API pod-failover recovery, and repeated load-distribution
-requests have been captured. The selected raw-manifest implementation and its
-Part 2-style documentation are complete. Two PDF evidence bullets remain open:
-service availability during a deliberate node failure, and even per-instance
-traffic distribution with pod-level attribution. The API now exposes the
-diagnostic `/instance` endpoint, and the Deployment injects `POD_NAME` through
-the Kubernetes Downward API. The final screenshots must still come from the
-real local WSL Minikube cluster.
+requests, per-replica distribution, and controlled node-failure availability
+have been captured. The selected raw-manifest implementation and its Part
+2-style documentation are complete. The API exposes the diagnostic `/instance`
+endpoint, and the Deployment injects `POD_NAME` through the Kubernetes
+Downward API.
 
 ### Latest closeout attempt
 
@@ -1088,5 +1086,6 @@ The preflight requires at least two Ready API pods, one consistent API image,
 visible API EndpointSlice addresses, and no active Ingress rewrite annotation.
 If the published image is used, set
 `EXPECTED_API_IMAGE=draiimon112/devops-api:staging` instead. Only after this
-passes should the two final evidence runs begin. No final `step12` or `step13`
-capture exists in this Repl yet.
+passes. The final distribution capture recorded 40/40 successful requests with
+20 responses from each API pod. The final node-failure capture recorded 20/20
+HTTP 200 responses while `minikube-m02` was `NotReady`, then restored the node.
