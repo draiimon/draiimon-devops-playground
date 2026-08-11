@@ -532,7 +532,8 @@ concepts are documented below.
 
 ### Script 1: system_health.sh
 
-**Purpose:** Displays a full system health report — date, uptime, memory, disk, top processes, and CPU info.
+**Purpose:** Displays a full system health report — date, uptime, memory, disk,
+top processes, CPU info, and a best-effort status check for Docker and Nginx.
 
 ```bash
 #!/bin/bash
@@ -558,6 +559,15 @@ echo ""
 echo "[6] CPU INFO"
 nproc
 cat /proc/loadavg
+echo ""
+echo "[7] SERVICE STATUS CHECK"
+for service in docker nginx; do
+    if systemctl is-active --quiet "$service" 2>/dev/null; then
+        echo "  ✔ $service is RUNNING"
+    else
+        echo "  ✘ $service is NOT running"
+    fi
+done
 echo ""
 echo "================================"
 echo "  END OF REPORT"

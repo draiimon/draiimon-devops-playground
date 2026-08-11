@@ -30,6 +30,8 @@
 | CI/CD platform | GitHub Actions |
 | Workflow file | `.github/workflows/deploy.yml` |
 | Trigger branch | `staging` |
+| Current workflow notification job | Discord webhook (`DISCORD_WEBHOOK_URL`) |
+| Historical notification evidence | GitHub Actions email settings and successful-run email |
 
 The local WSL environment does not support the `docker compose` v2
 subcommand, but provides the legacy `docker-compose` command. Therefore,
@@ -75,20 +77,22 @@ workflow.
 | Dockerfile validation | Compose config validation completed locally | ✅ Local preflight confirmed |
 | Automated tests and linting | Test job passed: UI quality checks and API/UI Docker smoke tests completed | ✅ CI confirmed |
 | Container image security scan | Optional; not yet added | ⏭️ Optional |
-| Staging deployment | Separate staging Compose project is running healthy containers from the published `:staging` API and UI images | ✅ Confirmed |
+| Staging deployment | Separate staging Compose project is running healthy containers from the published `:staging` API and UI images; the GitHub workflow does not itself connect to that local machine | ⚠️ Runtime evidenced; automated update boundary documented |
 | Container registry/artifact storage | Deploy job completed the Docker Hub login/tag/push sequence successfully | ✅ CI confirmed |
 | Rollback strategy | Immutable commit-SHA image tags provide a documented rollback path; live rollback not tested | ✅ Strategy documented |
-| Success notifications | GitHub Actions email notification confirmed for a successful run | ✅ Confirmed |
+| Success notifications | GitHub Actions email notification confirmed for a successful run; failure delivery is configured but not separately evidenced | ⚠️ Success confirmed; failure delivery unverified |
 
-**Overall status: Core Part 3 pipeline complete; success email notification
-confirmed.** The
+**Overall status: Core Part 3 build, test, registry publishing, and separate
+staging-runtime evidence are complete; success email notification confirmed.**
+The
 verified pipeline now runs
-**Verify → Build → Test → Push images to Docker Hub** on `staging`. A separate
-staging Compose runtime is now also evidenced with healthy API, UI, and database
+**Verify -> Build -> Test -> Push images to Docker Hub** on `staging`. A separate
+staging Compose runtime is also evidenced with healthy API, UI, and database
 containers using the published registry images. GitHub Actions email
 notifications are enabled and successful workflow email evidence is preserved.
-A failure simulation is not required for this submission and will not be
-performed.
+The workflow's failure-notification path is configured, but failure delivery was
+not separately evidenced. The workflow also does not connect to the separate
+local staging machine to update it automatically.
 
 ### Final Evidence-Based Handoff — August 8, 2026
 
@@ -1032,7 +1036,9 @@ confirm that both repositories received the images.
 ### Staging Runtime Deployment Evidence
 
 The published Docker Hub images were then started in a separate staging Compose
-project on the candidate's WSL computer. The evidence is:
+project on the candidate's WSL computer. This is separate runtime evidence
+after the registry push; the GitHub-hosted workflow does not have a connection
+step that updates that local WSL machine. The evidence is:
 
 The corresponding screenshot is embedded in the PDF-aligned Task 4 walkthrough
 below.
@@ -1047,10 +1053,10 @@ The screenshot confirms:
 
 The staging containers use the published registry images rather than local
 source builds. The database, API, and UI are shown as healthy. This confirms
-that the published `:staging` images were used to update and start the separate
-staging runtime. Additional HTTP smoke-test output would strengthen the
-evidence, but is not required to establish that the containers were deployed
-from the registry images.
+that the published `:staging` images were used to start the separate staging
+runtime. It does not show an automated connection from GitHub Actions to this
+local WSL machine. Additional HTTP smoke-test output would strengthen the
+evidence.
 
 The four annotations were Node.js runtime deprecation warnings. They stated
 that the actions currently target Node.js 20 and are being forced to run on
@@ -2089,11 +2095,15 @@ Push images to Docker Hub — Succeeded in 1 minute and 38 seconds
 
 ### Explanation
 
-GitHub Actions email notifications are the selected free notification method.
-The captured email proves that a successful pipeline notification was delivered
-and includes the workflow name and every job result. The notification setting
-also enables GitHub notifications. No webhook or credential is stored in the
-repository.
+The repository's current workflow contains a Discord webhook notification job
+that runs after the pipeline jobs and publishes an overall result. Separately,
+the supplied historical evidence captures GitHub Actions email settings and a
+successful-run email. These are two different evidence paths and must not be
+described as if the current Discord job produced the historical email.
+
+The captured email proves that a successful GitHub Actions notification was
+delivered at the time of that run and includes the workflow name and every job
+result. No webhook URL or credential is stored in the repository.
 
 No failure simulation is required for this submission. The workflow will not be
 intentionally broken just to generate a failure email; the documented evidence
@@ -2103,15 +2113,16 @@ Task 5 proves that the successful pipeline result reached the configured
 notification channel. Read it as:
 
 ```text
-enable GitHub and email notifications
+enable GitHub and email notifications for the documented historical run
 → run the workflow from staging
 → confirm the successful run in Actions history
 → confirm the success email lists every job
 ```
 
-Failure simulation is intentionally not part of this submission. The lesson is
-to document the notification behavior that was actually evidenced, rather than
-breaking a working pipeline merely to create another screenshot.
+The current workflow also contains a manual failure input and a Discord
+notification path. Neither a delivered failure notification nor a delivered
+Discord message is claimed by the supplied evidence. The documented evidence
+therefore proves successful email delivery for the historical run only.
 
 ### 📸 Screenshots
 
@@ -2135,9 +2146,10 @@ breaking a working pipeline merely to create another screenshot.
 
 | Notification requirement | Evidence | Status |
 |---|---|---|
-| Notification settings | GitHub Actions notifications enabled for GitHub and email | ✅ Confirmed |
-| Success notification | GitHub Actions email for Attempt #2 | ✅ Confirmed |
-| Failure simulation | Not required for this submission | ➖ Not applicable |
+| Notification settings | GitHub Actions notifications enabled for GitHub and email | ✅ Historical evidence |
+| Success notification | GitHub Actions email for Attempt #2 | ✅ Historical evidence |
+| Current workflow path | Discord webhook job using `DISCORD_WEBHOOK_URL` | ⚙️ Configured; delivery not captured |
+| Failure notification delivery | Manual failure input/path exists; no delivered failure notification captured | ⚠️ Unverified |
 
 ---
 
@@ -2178,7 +2190,8 @@ docker image ls | grep -E 'REPOSITORY|api-app|ui-app'
 2. Pipeline-as-code workflow stored at `.github/workflows/deploy.yml`.
 3. API and UI image build, tagging, validation, linting, and smoke tests.
 4. Docker Hub registry publishing through encrypted GitHub Secrets.
-5. Separate staging runtime using the published `:staging` images.
+5. Separate staging runtime using the published `:staging` images (runtime
+   evidence; not an automated connection from the GitHub runner).
 6. A documented immutable-tag rollback strategy.
 7. GitHub Actions success email notification.
 
@@ -2187,11 +2200,10 @@ docker image ls | grep -E 'REPOSITORY|api-app|ui-app'
 1. Optional Docker image security scanning.
 2. Testing the rollback procedure against a live staging environment.
 
-Part 3's required pipeline, registry, staging runtime, and success-notification
-work are documented with evidence. A failure notification simulation is not
-required for this submission and is intentionally not performed. The optional
-image scan and live rollback exercise remain clearly separated from the required
-completion items.
+Part 3's required pipeline, registry, separate staging runtime, and successful
+notification work are documented with evidence. Failure notification delivery
+is configured but not independently captured. The optional image scan and live
+rollback exercise remain clearly separated from the evidenced work.
 
 ### Rollback Strategy — Immutable Image Tags
 

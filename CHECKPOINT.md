@@ -181,13 +181,13 @@ devops_ui      ui-app:latest "npm start"             Up (healthy)  0.0.0.0:3000-
 
 ---
 
-## ✅ PART 3 — CI/CD Pipeline — CORE COMPLETE
+## ✅ PART 3 — CI/CD Pipeline — CORE EVIDENCED
 
 Part 3 is being performed on the candidate's personal WSL/Ubuntu computer, not in
 this Replit workspace. Uploaded terminal screenshots and user-provided command
 output are the source of truth for what has actually been completed.
 
-### Current position — Required pipeline and evidence complete
+### Current position — Core pipeline and registry evidence complete
 
 The repository was safely re-cloned locally from the current GitHub repository.
 The old Part 3 draft documentation and nested workflow were removed locally,
@@ -309,8 +309,9 @@ documentation/screenshots/part3/task14-dockerhub-api-repository.png
 
 These first screenshots prove repository creation. At that earlier checkpoint,
 they did not yet prove that a Docker image was pushed. Later evidence in this
-checkpoint confirms GitHub Secrets authentication, image push, staging update,
-and success notifications; rollback testing remains an optional follow-up.
+checkpoint confirms GitHub Secrets authentication, image push, separate staging
+runtime startup, and historical success-email evidence; current Discord
+delivery and failure-notification delivery are not captured.
 
 The UI Docker Hub repository was also created:
 
@@ -712,18 +713,19 @@ warnings affected the checkout steps and the Docker login action, which are
 currently being forced toward Node.js 24. This is a maintenance follow-up, not
 a failed pipeline result.
 
-Docker Hub publishing and staging service update are now confirmed. GitHub
-Actions email notifications are enabled, the workflow-runs history is
-preserved, and a successful workflow email for Attempt #2 is preserved as
+Docker Hub publishing and separate staging-runtime startup are now confirmed.
+The GitHub-hosted workflow does not connect to that local WSL machine to update
+it automatically. GitHub Actions email notifications are enabled, the
+workflow-runs history is preserved, and a successful workflow email for Attempt #2 is preserved as
 `documentation/screenshots/part3/task30-success-email-notification.png`.
 The full notification email view is also preserved as
 `documentation/screenshots/part3/task41-success-email-notification-full.png`;
 it shows the staging run and all four successful jobs.
 The notification settings and workflow history are preserved as
 `task28-notification-settings.png` and `task29-workflow-runs-history.png`.
-Failure-email simulation is not required for this submission and will not be
-performed. The immutable-tag rollback strategy is documented; a live rollback
-test remains optional follow-up evidence.
+The workflow contains a failure-notification path, but no delivered failure
+notification is claimed. The immutable-tag rollback strategy is documented; a
+live rollback test remains optional follow-up evidence.
 
 ### Final evidence-based handoff — August 8, 2026
 
@@ -735,9 +737,10 @@ Verify → Build → Test → Push images to Docker Hub
 
 The successful run was on `staging`, lasted approximately 4 minutes 14 seconds,
 and showed all four jobs passing. Four non-blocking Node.js 20 deprecation
-warnings were recorded. The evidence also includes a successful GitHub Actions
-email notification for Attempt #2. A failure simulation is not required for this
-submission and will not be performed.
+warnings were recorded. The evidence also includes a historical successful
+GitHub Actions email notification for Attempt #2. The current workflow contains
+a Discord notification path, but its delivery and failure-notification delivery
+are not captured.
 
 The rollback strategy is documented in
 `documentation/Part3-CICD-Documentation.md`: restore the last known-good
@@ -747,9 +750,11 @@ The strategy is not represented as a live rollback test.
 ### Next exact actions on the personal WSL computer
 
 The local Docker preflight, GitHub Actions Docker build, Test Stage, Docker Hub
-publishing, staging runtime, and success-email notification are complete. Do
-not repeat them unless a later change requires it. The remaining optional Part
-3 work is image scanning and testing the documented rollback procedure.
+publishing, separate staging runtime, and historical success-email evidence are
+complete. The GitHub-hosted workflow does not connect to the local WSL staging
+machine to update it automatically. The remaining Part 3 gaps are failure or
+Discord notification delivery evidence, optional image scanning, and testing
+the documented rollback procedure.
 Continue documenting only work shown by local or GitHub evidence.
 
 The previous commands that completed this checkpoint were:
@@ -919,13 +924,18 @@ The final local result was:
 |------|-------------|-------|--------------|-------------|--------|
 | Part 1 | Linux Basics (10 tasks) | ✅ 4 scripts | ✅ Done | ✅ 11 screenshots included | ✅ **COMPLETE** |
 | Part 2 | Docker Containerization (4 tasks) | ✅ 2 Dockerfiles + compose | ✅ Full command/error/solution documentation plus container lifecycle guide | ✅ All evidence present | ✅ **COMPLETE** |
-| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, staging deployment, and success email verified | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure simulation is not required | ✅ 49 screenshots plus 4 raw logs | ✅ **CORE COMPLETE** |
+| Part 3 | CI/CD Pipeline (5 requirements) | ✅ Verify, Build, Test, Docker Hub publishing, separate staging runtime, and historical success email evidenced | ✅ Five exam-aligned tasks documented with commands, output, explanations, evidence, warnings, rollback strategy, and evidence boundary; failure/Discord delivery is unverified | ✅ 49 screenshots plus 4 raw logs | ⚠️ **CORE EVIDENCED; BOUNDARIES OPEN** |
 | Part 4 | High Availability (K8s Option A) | ✅ Raw Kubernetes manifests + Minikube helper | ✅ Full Part 2-style evidence documentation + architecture diagram | ✅ 19 linked screenshots, including per-replica distribution and node-failure availability | ✅ **COMPLETE** |
 | Part 5 | Solution Presentation | N/A | N/A | N/A | 📅 Onsite |
 
 **Remaining optional or unverified work:**
-1. Decide whether to add the optional Docker image security scan.
-2. Test the documented immutable-tag rollback procedure on staging.
+1. Capture the six missing or weakly evidenced Part 1 command demonstrations
+   listed in `documentation/Final-Submission-Audit.md`.
+2. Capture a delivered failure notification or Discord notification, if required
+   by the evaluator, and decide whether the workflow should automate the
+   separate staging update.
+3. Decide whether to add the optional Docker image security scan.
+4. Test the documented immutable-tag rollback procedure on staging.
 
 ---
 

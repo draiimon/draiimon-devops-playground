@@ -8,6 +8,17 @@
 
 ---
 
+## Repository Links
+
+- Exam repository: https://github.com/draiimon/draiimon-devops-playground
+- CI/CD workflow: https://github.com/draiimon/draiimon-devops-playground/actions
+- Source API repository: https://bitbucket.org/metawhale/fast-api-clean
+- Source UI repository: https://bitbucket.org/metawhale/nextjs_app
+
+The CI/CD workflow runs from the `staging` branch. The local WSL and Minikube
+runtime evidence is documented in this repository; it is not a hosted
+production deployment.
+
 ## Application Components: Clone the Sample Applications
 
 The exam uses two sample applications hosted in Bitbucket. Clone both repositories
@@ -108,11 +119,13 @@ docker-compose up --build
 
 ## Part 3: CI/CD Pipeline
 
-**Status:** Core requirements complete. The verified GitHub Actions pipeline
-runs `Verify → Build → Test → Push images to Docker Hub` on the `staging`
-branch, updates the staging runtime with the published images, and has
-successful email-notification evidence. The optional image security scan and
-live rollback exercise remain optional follow-up work.
+**Status:** Core build/test/registry requirements are evidenced. The verified
+GitHub Actions pipeline runs `Verify -> Build -> Test -> Push images to Docker
+Hub` on the `staging` branch. A separate staging Compose runtime was started
+from the published images and successful email-notification evidence exists.
+The workflow does not itself connect to that local staging machine; failure
+notification delivery, the optional image security scan, and live rollback
+remain unverified follow-up work.
 
 See [`documentation/Part3-CICD-Documentation.md`](documentation/Part3-CICD-Documentation.md)
 for the five official PDF-aligned tasks.
@@ -174,11 +187,11 @@ kubectl get pods -n devops-exam -o wide
 
 ### Configure Local DNS
 
-Add to `/etc/hosts`:
+Add the current Minikube IP to `/etc/hosts` (the IP may differ on each local
+cluster start):
 
 ```
-127.0.0.1  api.myapp.local
-127.0.0.1  ui.myapp.local
+echo "$(minikube ip) api.myapp.local ui.myapp.local" | sudo tee -a /etc/hosts
 ```
 
 Then access via:
