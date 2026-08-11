@@ -1,161 +1,86 @@
-PART 5 - SPEAKER SCRIPT: LOCAL WALKTHROUGH AND CHECKPOINT EVIDENCE
+PART 5 - SPEAKER SCRIPT: FIVE-SLIDE LOCAL WALKTHROUGH
 Junior DevOps Engineer Exam 2026
 Mark Andrei Castillo
 
-Presentation rule: local action -> captured evidence -> checkpoint result.
+Format: 5 visual slides followed by 5 script pages in the same PDF.
+Presentation rule: local action -> captured result -> checkpoint meaning.
 
-SLIDE 1: Opening
+SLIDE 1: Opening and presentation scope
 
 SAY:
-I will walk through the work the way I actually performed it: from the local terminal, to the captured screenshot, to the checkpoint that records the result. I will not treat a design diagram as proof by itself.
+Good day. I am Mark Andrei Castillo, and this is my Part 5 solution presentation for the Junior DevOps Engineer Exam 2026. I will present the work as a walkthrough: what I ran locally, what I captured, and what the checkpoint evidence allows me to claim. I will keep the story focused on five slides: foundation, delivery, high availability, and my engineering decisions.
 
 SHOW / DO:
-Start with the PDF, then say that the screenshots are the evidence trail.
+Start with the title slide. Mention that the detailed script is included immediately after the five visual slides in this PDF.
 
 EVIDENCE NOTE:
-The execution boundary matters: Parts 3 and 4 were run on my local WSL machine, while this repository contains the code and evidence.
+The local execution boundary matters: the repository stores the implementation and evidence, while the Linux, CI, and Kubernetes work was performed and captured from the documented environments.
+
+IF ASKED:
+The presentation requirements are approach, architecture, thought process, tools/configuration, challenges, resolutions, trade-offs, improvements, and a repository walkthrough. The five slides cover each of those.
 
 ------------------------------------------------------------------------
 
-SLIDE 2: Evidence path
+SLIDE 2: Parts 1 and 2 foundation
 
 SAY:
-Every part follows the same pattern. I ran something locally, saved the output, and then used the checkpoint to decide what can be claimed as complete. I also separate completed work from future improvements.
+I worked from the foundation upward. In Part 1, I practiced the Linux commands and turned repeated checks into Bash scripts: system health, backup, log analysis, and scripting. In Part 2, I checked that the actual FastAPI and Next.js source was in the build context, then built separate API and UI images with a MySQL Compose dependency. The important result was not only that images built; the API, UI, and database became healthy and the API responded to curl checks.
 
 SHOW / DO:
-Point to the four boxes: local WSL, capture, checkpoint, explanation.
+Show the two evidence screenshots. Point to system_health.sh, backup.sh, and log_analysis.sh, then show docker-compose ps and the API root check.
 
 EVIDENCE NOTE:
-This prevents me from claiming that a planned scan or rollback test was already performed.
+The first local Docker attempt exposed missing source and database/driver alignment issues. I corrected those before treating the stack as ready. This is why the deck distinguishes a build result from an application readiness result.
+
+IF ASKED:
+I kept API and UI separate because they have different runtimes, dependencies, ports, and scaling boundaries. Compose provides a repeatable local feedback loop with MySQL.
 
 ------------------------------------------------------------------------
 
-SLIDE 3: Part 1 system health
+SLIDE 3: Part 3 CI/CD
 
 SAY:
-For Part 1, I began with the Linux environment on WSL2. I ran the system health script and captured the report with uptime, memory, disk, processes, and CPU information.
+For Part 3, the local staging push handed work to GitHub Actions. The workflow order is Verify, Build, Test, Push, and Notify. Build validates the Compose configuration and images. Test installs dependencies, starts the real services, waits for readiness, and checks behavior. Only after those checks does the pipeline publish API and UI images to Docker Hub. SHA, staging, and latest tags make the output traceable.
 
 SHOW / DO:
-Zoom into the command at the top and the END OF REPORT marker.
+Trace the successful workflow graph from left to right and then show the published registry tag evidence. Open .github/workflows/deploy.yml if asked.
 
 EVIDENCE NOTE:
-The checkpoint identifies the machine as Aloof, Ubuntu 24.04 on WSL2.
+The successful pipeline and registry publishing are captured evidence. Notification configuration is present, but I do not overclaim a new failure-notification capture or a live rollback test.
+
+IF ASKED:
+Fresh GitHub-hosted jobs do not share hidden local state, so each job checks out the code and declares its own setup. That makes the pipeline more reproducible.
 
 ------------------------------------------------------------------------
 
-SLIDE 4: Part 1 scripts
+SLIDE 4: Part 4 high availability
 
 SAY:
-I then ran the backup and log-analysis scripts. The backup produced a timestamped archive, while the log script counted four errors and two warnings and printed the latest entries. This made the Linux work repeatable instead of only manual commands.
+For Part 4, I used a two-node Minikube cluster and raw Kubernetes manifests. The application has two API replicas and two UI replicas, stable Services, Ingress routing, readiness and liveness probes, HPA, a PodDisruptionBudget, rolling updates, and topology spread. I then used a runtime verifier instead of trusting YAML alone. The captured results show traffic reaching both replicas and 20 out of 20 successful HTTP responses while one node was NotReady.
 
 SHOW / DO:
-Show the backup filename and the ERROR/WARNING counts.
+Show the ready pods, the 40-request distribution, and the controlled node-failure screenshot. Point out that preflight checks image consistency, EndpointSlice membership, routing, and /instance.
 
 EVIDENCE NOTE:
-Part 1 is recorded as fully complete with four scripts and eleven screenshots.
+This is the strongest HA boundary: the test exercises traffic and availability. The screenshots are local WSL captures; the Repl snapshot contains the verifier, manifests, documentation, and copied evidence.
+
+IF ASKED:
+Minikube is appropriate for a reproducible exam environment. In production I would repeat the same workload design in managed Kubernetes with stronger control-plane and observability guarantees.
 
 ------------------------------------------------------------------------
 
-SLIDE 5: Part 2 source
+SLIDE 5: Part 5 decisions and closing
 
 SAY:
-Before building containers, I checked that the actual API and UI source repositories were present. This was important because the first container attempt did not contain the real application source.
+The main challenges were boundary problems: missing source in the first container build, database alignment, fresh CI runners, and a green rollout without traffic proof. I resolved them with source checks, MySQL alignment, explicit job setup, and runtime preflight. With more time, I would add image scanning, immutable digests, a tested rollback, and production observability. My main lesson is that reliable delivery is a chain of verified boundaries.
 
 SHOW / DO:
-Point at api-src/main.py, requirements.txt, ui-src/app, and package.json in the screenshot.
+Walk through README.md, part1-linux/, part2-docker/, .github/workflows/deploy.yml, part4-ha/k8s/, verify-runtime-evidence.sh, and documentation/. End by inviting questions.
 
 EVIDENCE NOTE:
-The final Compose build contexts are api-src and ui-src, not empty wrapper folders.
+Keep completed evidence separate from configured behavior and future work. Do not present optional scanning or live rollback as already completed.
 
-------------------------------------------------------------------------
-
-SLIDE 6: Part 2 correction
-
-SAY:
-The first Compose run failed because the API image did not have the MySQL Python driver. I corrected the dependency and aligned the database setup with the cloned application. The later screenshot shows all three services healthy.
-
-SHOW / DO:
-Compare the ModuleNotFoundError screenshot with the final docker-compose ps output.
-
-EVIDENCE NOTE:
-The legacy docker-compose command was used locally because that is what the WSL environment provided.
-
-------------------------------------------------------------------------
-
-SLIDE 7: Part 2 response
-
-SAY:
-After the containers were healthy, I tested the API root and the trip endpoint, and I checked the UI. The checkpoint records the final API, MySQL, and UI state and the successful test trip.
-
-SHOW / DO:
-Show the browser response, then read the curl checks on the slide.
-
-EVIDENCE NOTE:
-This is the difference between an image that builds and an application stack that actually responds.
-
-------------------------------------------------------------------------
-
-SLIDE 8: Part 3 push
-
-SAY:
-For Part 3, I pushed the staging branch from the local WSL checkout. That push is the handoff point: the local Git result is followed by the GitHub Actions run history.
-
-SHOW / DO:
-Read the `git push origin staging` output and then point to the green staging runs.
-
-EVIDENCE NOTE:
-The checkpoint says the workflow was created and executed on the candidate's personal WSL computer, with GitHub as the remote runner.
-
-------------------------------------------------------------------------
-
-SLIDE 9: Part 3 workflow
-
-SAY:
-The successful workflow graph shows the actual order: Verify, Build Docker images, Test applications, and Push images to Docker Hub. The checkpoint records a separate staging runtime and historical successful email evidence. The current workflow also contains a Discord notification job, but its delivery is not captured here.
-
-SHOW / DO:
-Trace the four green jobs from left to right.
-
-EVIDENCE NOTE:
-Node deprecation annotations are warnings, not failed jobs. Do not mix the historical email screenshot with the current Discord configuration. The optional image scan, failure-notification delivery, and live rollback remain follow-up work.
-
-------------------------------------------------------------------------
-
-SLIDE 10: Part 4 deployment
-
-SAY:
-For Part 4, I moved to Kubernetes locally. The k9s capture shows two API pods, two UI pods, and one database pod running, with the application replicas placed across the two Minikube nodes.
-
-SHOW / DO:
-Point to READY 1/1, zero restarts, the pod names, and the node column.
-
-EVIDENCE NOTE:
-The checkpoint records the two-node cluster, Kubernetes versions, enabled Metrics Server, and Ingress controller.
-
-------------------------------------------------------------------------
-
-SLIDE 11: Part 4 runtime tests
-
-SAY:
-I did not stop at a successful rollout. The verifier sent 40 requests and recorded 20 responses from each API replica. Then it stopped one Minikube node and still received 20 out of 20 HTTP 200 responses before restoring the node.
-
-SHOW / DO:
-Read the successful requests and node-failure lines directly from the screenshots.
-
-EVIDENCE NOTE:
-These are the strongest runtime claims because they come from captured local WSL evidence, not only YAML.
-
-------------------------------------------------------------------------
-
-SLIDE 12: Closeout
-
-SAY:
-The checkpoint lets me make precise claims. Parts 1 and 2 have captured core evidence. Part 3 core CI/CD and registry publishing are evidenced, with a separate staging runtime capture. Part 4 runtime evidence is captured. Security scanning, failure-notification delivery, and live rollback remain unverified.
-
-SHOW / DO:
-Finish by opening CHECKPOINT.md and the documentation folders.
-
-EVIDENCE NOTE:
-The final walkthrough is run locally, captured, reconciled against the checkpoint, and explained with the correct evidence boundary.
+IF ASKED:
+The presentation is designed to be short, but every required Part 5 topic is available: approach, architecture, decisions, challenges, resolutions, trade-offs, improvements, repository walkthrough, Dockerfiles, CI/CD, and HA.
 
 ------------------------------------------------------------------------
