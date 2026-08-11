@@ -1,0 +1,169 @@
+PART 5 - SPEAKER SCRIPT
+Junior DevOps Engineer Exam 2026
+Mark Andrei Castillo
+
+Use this as your speaking guide. The code shown on slides is a readable sample; explain the real repository files when asked.
+
+SLIDE 1: Opening · 45 seconds
+
+SAY:
+Good day. I will present the solution as a delivery story: Linux and container foundations, an automated path to a registry, and a two-replica Kubernetes workload with runtime evidence.
+
+WALK-THROUGH:
+Open the repository README and point to the four parts. Start with the outcome, not a code dump.
+
+IF ASKED:
+Scope: Linux basics, Docker containerization, CI/CD, and high availability deployment.
+
+------------------------------------------------------------------------
+
+SLIDE 2: Executive snapshot · 60 seconds
+
+SAY:
+My approach was incremental and evidence-driven. Each layer produces an artifact the next layer can consume: scripts and docs, images, a pipeline, then Kubernetes manifests and runtime verification.
+
+WALK-THROUGH:
+tree -L 2
+sed -n '1,220p' README.md
+git status --short --branch
+
+IF ASKED:
+This order reduces debugging scope: if the container is not healthy, Kubernetes is not the place to debug the application.
+
+------------------------------------------------------------------------
+
+SLIDE 3: Architecture · 75 seconds
+
+SAY:
+The key decision is separation of concerns. Compose provides local feedback, GitHub Actions provides repeatable delivery, and Kubernetes provides availability controls.
+
+WALK-THROUGH:
+Show: part2-docker/docker-compose.yml, .github/workflows/deploy.yml, part4-ha/k8s/
+
+IF ASKED:
+Separate services allow independent scaling, clearer health boundaries, and a smaller blast radius.
+
+------------------------------------------------------------------------
+
+SLIDE 4: Linux foundations · 60 seconds
+
+SAY:
+Before containers or Kubernetes, I established operational habits: inspect the system, understand processes and networking, manage files safely, and automate repeated checks.
+
+WALK-THROUGH:
+bash part1-linux/system_health.sh
+bash part1-linux/backup.sh
+bash part1-linux/log_analysis.sh
+
+IF ASKED:
+The scripts turn ad-hoc diagnosis into a repeatable baseline.
+
+------------------------------------------------------------------------
+
+SLIDE 5: Dockerfiles · 75 seconds
+
+SAY:
+I used separate multi-stage images for the API and UI because they have different runtimes, dependencies, ports, and scaling behavior. Compose adds the MySQL dependency.
+
+WALK-THROUGH:
+Open the two Dockerfiles and docker-compose.yml. Run docker compose ... config --quiet, then ps.
+
+IF ASKED:
+If the local contract is unstable, the CI smoke test should fail before publishing.
+
+------------------------------------------------------------------------
+
+SLIDE 6: CI/CD walkthrough · 90 seconds
+
+SAY:
+The pipeline is deliberately modular: verify, build, test, deploy, and notify. Only after the test stage passes does Deploy publish Docker Hub tags.
+
+WALK-THROUGH:
+Open .github/workflows/deploy.yml and point to the jobs in dependency order.
+
+IF ASKED:
+Fresh runners make hidden local state visible, so each job must declare its dependencies and readiness checks.
+
+------------------------------------------------------------------------
+
+SLIDE 7: CI/CD proof · 75 seconds
+
+SAY:
+These screenshots show successful build, test, publish, and notification proof. Optional image scanning and a live rollback exercise are follow-up work, not overclaimed as complete.
+
+WALK-THROUGH:
+Show CI success, success email, and Docker Hub tags. Then show the current workflow file.
+
+IF ASKED:
+I did not intentionally break a working pipeline just to create failure-email evidence.
+
+------------------------------------------------------------------------
+
+SLIDE 8: HA design · 90 seconds
+
+SAY:
+Kubernetes provides the primitives the requirement needs: replicas, scheduling constraints, probes, stable Services, Ingress, autoscaling, and disruption protection.
+
+WALK-THROUGH:
+Open api-deployment.yaml, api-service.yaml, hpa.yaml, poddisruptionbudget.yaml, and verify-runtime-evidence.sh.
+
+IF ASKED:
+Minikube is a reproducible local exam environment; the manifests can be repeated in managed Kubernetes.
+
+------------------------------------------------------------------------
+
+SLIDE 9: HA proof · 90 seconds
+
+SAY:
+The important detail is the preflight. I do not count requests just because rollout says complete. I first verify pods, images, EndpointSlice membership, ingress behavior, and /instance.
+
+WALK-THROUGH:
+EXPECTED_API_IMAGE=draiimon112/devops-api:staging ./part4-ha/verify-runtime-evidence.sh --preflight
+./part4-ha/verify-runtime-evidence.sh
+./part4-ha/verify-runtime-evidence.sh --node-failure
+
+IF ASKED:
+A Ready pod not present in the EndpointSlice is not receiving traffic, so pod status alone can mislead.
+
+------------------------------------------------------------------------
+
+SLIDE 10: Challenges and trade-offs · 90 seconds
+
+SAY:
+The most useful challenges were boundary problems: fresh CI runners, mutable image tags, and ingress path behavior. I resolved them with explicit readiness, SHA traceability, and preflight checks.
+
+WALK-THROUGH:
+Use the slide as the reflection section. Clearly separate completed work, documented strategy, and next improvements.
+
+IF ASKED:
+Next improvements: image scanning, immutable deployment digests, tested rollback, and managed staging.
+
+------------------------------------------------------------------------
+
+SLIDE 11: Live walkthrough · 3–5 minutes
+
+SAY:
+I will keep the demo deterministic: repository state, Compose validation, workflow shape, then Kubernetes preflight or captured evidence. I will not improvise if the cluster is unavailable.
+
+WALK-THROUGH:
+git status --short --branch
+git log --oneline --decorate -3
+docker compose -f part2-docker/docker-compose.yml config --quiet
+
+IF ASKED:
+If a command fails, stop at that boundary and explain whether it is environment readiness or application behavior.
+
+------------------------------------------------------------------------
+
+SLIDE 12: Closing · 30 seconds
+
+SAY:
+My main takeaway is that reliability is not one tool. It is a chain of verified boundaries. I can show the repository, explain the choices, and reproduce the checks.
+
+WALK-THROUGH:
+Finish with: I am happy to walk through any file or command in more detail.
+
+IF ASKED:
+Never infer runtime correctness from one green signal; verify the boundary that carries traffic.
+
+------------------------------------------------------------------------
